@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.groundreservation" "\0"
-            VALUE "FileDescription", "ground_reservation_system" "\0"
+            VALUE "CompanyName", "com.groundzero" "\0"
+            VALUE "FileDescription", "ground_zero" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "ground_reservation_system" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.groundreservation. All rights reserved." "\0"
-            VALUE "OriginalFilename", "ground_reservation_system.exe" "\0"
-            VALUE "ProductName", "ground_reservation_system" "\0"
+            VALUE "InternalName", "ground_zero" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.groundzero. All rights reserved." "\0"
+            VALUE "OriginalFilename", "ground_zero.exe" "\0"
+            VALUE "ProductName", "ground_zero" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

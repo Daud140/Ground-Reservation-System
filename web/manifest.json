@@ -1,6 +1,6 @@
 {
-    "name": "ground_reservation_system",
-    "short_name": "ground_reservation_system",
+    "name": "ground_zero",
+    "short_name": "ground_zero",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

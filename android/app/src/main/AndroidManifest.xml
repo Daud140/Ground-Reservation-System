@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="ground_reservation_system"
+        android:label="ground_zero"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
