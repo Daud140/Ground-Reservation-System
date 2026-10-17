@@ -36,7 +36,16 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
       body: FutureBuilder<List<BookingModel>>(
         future: bookingRepo.getAllBookings(),
         builder: (context, snapshot) {
-          final bookings = snapshot.data ?? [];
+          final allBookings = snapshot.data ?? [];
+          final filteredBookings = allBookings.where((b) {
+            if (_activeTab == 0) {
+              return b.status == BookingStatus.confirmed || b.status == BookingStatus.pending;
+            } else if (_activeTab == 1) {
+              return b.status == BookingStatus.completed;
+            } else {
+              return b.status == BookingStatus.cancelled || b.status == BookingStatus.rejected;
+            }
+          }).toList();
 
           return Column(
             children: [
@@ -54,13 +63,15 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
                 ),
               ),
               Expanded(
-                child: bookings.isEmpty
-                    ? const Center(child: Text('No bookings recorded yet'))
+                child: filteredBookings.isEmpty
+                    ? const Center(child: Text('No bookings in this tab'))
                     : ListView.builder(
                         padding: const EdgeInsets.all(16),
-                        itemCount: bookings.length,
+                        itemCount: filteredBookings.length,
                         itemBuilder: (context, index) {
-                          final booking = bookings[index];
+                          final booking = filteredBookings[index];
+                          final canCancel = booking.status == BookingStatus.confirmed || booking.status == BookingStatus.pending;
+
                           return Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.all(16),
@@ -75,12 +86,15 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      booking.groundName,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w800,
-                                        color: AppColors.navy,
+                                    Expanded(
+                                      child: Text(
+                                        booking.groundName,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w800,
+                                          color: AppColors.navy,
+                                        ),
                                       ),
                                     ),
                                     Container(
@@ -113,15 +127,60 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
                                       'PKR ${booking.totalPrice.toInt()} Paid',
                                       style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.emeraldDark),
                                     ),
-                                    OutlinedButton.icon(
-                                      onPressed: () => context.push('/customer/ticket/${booking.id}', extra: booking),
-                                      icon: const Icon(Icons.qr_code, size: 16),
-                                      label: const Text('View Pass', style: TextStyle(fontSize: 12)),
-                                      style: OutlinedButton.styleFrom(
-                                        foregroundColor: AppColors.navy,
-                                        side: const BorderSide(color: AppColors.borderLight),
-                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                      ),
+                                    Row(
+                                      children: [
+                                        if (canCancel) ...[
+                                          TextButton.icon(
+                                            onPressed: () async {
+                                              final confirmed = await showDialog<bool>(
+                                                context: context,
+                                                builder: (ctx) => AlertDialog(
+                                                  title: const Text('Cancel Booking?'),
+                                                  content: Text(
+                                                    'Are you sure you want to cancel this booking (${booking.groundName} - PKR ${booking.totalPrice.toInt()})?\n\nIf confirmed, this will reduce owner revenue accordingly.',
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () => Navigator.pop(ctx, false),
+                                                      child: const Text('Keep Booking'),
+                                                    ),
+                                                    ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                                                      onPressed: () => Navigator.pop(ctx, true),
+                                                      child: const Text('Confirm Cancel', style: TextStyle(color: Colors.white)),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                              if (confirmed == true) {
+                                                await bookingRepo.cancelBooking(booking.id);
+                                                setState(() {});
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text('Booking cancelled. Owner revenue reduced accordingly.'),
+                                                      backgroundColor: AppColors.error,
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                            },
+                                            icon: const Icon(Icons.cancel_outlined, size: 14, color: AppColors.error),
+                                            label: const Text('Cancel', style: TextStyle(color: AppColors.error, fontSize: 12)),
+                                          ),
+                                          const SizedBox(width: 8),
+                                        ],
+                                        OutlinedButton.icon(
+                                          onPressed: () => context.push('/customer/ticket/${booking.id}', extra: booking),
+                                          icon: const Icon(Icons.qr_code, size: 16),
+                                          label: const Text('View Pass', style: TextStyle(fontSize: 12)),
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor: AppColors.navy,
+                                            side: const BorderSide(color: AppColors.borderLight),
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),

@@ -56,12 +56,53 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Top bar: Logo, Location Chip, Notifications & Avatar
+                        // Top bar: Brand Logo on left, Notifications & Avatar on right
                         Row(
                           children: [
                             const GroundZeroLogo(size: 26),
                             const Spacer(),
-                            // Location Selector Chip
+                            // Notification bell
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: AppColors.borderLight),
+                              ),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  const Icon(Icons.notifications_none_rounded, color: AppColors.navy, size: 18),
+                                  Positioned(
+                                    top: 7,
+                                    right: 8,
+                                    child: Container(
+                                      width: 7,
+                                      height: 7,
+                                      decoration: const BoxDecoration(
+                                        color: AppColors.emerald,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            // User avatar
+                            GesturableAvatar(
+                              name: user?.name ?? 'Player',
+                              onTap: () => widget.onNavigateTab?.call(4),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        // Sub-bar: City Selector Chip & Greeting
+                        Row(
+                          children: [
                             InkWell(
                               onTap: _showCityPicker,
                               borderRadius: BorderRadius.circular(20),
@@ -91,40 +132,17 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 10),
-                            // Notification bell
-                            Container(
-                              width: 38,
-                              height: 38,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.borderLight),
+                            const Spacer(),
+                            Flexible(
+                              child: Text(
+                                'Ready to play, ${user?.name.split(' ').first ?? 'Player'}?',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textSecondaryLight,
+                                ),
                               ),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  const Icon(Icons.notifications_none_rounded, color: AppColors.navy, size: 20),
-                                  Positioned(
-                                    top: 8,
-                                    right: 9,
-                                    child: Container(
-                                      width: 8,
-                                      height: 8,
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.emerald,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            // User avatar
-                            GesturableAvatar(
-                              name: user?.name ?? 'Player',
-                              onTap: () => widget.onNavigateTab?.call(4),
                             ),
                           ],
                         ),

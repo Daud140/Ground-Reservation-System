@@ -172,17 +172,21 @@ class BookingConfirmationScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Date & Time', style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
-                              const SizedBox(height: 2),
-                              Text(
-                                '$dateStr • $timeSlot',
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.navy),
-                              ),
-                            ],
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Date & Time', style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '$dateStr • $timeSlot',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.navy),
+                                ),
+                              ],
+                            ),
                           ),
+                          const SizedBox(width: 10),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
@@ -262,23 +266,30 @@ class BookingConfirmationScreen extends ConsumerWidget {
 
                 // Quick Action Buttons Row: [Add to Calendar] [Share Pass] [Get Directions]
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildActionButton(Icons.calendar_month_outlined, 'Calendar', () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Match event synced to device calendar!')),
-                      );
-                    }),
-                    _buildActionButton(Icons.share_outlined, 'Share Pass', () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Pass ready to share!')),
-                      );
-                    }),
-                    _buildActionButton(Icons.directions_outlined, 'Directions', () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Opening navigation directions...')),
-                      );
-                    }),
+                    Expanded(
+                      child: _buildActionButton(Icons.calendar_month_outlined, 'Calendar', () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Match event synced to device calendar!')),
+                        );
+                      }),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildActionButton(Icons.share_outlined, 'Share Pass', () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Pass ready to share!')),
+                        );
+                      }),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _buildActionButton(Icons.directions_outlined, 'Directions', () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Opening navigation directions...')),
+                        );
+                      }),
+                    ),
                   ],
                 ),
 

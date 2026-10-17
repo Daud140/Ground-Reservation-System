@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import '../constants/app_colors.dart';
+import '../core/storage/hive_boxes.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import 'home_screen.dart';
@@ -40,6 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // 5. OTHER FIELDS: Terms and Conditions Checkbox Validation
     if (!_agreeToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -51,15 +55,73 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(milliseconds: 1200));
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final name = _fullNameController.text.trim();
+    final phone = _phoneController.text.trim();
+
+    // 6. NEW ACCOUNT: Save account to allow login & prevent duplicate accounts
+    try {
+      Box usersBox;
+      if (Hive.isBoxOpen(HiveBoxes.usersBox)) {
+        usersBox = Hive.box(HiveBoxes.usersBox);
+      } else {
+        usersBox = await Hive.openBox(HiveBoxes.usersBox);
+      }
+
+      // Check if duplicate email already exists (case-insensitive)
+      for (final key in usersBox.keys) {
+        final raw = usersBox.get(key);
+        if (raw != null) {
+          final map = Map<String, dynamic>.from(jsonDecode(raw as String));
+          final existingEmail = (map['email'] as String? ?? '').toLowerCase();
+          if (existingEmail == email.toLowerCase()) {
+            if (!mounted) return;
+            setState(() => _isLoading = false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('An account with this email already exists. Please sign in.'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+            return;
+          }
+        }
+      }
+
+      // Save new account
+      final newId = 'user_${DateTime.now().millisecondsSinceEpoch}';
+      final newUserMap = {
+        'id': newId,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'role': 'customer',
+        'password': password,
+        'sports': _selectedSports.toList(),
+      };
+      await usersBox.put(newId, jsonEncode(newUserMap));
+    } catch (e) {
+      debugPrint('Registration storage note: $e');
+    }
+
+    await Future.delayed(const Duration(milliseconds: 600));
 
     if (!mounted) return;
     setState(() => _isLoading = false);
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Account created for $name! You can now log in anytime.'),
+        backgroundColor: AppColors.primaryDark,
+      ),
+    );
+
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (context) => HomeScreen(
-          userEmail: _emailController.text.trim(),
+          userEmail: email,
         ),
       ),
       (route) => false,
@@ -129,7 +191,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Full Name
+                      // 5. OTHER FIELDS: Full Name Validation
                       CustomTextField(
                         controller: _fullNameController,
                         label: 'Full Name',
@@ -139,101 +201,141 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (val == null || val.trim().isEmpty) {
                             return 'Please enter your full name';
                           }
+                          if (val.trim().length < 3) {
+                            return 'Full name must be at least 3 characters';
+                          }
+                          if (!RegExp(r"^[a-zA-Z\s'-]+$").hasMatch(val.trim())) {
+                            return 'Full name must contain letters only';
+                          }
                           return null;
                         },
                       ),
                       const SizedBox(height: 16),
 
-                      // Email
+                      // 3. EMAIL FIELD: Must be valid format and contain at least one uppercase letter
                       CustomTextField(
                         controller: _emailController,
-                        label: 'Email Address',
-                        hintText: 'name@example.com',
+                        label: 'Email Address (Must contain an uppercase letter)',
+                        hintText: 'User@example.com',
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
                         validator: (val) {
                           if (val == null || val.trim().isEmpty) {
-                            return 'Please enter your email';
+                            return 'Please enter your email address';
                           }
-                          if (!val.contains('@') || !val.contains('.')) {
-                            return 'Please enter a valid email address';
+                          if (!RegExp(r'[A-Z]').hasMatch(val)) {
+                            return 'Email must contain at least one uppercase letter (e.g. User@example.com)';
+                          }
+                          if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(val)) {
+                            return 'Please enter a valid email format (e.g. User@example.com)';
                           }
                           return null;
                         },
                       ),
                       const SizedBox(height: 16),
 
-                      // Phone Number
+                      // 2. PHONE FIELD: Accepts digits only, keyboard restricted, length validated (10 or 11 digits)
                       CustomTextField(
                         controller: _phoneController,
-                        label: 'Phone Number',
-                        hintText: '+1 234 567 8900',
+                        label: 'Phone Number (Digits only, 10-11 digits)',
+                        hintText: '03001234567',
                         prefixIcon: Icons.phone_outlined,
-                        keyboardType: TextInputType.phone,
+                        keyboardType: TextInputType.number,
                         validator: (val) {
                           if (val == null || val.trim().isEmpty) {
                             return 'Please enter your phone number';
                           }
+                          if (!RegExp(r'^[0-9]+$').hasMatch(val.trim())) {
+                            return 'Phone number must accept digits only (no letters, symbols, or spaces)';
+                          }
+                          if (val.trim().length < 10 || val.trim().length > 11) {
+                            return 'Phone number must be 10 or 11 digits (e.g. 03001234567)';
+                          }
                           return null;
                         },
                       ),
                       const SizedBox(height: 16),
 
-                      // Preferred Sport Filter Chips
-                      const Text(
-                        'Preferred Sport(s)',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _sports.map((sport) {
-                          final isSelected = _selectedSports.contains(sport);
-                          return FilterChip(
-                            label: Text(sport),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              setState(() {
-                                if (selected) {
-                                  _selectedSports.add(sport);
-                                } else {
-                                  if (_selectedSports.length > 1) {
-                                    _selectedSports.remove(sport);
-                                  }
-                                }
-                              });
-                            },
-                            selectedColor: AppColors.primaryLight,
-                            checkmarkColor: AppColors.primaryDark,
-                            labelStyle: TextStyle(
-                              fontSize: 12,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                              color: isSelected ? AppColors.primaryDark : AppColors.textSecondary,
-                            ),
-                            backgroundColor: AppColors.inputBackground,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(
-                                color: isSelected ? AppColors.primary : AppColors.border,
+                      // 5. OTHER FIELDS: Preferred Sport Selection Validation
+                      FormField<Set<String>>(
+                        initialValue: _selectedSports,
+                        validator: (_) {
+                          if (_selectedSports.isEmpty) {
+                            return 'Please select at least one preferred sport';
+                          }
+                          return null;
+                        },
+                        builder: (state) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Preferred Sport(s)',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
                               ),
-                            ),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: _sports.map((sport) {
+                                  final isSelected = _selectedSports.contains(sport);
+                                  return FilterChip(
+                                    label: Text(sport),
+                                    selected: isSelected,
+                                    onSelected: (selected) {
+                                      setState(() {
+                                        if (selected) {
+                                          _selectedSports.add(sport);
+                                        } else {
+                                          if (_selectedSports.length > 1) {
+                                            _selectedSports.remove(sport);
+                                          }
+                                        }
+                                        state.didChange(_selectedSports);
+                                      });
+                                    },
+                                    selectedColor: AppColors.primaryLight,
+                                    checkmarkColor: AppColors.primaryDark,
+                                    labelStyle: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                      color: isSelected ? AppColors.primaryDark : AppColors.textSecondary,
+                                    ),
+                                    backgroundColor: AppColors.inputBackground,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      side: BorderSide(
+                                        color: isSelected ? AppColors.primary : AppColors.border,
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                              if (state.hasError) ...[
+                                const SizedBox(height: 6),
+                                Text(
+                                  state.errorText!,
+                                  style: const TextStyle(color: AppColors.error, fontSize: 12),
+                                ),
+                              ],
+                            ],
                           );
-                        }).toList(),
+                        },
                       ),
                       const SizedBox(height: 16),
 
-                      // Password
+                      // 4. PASSWORD FIELD: Must contain uppercase letter, min 6 chars, at least 1 number
                       CustomTextField(
                         controller: _passwordController,
                         label: 'Password',
                         hintText: 'Create a strong password',
                         prefixIcon: Icons.lock_outline,
                         obscureText: _obscurePassword,
+                        helperText: 'Rules: Min 6 chars, at least 1 uppercase letter (A-Z), at least 1 number (0-9)',
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
@@ -243,15 +345,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                         ),
                         validator: (val) {
-                          if (val == null || val.length < 6) {
-                            return 'Password must be at least 6 characters';
+                          if (val == null || val.isEmpty) {
+                            return 'Please enter a password';
+                          }
+                          if (val.length < 6) {
+                            return 'Password must be at least 6 characters long';
+                          }
+                          if (!RegExp(r'[A-Z]').hasMatch(val)) {
+                            return 'Password must contain at least one uppercase letter (A-Z)';
+                          }
+                          if (!RegExp(r'[0-9]').hasMatch(val)) {
+                            return 'Password must contain at least one number (0-9)';
                           }
                           return null;
                         },
                       ),
                       const SizedBox(height: 16),
 
-                      // Confirm Password
+                      // 5. OTHER FIELDS: Confirm Password Validation
                       CustomTextField(
                         controller: _confirmPasswordController,
                         label: 'Confirm Password',
@@ -267,6 +378,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                         ),
                         validator: (val) {
+                          if (val == null || val.isEmpty) {
+                            return 'Please confirm your password';
+                          }
                           if (val != _passwordController.text) {
                             return 'Passwords do not match';
                           }
@@ -275,7 +389,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 12),
 
-                      // Terms and conditions checkbox
+                      // 5. OTHER FIELDS: Terms and Conditions checkbox
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [

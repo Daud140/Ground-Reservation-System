@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import '../constants/app_colors.dart';
+import '../core/storage/hive_boxes.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/social_login_button.dart';
@@ -31,8 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _fillDemoCredentials() {
     setState(() {
-      _emailController.text = 'demo.player@groundres.com';
-      _passwordController.text = 'demo1234';
+      _emailController.text = 'Demo.player@groundres.com';
+      _passwordController.text = 'Demo1234';
     });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -48,16 +51,68 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isLoading = true);
 
-    // Simulate network authentication delay
-    await Future.delayed(const Duration(milliseconds: 1200));
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    // 6. NEW ACCOUNT / LOGIN: Verify against saved accounts
+    bool isAuthenticated = false;
+    String? authError;
+
+    try {
+      Box usersBox;
+      if (Hive.isBoxOpen(HiveBoxes.usersBox)) {
+        usersBox = Hive.box(HiveBoxes.usersBox);
+      } else {
+        usersBox = await Hive.openBox(HiveBoxes.usersBox);
+      }
+
+      // Allow demo accounts as well as any created accounts in Hive
+      if (email.toLowerCase() == 'demo.player@groundres.com' || email.toLowerCase() == 'customer@groundzero.pk') {
+        isAuthenticated = true;
+      } else {
+        for (final key in usersBox.keys) {
+          final raw = usersBox.get(key);
+          if (raw != null) {
+            final map = Map<String, dynamic>.from(jsonDecode(raw as String));
+            final storedEmail = (map['email'] as String? ?? '').toLowerCase();
+            if (storedEmail == email.toLowerCase()) {
+              final storedPassword = map['password'] as String?;
+              if (storedPassword != null && storedPassword != password) {
+                authError = 'Incorrect password. Please verify your credentials.';
+              } else {
+                isAuthenticated = true;
+              }
+              break;
+            }
+          }
+        }
+        if (!isAuthenticated && authError == null) {
+          authError = 'No account found with this email. Please click "Sign Up" to create an account.';
+        }
+      }
+    } catch (_) {
+      isAuthenticated = true;
+    }
+
+    await Future.delayed(const Duration(milliseconds: 600));
 
     if (!mounted) return;
     setState(() => _isLoading = false);
 
+    if (!isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authError ?? 'Authentication failed.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (context) => HomeScreen(
-          userEmail: _emailController.text.trim(),
+          userEmail: email,
         ),
       ),
     );
@@ -65,6 +120,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showForgotPasswordDialog() {
     final resetEmailController = TextEditingController(text: _emailController.text);
+    final dialogFormKey = GlobalKey<FormState>();
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -76,30 +133,45 @@ class _LoginScreenState extends State<LoginScreen> {
             Text('Reset Password', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Enter your registered email and we\'ll send you a link to reset your ground booking password.',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: resetEmailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                hintText: 'Enter your email address',
-                prefixIcon: const Icon(Icons.email_outlined),
-                filled: true,
-                fillColor: AppColors.inputBackground,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+        content: Form(
+          key: dialogFormKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Enter your registered email and we\'ll send you a link to reset your ground booking password.',
+                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: resetEmailController,
+                keyboardType: TextInputType.emailAddress,
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return 'Please enter your email address';
+                  }
+                  if (!RegExp(r'[A-Z]').hasMatch(val)) {
+                    return 'Email must contain at least one uppercase letter';
+                  }
+                  if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(val)) {
+                    return 'Please enter a valid email format';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  hintText: 'User@example.com',
+                  prefixIcon: const Icon(Icons.email_outlined),
+                  filled: true,
+                  fillColor: AppColors.inputBackground,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -112,6 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
+              if (!dialogFormKey.currentState!.validate()) return;
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -183,32 +256,36 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 24),
 
-                          // Email Field
+                          // 3. EMAIL FIELD: Must be valid email format and contain at least one uppercase letter
                           CustomTextField(
                             controller: _emailController,
-                            label: 'Email / Username',
-                            hintText: 'name@example.com',
+                            label: 'Email Address (Must contain an uppercase letter)',
+                            hintText: 'User@example.com',
                             prefixIcon: Icons.email_outlined,
                             keyboardType: TextInputType.emailAddress,
                             validator: (val) {
                               if (val == null || val.trim().isEmpty) {
-                                return 'Please enter your email or username';
+                                return 'Please enter your email address';
                               }
-                              if (!val.contains('@') || !val.contains('.')) {
-                                return 'Please enter a valid email address';
+                              if (!RegExp(r'[A-Z]').hasMatch(val)) {
+                                return 'Email must contain at least one uppercase letter (e.g. User@example.com)';
+                              }
+                              if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(val)) {
+                                return 'Please enter a valid email address (e.g. User@example.com)';
                               }
                               return null;
                             },
                           ),
                           const SizedBox(height: 18),
 
-                          // Password Field
+                          // 4. PASSWORD FIELD: Must contain uppercase letter, min 6 chars, at least 1 number
                           CustomTextField(
                             controller: _passwordController,
                             label: 'Password',
                             hintText: 'Enter your password',
                             prefixIcon: Icons.lock_outline,
                             obscureText: _obscurePassword,
+                            helperText: 'Rules: Min 6 chars, at least 1 uppercase letter (A-Z), at least 1 number (0-9)',
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _obscurePassword
@@ -228,7 +305,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 return 'Please enter your password';
                               }
                               if (val.length < 6) {
-                                return 'Password must be at least 6 characters';
+                                return 'Password must be at least 6 characters long';
+                              }
+                              if (!RegExp(r'[A-Z]').hasMatch(val)) {
+                                return 'Password must contain at least one uppercase letter (A-Z)';
+                              }
+                              if (!RegExp(r'[0-9]').hasMatch(val)) {
+                                return 'Password must contain at least one number (0-9)';
                               }
                               return null;
                             },

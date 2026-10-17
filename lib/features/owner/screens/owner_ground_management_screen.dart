@@ -48,6 +48,32 @@ class _OwnerGroundManagementScreenState extends ConsumerState<OwnerGroundManagem
   }
 
   void _handleSaveGround() {
+    final name = _nameController.text.trim();
+    final priceStr = _priceController.text.trim();
+    final surface = _surfaceController.text.trim();
+
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a ground name'), backgroundColor: AppColors.error),
+      );
+      return;
+    }
+
+    final price = double.tryParse(priceStr);
+    if (price == null || price <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid positive hourly rate (PKR)'), backgroundColor: AppColors.error),
+      );
+      return;
+    }
+
+    if (surface.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter pitch surface (e.g. Artificial Turf 5G)'), backgroundColor: AppColors.error),
+      );
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Ground settings and slot timings updated successfully!'),

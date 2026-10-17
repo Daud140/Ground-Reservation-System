@@ -37,15 +37,20 @@ class MockAuthRepository implements AuthRepository {
     for (final key in usersBox.keys) {
       final raw = usersBox.get(key);
       if (raw != null) {
-        final user = UserModel.fromJson(Map<String, dynamic>.from(jsonDecode(raw as String)));
+        final map = Map<String, dynamic>.from(jsonDecode(raw as String));
+        final user = UserModel.fromJson(map);
         if (user.email.toLowerCase() == email.trim().toLowerCase()) {
+          final savedPassword = map['password'] as String?;
+          if (savedPassword != null && savedPassword != password) {
+            throw Exception('Incorrect password. Please verify and try again.');
+          }
           await _storage.saveCurrentUser(user);
           return user;
         }
       }
     }
 
-    throw Exception('User not found with this email. Please check your credentials or use Demo Login.');
+    throw Exception('No account found with this email ($email). Please register first.');
   }
 
   @override
@@ -59,13 +64,13 @@ class MockAuthRepository implements AuthRepository {
     await Future.delayed(const Duration(milliseconds: 400));
     final usersBox = Hive.box(HiveBoxes.usersBox);
 
-    // Check if email already exists
+    // Prevent duplicate accounts: check if email already exists
     for (final key in usersBox.keys) {
       final raw = usersBox.get(key);
       if (raw != null) {
         final existing = UserModel.fromJson(Map<String, dynamic>.from(jsonDecode(raw as String)));
         if (existing.email.toLowerCase() == email.trim().toLowerCase()) {
-          throw Exception('An account with this email already exists.');
+          throw Exception('An account with this email already exists. Please sign in instead.');
         }
       }
     }
@@ -79,7 +84,11 @@ class MockAuthRepository implements AuthRepository {
       role: role,
     );
 
-    await usersBox.put(newId, jsonEncode(newUser.toJson()));
+    // Save account with password so the user can log in
+    final userMap = newUser.toJson();
+    userMap['password'] = password;
+
+    await usersBox.put(newId, jsonEncode(userMap));
     await _storage.saveCurrentUser(newUser);
     return newUser;
   }

@@ -119,7 +119,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showBookingSheet(GroundItem ground) {
     String selectedSlot = ground.availableSlots.first;
-    DateTime selectedDate = DateTime.now();
 
     showModalBottomSheet(
       context: context,

@@ -45,28 +45,34 @@ class GroundZeroLogo extends StatelessWidget {
         ),
         if (showText) ...[
           SizedBox(width: size * 0.3),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'GROUND',
-                  style: TextStyle(
-                    fontSize: size * 0.58,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.1,
-                    color: textColor ?? (isDark ? Colors.white : AppColors.navy),
-                  ),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'GROUND',
+                      style: TextStyle(
+                        fontSize: size * 0.58,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.1,
+                        color: textColor ?? (isDark ? Colors.white : AppColors.navy),
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'ZERO',
+                      style: TextStyle(
+                        fontSize: size * 0.58,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.1,
+                        color: AppColors.emerald,
+                      ),
+                    ),
+                  ],
                 ),
-                TextSpan(
-                  text: 'ZERO',
-                  style: TextStyle(
-                    fontSize: size * 0.58,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.1,
-                    color: AppColors.emerald,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ],

@@ -29,7 +29,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const GroundZeroLogo(size: 32),
+                  const Flexible(child: GroundZeroLogo(size: 28)),
                   TextButton(
                     onPressed: () => context.go(AppRoutes.login),
                     child: const Text(

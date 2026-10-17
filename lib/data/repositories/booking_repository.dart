@@ -17,6 +17,7 @@ abstract class BookingRepository {
   Future<BookingModel> createBooking(BookingModel booking);
   Future<void> updateBookingStatus(String bookingId, BookingStatus newStatus);
   Future<void> cancelBooking(String bookingId);
+  Future<double> getOwnerRevenue(String ownerId);
 }
 
 /// Offline Hive-persisted Mock implementation for Mid-Term
@@ -106,5 +107,18 @@ class MockBookingRepository implements BookingRepository {
   @override
   Future<void> cancelBooking(String bookingId) async {
     await updateBookingStatus(bookingId, BookingStatus.cancelled);
+  }
+
+  @override
+  Future<double> getOwnerRevenue(String ownerId) async {
+    final all = await getAllBookings();
+    // Rule: When a booking is confirmed, increase owner's revenue by the booking amount.
+    // Revenue must not increase for unconfirmed or cancelled bookings.
+    // Cancelled bookings reduce it if they were already confirmed.
+    return all
+        .where((b) =>
+            (ownerId.isEmpty || b.ownerId == ownerId) &&
+            (b.status == BookingStatus.confirmed || b.status == BookingStatus.completed))
+        .fold<double>(0.0, (sum, b) => sum + b.totalPrice);
   }
 }

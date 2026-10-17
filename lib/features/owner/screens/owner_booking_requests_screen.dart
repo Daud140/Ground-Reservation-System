@@ -14,14 +14,26 @@ class OwnerBookingRequestsScreen extends ConsumerStatefulWidget {
 class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequestsScreen> {
   int _selectedFilterIndex = 0; // 0: All, 1: Pending, 2: Confirmed, 3: Completed
 
-  Future<void> _updateStatus(String bookingId, BookingStatus newStatus) async {
+  Future<void> _updateStatus(String bookingId, BookingStatus newStatus, [double? price]) async {
     final bookingRepo = ref.read(bookingRepositoryProvider);
     await bookingRepo.updateBookingStatus(bookingId, newStatus);
     setState(() {});
     if (!mounted) return;
+    String message;
+    if (newStatus == BookingStatus.confirmed) {
+      message = price != null
+          ? 'Booking confirmed! Owner revenue increased by PKR ${price.toInt()}.'
+          : 'Booking request accepted!';
+    } else if (newStatus == BookingStatus.cancelled) {
+      message = price != null
+          ? 'Booking cancelled. Owner revenue reduced by PKR ${price.toInt()}.'
+          : 'Booking cancelled.';
+    } else {
+      message = 'Booking rejected. Revenue unaffected.';
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(newStatus == BookingStatus.confirmed ? 'Booking request accepted!' : 'Booking rejected.'),
+        content: Text(message),
         backgroundColor: newStatus == BookingStatus.confirmed ? AppColors.emerald : AppColors.error,
       ),
     );
@@ -279,7 +291,7 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => _updateStatus(booking.id, BookingStatus.rejected),
+                    onPressed: () => _updateStatus(booking.id, BookingStatus.rejected, booking.totalPrice),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.error,
                       side: const BorderSide(color: AppColors.error),
@@ -292,7 +304,7 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () => _updateStatus(booking.id, BookingStatus.confirmed),
+                    onPressed: () => _updateStatus(booking.id, BookingStatus.confirmed, booking.totalPrice),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.emerald,
                       foregroundColor: Colors.white,
@@ -304,6 +316,25 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
                   ),
                 ),
               ],
+            ),
+          ],
+
+          // Action Button if confirmed (allow cancelling to test revenue decrease)
+          if (booking.status == BookingStatus.confirmed) ...[
+            const SizedBox(height: 14),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _updateStatus(booking.id, BookingStatus.cancelled, booking.totalPrice),
+                icon: const Icon(Icons.cancel_outlined, size: 16),
+                label: const Text('Cancel Booking (Reduces Revenue)', style: TextStyle(fontWeight: FontWeight.w700)),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.error,
+                  side: const BorderSide(color: AppColors.error),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
             ),
           ],
         ],

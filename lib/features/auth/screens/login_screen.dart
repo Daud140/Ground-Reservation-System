@@ -16,10 +16,10 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _emailController = TextEditingController(text: 'customer@groundzero.pk');
-  final _passwordController = TextEditingController(text: '123456');
+  final _emailController = TextEditingController(text: 'Customer@groundzero.pk');
+  final _passwordController = TextEditingController(text: 'Pass1234');
   final _nameController = TextEditingController(text: 'Ali Raza');
-  final _phoneController = TextEditingController(text: '+92 300 1234567');
+  final _phoneController = TextEditingController(text: '03001234567');
 
   bool _isLoginTab = true;
   bool _obscurePassword = true;
@@ -34,25 +34,95 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  void _showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.error,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
   Future<void> _handleAuthAction() async {
     final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+    final password = _passwordController.text;
+    final name = _nameController.text.trim();
+    final phone = _phoneController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all required credentials')),
-      );
+    if (!_isLoginTab) {
+      // 5. OTHER FIELDS: Full Name validation
+      if (name.isEmpty) {
+        _showError('Please enter your full name');
+        return;
+      }
+      if (name.length < 3) {
+        _showError('Full name must be at least 3 characters');
+        return;
+      }
+      if (!RegExp(r"^[a-zA-Z\s'-]+$").hasMatch(name)) {
+        _showError('Full name must contain letters only');
+        return;
+      }
+
+      // 2. PHONE FIELD: Digits only, keyboard restricted, length validated
+      if (phone.isEmpty) {
+        _showError('Please enter your phone number');
+        return;
+      }
+      if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+        _showError('Phone number must accept digits only (no letters, symbols, or spaces)');
+        return;
+      }
+      if (phone.length < 10 || phone.length > 11) {
+        _showError('Phone number must be 10 or 11 digits (e.g. 03001234567)');
+        return;
+      }
+    }
+
+    // 3. EMAIL FIELD: Valid format and at least one uppercase letter
+    if (email.isEmpty) {
+      _showError('Please enter your email address');
+      return;
+    }
+    if (!RegExp(r'[A-Z]').hasMatch(email)) {
+      _showError('Email must contain at least one uppercase letter (e.g. User@domain.com)');
+      return;
+    }
+    if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
+      _showError('Please enter a valid email format (e.g. User@domain.com)');
+      return;
+    }
+
+    // 4. PASSWORD FIELD: At least one uppercase letter, min 6 characters, at least 1 number
+    if (password.isEmpty) {
+      _showError('Please enter your password');
+      return;
+    }
+    if (password.length < 6) {
+      _showError('Password must be at least 6 characters long');
+      return;
+    }
+    if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      _showError('Password must contain at least one uppercase letter (A-Z)');
+      return;
+    }
+    if (!RegExp(r'[0-9]').hasMatch(password)) {
+      _showError('Password must contain at least one number (0-9)');
       return;
     }
 
     try {
       if (_isLoginTab) {
+        // 6. NEW ACCOUNT / LOGIN: Verify credentials from saved accounts
         await ref.read(authProvider.notifier).signIn(email, password);
       } else {
+        // 6. NEW ACCOUNT: Save account so user can log in, prevent duplicates
         await ref.read(authProvider.notifier).signUp(
-              name: _nameController.text.trim(),
+              name: name,
               email: email,
-              phone: _phoneController.text.trim(),
+              phone: phone,
               password: password,
               role: _selectedRole,
             );
@@ -67,12 +137,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      _showError(e.toString().replaceFirst('Exception: ', ''));
     }
   }
 
@@ -120,10 +185,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const GroundZeroLogo(
-                        size: 32,
-                        isDark: true,
-                        textColor: Colors.white,
+                      const Flexible(
+                        child: GroundZeroLogo(
+                          size: 28,
+                          isDark: true,
+                          textColor: Colors.white,
+                        ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -155,96 +222,73 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 6),
                   Text(
                     _isLoginTab
-                        ? 'Log in to your account'
-                        : 'Sign up to reserve grounds & manage arenas',
+                        ? 'Book stadium pitches & join competitive tournaments'
+                        : 'Sign up to reserve venues across Islamabad & Rawalpindi',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 14,
-                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+
+                  // Pill Toggle (Log In / Sign Up)
+                  Container(
+                    height: 48,
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.25),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => setState(() => _isLoginTab = true),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              decoration: BoxDecoration(
+                                color: _isLoginTab ? Colors.white : Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Log In',
+                                  style: TextStyle(
+                                    color: _isLoginTab ? AppColors.navy : Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => setState(() => _isLoginTab = false),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              decoration: BoxDecoration(
+                                color: !_isLoginTab ? Colors.white : Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                    color: !_isLoginTab ? AppColors.navy : Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
-            ),
-
-            // Tab Selector Pill: [Log In] | [Sign Up]
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceSecondaryLight,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.borderLight),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _isLoginTab = true),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color: _isLoginTab ? Colors.white : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: _isLoginTab
-                                ? [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.05),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    )
-                                  ]
-                                : null,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Log In',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: _isLoginTab ? FontWeight.w700 : FontWeight.w500,
-                                color: _isLoginTab ? AppColors.navy : AppColors.textSecondaryLight,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _isLoginTab = false),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          decoration: BoxDecoration(
-                            color: !_isLoginTab ? Colors.white : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: !_isLoginTab
-                                ? [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.05),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    )
-                                  ]
-                                : null,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Sign Up',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: !_isLoginTab ? FontWeight.w700 : FontWeight.w500,
-                                color: !_isLoginTab ? AppColors.navy : AppColors.textSecondaryLight,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ),
 
@@ -294,9 +338,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 16),
                     _buildInputField(
                       controller: _phoneController,
-                      label: 'Phone Number',
-                      hintText: '+92 300 1234567',
+                      label: 'Phone Number (Digits only, 10-11 digits)',
+                      hintText: '03001234567',
                       icon: Icons.phone_outlined,
+                      keyboardType: TextInputType.number,
                     ),
                     const SizedBox(height: 16),
                   ],
@@ -304,9 +349,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   // Email Field
                   _buildInputField(
                     controller: _emailController,
-                    label: 'Email or Phone',
-                    hintText: 'customer@groundzero.pk',
+                    label: 'Email (Must contain an uppercase letter)',
+                    hintText: 'Customer@groundzero.pk',
                     icon: Icons.mail_outline_rounded,
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 16),
 
@@ -352,6 +398,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             borderRadius: BorderRadius.circular(14),
                             borderSide: const BorderSide(color: AppColors.emerald, width: 1.5),
                           ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Password rules: Min 6 characters, at least 1 uppercase letter (A-Z), and at least 1 number (0-9)',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textSecondaryLight,
                         ),
                       ),
                     ],
@@ -424,15 +478,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         GoogleLogoWidget(size: 18),
                         SizedBox(width: 12),
-                        Text(
-                          'Or continue with Google',
-                          style: TextStyle(
-                            color: AppColors.navy,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
+                        Flexible(
+                          child: Text(
+                            'Or continue with Google',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: AppColors.navy,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ],
@@ -535,6 +593,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required String label,
     required String hintText,
     required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -550,6 +609,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         const SizedBox(height: 6),
         TextField(
           controller: controller,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hintText,
             prefixIcon: Icon(icon, size: 20),

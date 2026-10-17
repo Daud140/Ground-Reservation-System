@@ -15,22 +15,32 @@ class LocalStorageService {
 
   /// Initialize Hive and open all necessary boxes
   Future<void> init() async {
-    await Hive.initFlutter();
+    try {
+      await Hive.initFlutter();
 
-    await Future.wait([
-      Hive.openBox(HiveBoxes.usersBox),
-      Hive.openBox(HiveBoxes.groundsBox),
-      Hive.openBox(HiveBoxes.bookingsBox),
-      Hive.openBox(HiveBoxes.reviewsBox),
-      Hive.openBox(HiveBoxes.settingsBox),
-      Hive.openBox(HiveBoxes.favoritesBox),
-    ]);
+      final boxNames = [
+        HiveBoxes.usersBox,
+        HiveBoxes.groundsBox,
+        HiveBoxes.bookingsBox,
+        HiveBoxes.reviewsBox,
+        HiveBoxes.settingsBox,
+        HiveBoxes.favoritesBox,
+      ];
 
-    // Check if initial demo data needs seeding
-    final settingsBox = Hive.box(HiveBoxes.settingsBox);
-    final isSeeded = settingsBox.get(_keySeeded, defaultValue: false) as bool;
-    if (!isSeeded) {
-      await seedDemoData();
+      for (final boxName in boxNames) {
+        if (!Hive.isBoxOpen(boxName)) {
+          await Hive.openBox(boxName);
+        }
+      }
+
+      // Check if initial demo data needs seeding
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      final isSeeded = settingsBox.get(_keySeeded, defaultValue: false) as bool;
+      if (!isSeeded) {
+        await seedDemoData();
+      }
+    } catch (e) {
+      // Graceful fallback: do not crash main() if Hive storage has file lock contention
     }
   }
 
@@ -49,7 +59,9 @@ class LocalStorageService {
 
     // 1. Seed Users
     for (final user in DemoData.users) {
-      await usersBox.put(user.id, jsonEncode(user.toJson()));
+      final userMap = user.toJson();
+      userMap['password'] = user.isOwner ? 'Owner123' : 'Customer123';
+      await usersBox.put(user.id, jsonEncode(userMap));
     }
 
     // 2. Seed Grounds
