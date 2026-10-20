@@ -72,8 +72,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppTheme.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -97,10 +105,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Skip',
                       style: TextStyle(
-                        color: AppColors.textSecondaryLight,
+                        color: subtextColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                       ),
@@ -137,14 +145,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             constraints: const BoxConstraints(maxWidth: 340),
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: cardColor,
                               borderRadius: BorderRadius.circular(
                                 AppTheme.cardRadius + 4,
                               ),
                               boxShadow: [
                                 BoxShadow(
                                   color: AppTheme.emerald.withValues(
-                                    alpha: 0.12,
+                                    alpha: isDark ? 0.05 : 0.12,
                                   ),
                                   blurRadius: 28,
                                   offset: const Offset(0, 10),
@@ -163,11 +171,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             children: [
                               TextSpan(
                                 text: slide.titlePrefix,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 34,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: -0.5,
-                                  color: AppTheme.navy,
+                                  color: textColor,
                                 ),
                               ),
                               const TextSpan(
@@ -186,10 +194,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         // Description
                         Text(
                           slide.description,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             height: 1.45,
-                            color: AppColors.textSecondaryLight,
+                            color: subtextColor,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -201,8 +209,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           runSpacing: 10,
                           children: slide.chips
                               .map(
-                                (chip) =>
-                                    _buildFeaturePill(chip.label, chip.icon),
+                                (chip) => _buildFeaturePill(
+                                  chip.label,
+                                  chip.icon,
+                                  isDark,
+                                  textColor,
+                                  borderColor,
+                                ),
                               )
                               .toList(),
                         ),
@@ -235,7 +248,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             decoration: BoxDecoration(
                               color: isActive
                                   ? AppTheme.emerald
-                                  : AppTheme.borderLight,
+                                  : (isDark
+                                        ? AppColors.borderDark
+                                        : AppTheme.borderLight),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           );
@@ -249,18 +264,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceSecondaryLight,
+                          color: isDark
+                              ? AppColors.surfaceSecondaryDark
+                              : AppColors.surfaceSecondaryLight,
                           borderRadius: BorderRadius.circular(
                             AppTheme.pillRadius,
                           ),
                         ),
                         child: Text(
                           '0${_currentPage + 1}/0${_slides.length}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.5,
-                            color: AppTheme.navy,
+                            color: textColor,
                           ),
                         ),
                       ),
@@ -284,10 +301,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     onPressed: () => context.go(
                       '${AppRoutes.login}?role=customer&tab=login',
                     ),
-                    child: const Text(
+                    child: Text(
                       'Already have an account? Log In / Sign Up',
                       style: TextStyle(
-                        color: AppColors.textSecondaryLight,
+                        color: subtextColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
@@ -302,13 +319,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildFeaturePill(String title, IconData icon) {
+  Widget _buildFeaturePill(
+    String title,
+    IconData icon,
+    bool isDark,
+    Color textColor,
+    Color borderColor,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
       decoration: BoxDecoration(
-        color: AppColors.surfaceSecondaryLight,
+        color: isDark
+            ? AppColors.surfaceSecondaryDark
+            : AppColors.surfaceSecondaryLight,
         borderRadius: BorderRadius.circular(AppTheme.pillRadius),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -317,10 +342,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const SizedBox(width: 6),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: AppTheme.navy,
+              color: textColor,
             ),
           ),
         ],

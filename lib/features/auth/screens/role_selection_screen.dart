@@ -26,17 +26,24 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final isCustomer = _selectedRole == UserRole.customer;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppTheme.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: cardColor,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: AppTheme.navy,
+            color: textColor,
             size: 20,
           ),
           onPressed: () => context.go(AppRoutes.onboarding),
@@ -46,14 +53,16 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
             margin: const EdgeInsets.only(right: 20),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.surfaceSecondaryLight,
+              color: isDark
+                  ? AppColors.surfaceSecondaryDark
+                  : AppColors.surfaceSecondaryLight,
               borderRadius: BorderRadius.circular(AppTheme.pillRadius),
-              border: Border.all(color: AppColors.borderLight),
+              border: Border.all(color: borderColor),
             ),
-            child: const Text(
+            child: Text(
               'Step 1 of 3',
               style: TextStyle(
-                color: AppTheme.navy,
+                color: textColor,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.3,
@@ -75,21 +84,21 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'How will you use GroundZero?',
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w900,
                         letterSpacing: -0.5,
-                        color: AppTheme.navy,
+                        color: textColor,
                       ),
                     ),
                     const SizedBox(height: 6),
-                    const Text(
+                    Text(
                       'Choose your primary goal to customize your experience',
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondaryLight,
+                        color: subtextColor,
                         height: 1.4,
                       ),
                     ),
@@ -199,13 +208,41 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
     required List<String> chips,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppTheme.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        decoration: isSelected
-            ? AppTheme.selectedCardDecoration
-            : AppTheme.cardDecoration,
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+          border: Border.all(
+            color: isSelected ? AppTheme.emerald : borderColor,
+            width: isSelected ? 2.0 : 1.2,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppTheme.emerald.withValues(alpha: 0.18),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+        ),
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,10 +262,10 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                         children: [
                           Text(
                             title,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
-                              color: AppTheme.navy,
+                              color: textColor,
                             ),
                           ),
                           Container(
@@ -239,7 +276,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? AppTheme.emeraldContainer
-                                  : AppColors.surfaceSecondaryLight,
+                                  : (isDark
+                                        ? AppColors.surfaceSecondaryDark
+                                        : AppColors.surfaceSecondaryLight),
                               borderRadius: BorderRadius.circular(
                                 AppTheme.pillRadius,
                               ),
@@ -251,7 +290,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                                 fontWeight: FontWeight.w700,
                                 color: isSelected
                                     ? AppTheme.emeraldDark
-                                    : AppColors.textSecondaryLight,
+                                    : subtextColor,
                               ),
                             ),
                           ),
@@ -260,9 +299,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                       const SizedBox(height: 4),
                       Text(
                         description,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textSecondaryLight,
+                          color: subtextColor,
                           height: 1.35,
                         ),
                       ),
@@ -280,9 +319,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                     color: isSelected ? AppTheme.emerald : Colors.transparent,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isSelected
-                          ? AppTheme.emerald
-                          : AppTheme.borderLight,
+                      color: isSelected ? AppTheme.emerald : borderColor,
                       width: 2,
                     ),
                   ),
@@ -319,13 +356,17 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                   ),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? const Color(0xFFF0FDF4)
-                        : AppColors.surfaceSecondaryLight,
+                        ? (isDark
+                              ? AppColors.emeraldDark.withValues(alpha: 0.25)
+                              : const Color(0xFFF0FDF4))
+                        : (isDark
+                              ? AppColors.surfaceSecondaryDark
+                              : AppColors.surfaceSecondaryLight),
                     borderRadius: BorderRadius.circular(AppTheme.pillRadius),
                     border: Border.all(
                       color: isSelected
-                          ? AppTheme.emerald.withValues(alpha: 0.25)
-                          : AppColors.borderLight,
+                          ? AppTheme.emerald.withValues(alpha: 0.35)
+                          : borderColor,
                     ),
                   ),
                   child: Row(
@@ -334,9 +375,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                       Icon(
                         Icons.check_circle_outline_rounded,
                         size: 13,
-                        color: isSelected
-                            ? AppTheme.emeraldDark
-                            : AppColors.textSecondaryLight,
+                        color: isSelected ? AppTheme.emerald : subtextColor,
                       ),
                       const SizedBox(width: 5),
                       Text(
@@ -345,8 +384,8 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: isSelected
-                              ? AppTheme.navy
-                              : AppColors.textSecondaryLight,
+                              ? (isDark ? AppColors.lime : AppTheme.navy)
+                              : subtextColor,
                         ),
                       ),
                     ],

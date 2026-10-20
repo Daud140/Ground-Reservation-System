@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/map_launcher.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../booking/models/booking_model.dart';
+import '../../notifications/models/notification_model.dart';
+import '../../notifications/providers/notification_provider.dart';
 
 class CustomerBookingsScreen extends ConsumerStatefulWidget {
   const CustomerBookingsScreen({super.key});
@@ -24,17 +27,31 @@ class _CustomerBookingsScreenState
     final bookingRepo = ref.watch(bookingRepositoryProvider);
     final authState = ref.watch(authProvider);
     final currentCustomerId = authState.user?.id ?? 'customer_sport_demo';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark
+        ? const Color(0xFF334155)
+        : AppColors.borderLight;
+    final tabBgColor = isDark
+        ? const Color(0xFF0F172A)
+        : AppColors.surfaceSecondaryLight;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: bgColor,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'My Match Passes',
           style: TextStyle(
-            color: AppColors.navy,
-            fontSize: 17,
+            color: textColor,
+            fontSize: 18,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -66,24 +83,33 @@ class _CustomerBookingsScreenState
           return Column(
             children: [
               Container(
-                color: Colors.white,
+                color: bgColor,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
                 ),
                 child: Row(
                   children: [
-                    _buildTab('Upcoming', 0),
+                    _buildTab('Upcoming', 0, isDark, tabBgColor, subtextColor),
                     const SizedBox(width: 8),
-                    _buildTab('Completed', 1),
+                    _buildTab('Completed', 1, isDark, tabBgColor, subtextColor),
                     const SizedBox(width: 8),
-                    _buildTab('Cancelled', 2),
+                    _buildTab('Cancelled', 2, isDark, tabBgColor, subtextColor),
                   ],
                 ),
               ),
               Expanded(
                 child: filteredBookings.isEmpty
-                    ? const Center(child: Text('No bookings in this tab'))
+                    ? Center(
+                        child: Text(
+                          'No bookings in this tab',
+                          style: TextStyle(
+                            color: subtextColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
                     : ListView.builder(
                         padding: const EdgeInsets.all(16),
                         itemCount: filteredBookings.length,
@@ -97,9 +123,9 @@ class _CustomerBookingsScreenState
                             margin: const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: cardColor,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: AppColors.borderLight),
+                              border: Border.all(color: borderColor),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,10 +138,10 @@ class _CustomerBookingsScreenState
                                       child: Text(
                                         booking.groundName,
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w800,
-                                          color: AppColors.navy,
+                                          color: textColor,
                                         ),
                                       ),
                                     ),
@@ -142,11 +168,35 @@ class _CustomerBookingsScreenState
                                 const SizedBox(height: 6),
                                 Text(
                                   '${booking.date} • ${booking.timeSlot}',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
-                                    color: AppColors.textSecondaryLight,
+                                    color: subtextColor,
                                   ),
                                 ),
+                                if (booking.groundLocation.isNotEmpty) ...[
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.location_on_outlined,
+                                        size: 13,
+                                        color: AppColors.emerald,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          booking.groundLocation,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: subtextColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                                 const SizedBox(height: 12),
                                 Row(
                                   mainAxisAlignment:
@@ -162,14 +212,41 @@ class _CustomerBookingsScreenState
                                     ),
                                     Row(
                                       children: [
+                                        // Directions Button
+                                        IconButton(
+                                          tooltip: 'Open in Google Maps',
+                                          icon: const Icon(
+                                            Icons.directions_outlined,
+                                            size: 20,
+                                            color: AppColors.emerald,
+                                          ),
+                                          onPressed: () {
+                                            MapLauncher.openCoordinates(
+                                              context: context,
+                                              latitude: 33.7215,
+                                              longitude: 73.0560,
+                                              title: booking.groundName,
+                                            );
+                                          },
+                                        ),
                                         if (canCancel) ...[
                                           TextButton.icon(
                                             onPressed: () async {
                                               final confirmed = await showDialog<bool>(
                                                 context: context,
                                                 builder: (ctx) => AlertDialog(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          16,
+                                                        ),
+                                                  ),
                                                   title: const Text(
                                                     'Cancel Booking?',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                    ),
                                                   ),
                                                   content: Text(
                                                     'Are you sure you want to cancel this booking (${booking.groundName} - PKR ${booking.totalPrice.toInt()})?\n\nIf confirmed, this will reduce owner revenue accordingly.',
@@ -190,6 +267,8 @@ class _CustomerBookingsScreenState
                                                           ElevatedButton.styleFrom(
                                                             backgroundColor:
                                                                 AppColors.error,
+                                                            foregroundColor:
+                                                                Colors.white,
                                                           ),
                                                       onPressed: () =>
                                                           Navigator.pop(
@@ -198,9 +277,6 @@ class _CustomerBookingsScreenState
                                                           ),
                                                       child: const Text(
                                                         'Confirm Cancel',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                        ),
                                                       ),
                                                     ),
                                                   ],
@@ -210,6 +286,23 @@ class _CustomerBookingsScreenState
                                                 await bookingRepo.cancelBooking(
                                                   booking.id,
                                                 );
+
+                                                // Trigger notification
+                                                ref
+                                                    .read(
+                                                      notificationsProvider
+                                                          .notifier,
+                                                    )
+                                                    .addNotification(
+                                                      title:
+                                                          'Booking Cancelled',
+                                                      body:
+                                                          'Your reservation for ${booking.groundName} on ${booking.date} (${booking.timeSlot}) has been cancelled.',
+                                                      type: NotificationType
+                                                          .bookingCancelled,
+                                                      bookingId: booking.id,
+                                                    );
+
                                                 setState(() {});
                                                 if (context.mounted) {
                                                   ScaffoldMessenger.of(context)
@@ -238,25 +331,28 @@ class _CustomerBookingsScreenState
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(width: 8),
+                                          const SizedBox(width: 4),
                                         ],
                                         OutlinedButton.icon(
                                           onPressed: () => context.push(
                                             '/customer/ticket/${booking.id}',
                                             extra: booking,
                                           ),
-                                          icon: const Icon(
+                                          icon: Icon(
                                             Icons.qr_code,
                                             size: 16,
+                                            color: textColor,
                                           ),
-                                          label: const Text(
+                                          label: Text(
                                             'View Pass',
-                                            style: TextStyle(fontSize: 12),
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: textColor,
+                                            ),
                                           ),
                                           style: OutlinedButton.styleFrom(
-                                            foregroundColor: AppColors.navy,
-                                            side: const BorderSide(
-                                              color: AppColors.borderLight,
+                                            side: BorderSide(
+                                              color: borderColor,
                                             ),
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 10,
@@ -281,7 +377,13 @@ class _CustomerBookingsScreenState
     );
   }
 
-  Widget _buildTab(String label, int index) {
+  Widget _buildTab(
+    String label,
+    int index,
+    bool isDark,
+    Color tabBgColor,
+    Color subtextColor,
+  ) {
     final isSelected = _activeTab == index;
     return Expanded(
       child: GestureDetector(
@@ -289,9 +391,7 @@ class _CustomerBookingsScreenState
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected
-                ? AppColors.emerald
-                : AppColors.surfaceSecondaryLight,
+            color: isSelected ? AppColors.emerald : tabBgColor,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
@@ -300,7 +400,7 @@ class _CustomerBookingsScreenState
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                color: isSelected ? Colors.white : AppColors.textSecondaryLight,
+                color: isSelected ? Colors.white : subtextColor,
               ),
             ),
           ),

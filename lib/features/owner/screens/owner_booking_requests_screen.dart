@@ -5,6 +5,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../booking/models/booking_model.dart';
+import '../../notifications/models/notification_model.dart';
+import '../../notifications/providers/notification_provider.dart';
 
 class OwnerBookingRequestsScreen extends ConsumerStatefulWidget {
   const OwnerBookingRequestsScreen({super.key});
@@ -26,6 +28,28 @@ class _OwnerBookingRequestsScreenState
   ]) async {
     final bookingRepo = ref.read(bookingRepositoryProvider);
     await bookingRepo.updateBookingStatus(bookingId, newStatus);
+
+    // Trigger persistent notification
+    if (newStatus == BookingStatus.confirmed) {
+      ref
+          .read(notificationsProvider.notifier)
+          .addNotification(
+            title: 'Booking Confirmed!',
+            body: 'Slot #$bookingId confirmed. Customer has been alerted.',
+            type: NotificationType.bookingConfirmed,
+            bookingId: bookingId,
+          );
+    } else if (newStatus == BookingStatus.cancelled) {
+      ref
+          .read(notificationsProvider.notifier)
+          .addNotification(
+            title: 'Booking Cancelled',
+            body: 'Booking #$bookingId was cancelled. Schedule reopened.',
+            type: NotificationType.bookingCancelled,
+            bookingId: bookingId,
+          );
+    }
+
     setState(() {});
     if (!mounted) return;
     String message;
@@ -56,15 +80,23 @@ class _OwnerBookingRequestsScreenState
     final authState = ref.watch(authProvider);
     final ownerId = authState.user?.id ?? 'owner_sport_demo';
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: cardColor,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Booking Requests',
           style: TextStyle(
-            color: AppColors.navy,
+            color: textColor,
             fontSize: 17,
             fontWeight: FontWeight.w800,
           ),
@@ -107,33 +139,43 @@ class _OwnerBookingRequestsScreenState
             children: [
               // Filter Tabs Header
               Container(
-                color: Colors.white,
+                color: cardColor,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 10,
                 ),
                 child: Row(
                   children: [
-                    _buildFilterTab('All', 0, allBookings.length),
+                    _buildFilterTab('All', 0, allBookings.length, isDark),
                     const SizedBox(width: 8),
-                    _buildFilterTab('Pending', 1, pendingList.length),
+                    _buildFilterTab('Pending', 1, pendingList.length, isDark),
                     const SizedBox(width: 8),
-                    _buildFilterTab('Confirmed', 2, confirmedList.length),
+                    _buildFilterTab(
+                      'Confirmed',
+                      2,
+                      confirmedList.length,
+                      isDark,
+                    ),
                     const SizedBox(width: 8),
-                    _buildFilterTab('Completed', 3, completedList.length),
+                    _buildFilterTab(
+                      'Completed',
+                      3,
+                      completedList.length,
+                      isDark,
+                    ),
                   ],
                 ),
               ),
 
-              const Divider(height: 1, color: AppColors.borderLight),
+              Divider(height: 1, color: borderColor),
 
               // Booking Requests List
               Expanded(
                 child: displayedBookings.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
                           'No bookings in this category',
-                          style: TextStyle(color: AppColors.textSecondaryLight),
+                          style: TextStyle(color: subtextColor),
                         ),
                       )
                     : ListView.builder(
@@ -141,7 +183,14 @@ class _OwnerBookingRequestsScreenState
                         itemCount: displayedBookings.length,
                         itemBuilder: (context, index) {
                           final booking = displayedBookings[index];
-                          return _buildRequestCard(booking);
+                          return _buildRequestCard(
+                            booking,
+                            isDark: isDark,
+                            cardColor: cardColor,
+                            textColor: textColor,
+                            subtextColor: subtextColor,
+                            borderColor: borderColor,
+                          );
                         },
                       ),
               ),
@@ -152,7 +201,7 @@ class _OwnerBookingRequestsScreenState
     );
   }
 
-  Widget _buildFilterTab(String label, int index, int count) {
+  Widget _buildFilterTab(String label, int index, int count, bool isDark) {
     final isSelected = _selectedFilterIndex == index;
     return Expanded(
       child: GestureDetector(
@@ -163,7 +212,9 @@ class _OwnerBookingRequestsScreenState
           decoration: BoxDecoration(
             color: isSelected
                 ? AppColors.emerald
-                : AppColors.surfaceSecondaryLight,
+                : (isDark
+                      ? AppColors.surfaceSecondaryDark
+                      : AppColors.surfaceSecondaryLight),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
@@ -172,7 +223,11 @@ class _OwnerBookingRequestsScreenState
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                color: isSelected ? Colors.white : AppColors.textSecondaryLight,
+                color: isSelected
+                    ? Colors.white
+                    : (isDark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.textSecondaryLight),
               ),
             ),
           ),
@@ -181,19 +236,26 @@ class _OwnerBookingRequestsScreenState
     );
   }
 
-  Widget _buildRequestCard(BookingModel booking) {
+  Widget _buildRequestCard(
+    BookingModel booking, {
+    required bool isDark,
+    required Color cardColor,
+    required Color textColor,
+    required Color subtextColor,
+    required Color borderColor,
+  }) {
     final isPending = booking.status == BookingStatus.pending;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -208,7 +270,7 @@ class _OwnerBookingRequestsScreenState
               Container(
                 width: 42,
                 height: 42,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.emeraldContainer,
                   shape: BoxShape.circle,
                 ),
@@ -232,18 +294,15 @@ class _OwnerBookingRequestsScreenState
                   children: [
                     Text(
                       booking.customerName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.navy,
+                        color: textColor,
                       ),
                     ),
                     Text(
                       booking.customerPhone,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondaryLight,
-                      ),
+                      style: TextStyle(fontSize: 12, color: subtextColor),
                     ),
                   ],
                 ),
@@ -267,7 +326,7 @@ class _OwnerBookingRequestsScreenState
           ),
 
           const SizedBox(height: 12),
-          const Divider(color: AppColors.borderLight),
+          Divider(color: borderColor),
           const SizedBox(height: 8),
 
           // Match Slot Details
@@ -276,18 +335,18 @@ class _OwnerBookingRequestsScreenState
             children: [
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.calendar_today_outlined,
                     size: 14,
-                    color: AppColors.textSecondaryLight,
+                    color: subtextColor,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     '${booking.date} • ${booking.timeSlot}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.navy,
+                      color: textColor,
                     ),
                   ),
                 ],
@@ -297,7 +356,7 @@ class _OwnerBookingRequestsScreenState
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.emeraldDark,
+                  color: AppColors.emerald,
                 ),
               ),
             ],
@@ -315,10 +374,7 @@ class _OwnerBookingRequestsScreenState
               const SizedBox(width: 6),
               Text(
                 'Payment: ${booking.paymentMethod}',
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textSecondaryLight,
-                ),
+                style: TextStyle(fontSize: 11, color: subtextColor),
               ),
             ],
           ),

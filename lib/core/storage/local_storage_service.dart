@@ -174,21 +174,117 @@ class LocalStorageService {
   // FAVORITES MANAGEMENT
   // ---------------------------------------------------------------------------
   List<String> getFavoriteGroundIds() {
-    final box = Hive.box(HiveBoxes.favoritesBox);
-    return box.keys.map((k) => k.toString()).toList();
+    try {
+      final box = Hive.box(HiveBoxes.favoritesBox);
+      return box.keys.map((k) => k.toString()).toList();
+    } catch (_) {
+      return [];
+    }
   }
 
   bool isFavorite(String groundId) {
-    final box = Hive.box(HiveBoxes.favoritesBox);
-    return box.containsKey(groundId);
+    try {
+      final box = Hive.box(HiveBoxes.favoritesBox);
+      return box.containsKey(groundId);
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> toggleFavorite(String groundId) async {
-    final box = Hive.box(HiveBoxes.favoritesBox);
-    if (box.containsKey(groundId)) {
-      await box.delete(groundId);
-    } else {
-      await box.put(groundId, true);
+    try {
+      final box = Hive.box(HiveBoxes.favoritesBox);
+      if (box.containsKey(groundId)) {
+        await box.delete(groundId);
+      } else {
+        await box.put(groundId, true);
+      }
+    } catch (_) {}
+  }
+
+  // ---------------------------------------------------------------------------
+  // NOTIFICATIONS PERSISTENCE
+  // ---------------------------------------------------------------------------
+  static const String _keyNotifications = 'user_notifications_v1';
+
+  List<Map<String, dynamic>> getRawNotifications() {
+    try {
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      final raw = settingsBox.get(_keyNotifications);
+      if (raw == null) return [];
+      final List<dynamic> list = jsonDecode(raw as String);
+      return list.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    } catch (_) {
+      return [];
     }
+  }
+
+  Future<void> saveRawNotifications(List<Map<String, dynamic>> list) async {
+    try {
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      await settingsBox.put(_keyNotifications, jsonEncode(list));
+    } catch (_) {}
+  }
+
+  // ---------------------------------------------------------------------------
+  // PAYMENT METHODS PERSISTENCE
+  // ---------------------------------------------------------------------------
+  static const String _keyPaymentMethods = 'user_payment_methods_v1';
+  static const String _keySelectedPaymentId = 'selected_payment_method_id';
+
+  List<Map<String, dynamic>> getRawPaymentMethods() {
+    try {
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      final raw = settingsBox.get(_keyPaymentMethods);
+      if (raw == null) return [];
+      final List<dynamic> list = jsonDecode(raw as String);
+      return list.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> saveRawPaymentMethods(List<Map<String, dynamic>> list) async {
+    try {
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      await settingsBox.put(_keyPaymentMethods, jsonEncode(list));
+    } catch (_) {}
+  }
+
+  String? getSelectedPaymentMethodId() {
+    try {
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      return settingsBox.get(_keySelectedPaymentId) as String?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> setSelectedPaymentMethodId(String id) async {
+    try {
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      await settingsBox.put(_keySelectedPaymentId, id);
+    } catch (_) {}
+  }
+
+  // ---------------------------------------------------------------------------
+  // THEME MODE PERSISTENCE
+  // ---------------------------------------------------------------------------
+  static const String _keyDarkMode = 'isDarkMode';
+
+  bool get isDarkMode {
+    try {
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      return settingsBox.get(_keyDarkMode, defaultValue: false) as bool;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> setDarkMode(bool isDark) async {
+    try {
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      await settingsBox.put(_keyDarkMode, isDark);
+    } catch (_) {}
   }
 }

@@ -123,11 +123,18 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
   @override
   Widget build(BuildContext context) {
     final groundRepo = ref.watch(groundRepositoryProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: cardColor,
         elevation: 1,
         title: Row(
           children: [
@@ -145,7 +152,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -153,10 +160,10 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.navy,
+                    color: textColor,
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
                     Icon(Icons.circle, color: AppColors.emerald, size: 8),
                     SizedBox(width: 4),
@@ -176,11 +183,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.refresh_rounded,
-              color: AppColors.navy,
-              size: 22,
-            ),
+            icon: Icon(Icons.refresh_rounded, color: textColor, size: 22),
             onPressed: () {
               setState(() {
                 _messages.clear();
@@ -276,13 +279,13 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                         child: ActionChip(
                           label: Text(
                             chip,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.navy,
+                              color: textColor,
                             ),
                           ),
-                          backgroundColor: Colors.white,
+                          backgroundColor: cardColor,
                           side: const BorderSide(
                             color: AppColors.emerald,
                             width: 1,
@@ -301,10 +304,12 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: cardColor,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.2 : 0.05,
+                      ),
                       blurRadius: 10,
                       offset: const Offset(0, -2),
                     ),
@@ -316,21 +321,24 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: AppColors.surfaceSecondaryLight,
+                            color: isDark
+                                ? AppColors.surfaceSecondaryDark
+                                : AppColors.surfaceSecondaryLight,
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: AppColors.borderLight),
+                            border: Border.all(color: borderColor),
                           ),
                           child: TextField(
                             controller: _textController,
+                            style: TextStyle(fontSize: 14, color: textColor),
                             textInputAction: TextInputAction.send,
                             onSubmitted: (_) => _handleSendMessage(),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: 'Ask AI assistant...',
                               hintStyle: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.textMutedLight,
+                                color: subtextColor,
                               ),
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 18,
                                 vertical: 12,
                               ),
@@ -379,6 +387,10 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     Map<String, GroundModel> groundMap,
   ) {
     final isUser = message.isUser;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     final recommendedGrounds = message.groundIds
         .map((id) => groundMap[id])
         .whereType<GroundModel>()
@@ -420,19 +432,23 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: isUser ? AppColors.navy : Colors.white,
+                    color: isUser
+                        ? (isDark ? AppColors.emeraldDark : AppColors.navy)
+                        : (isDark
+                              ? AppColors.surfaceSecondaryDark
+                              : Colors.white),
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(18),
                       topRight: const Radius.circular(18),
                       bottomLeft: Radius.circular(isUser ? 18 : 4),
                       bottomRight: Radius.circular(isUser ? 4 : 18),
                     ),
-                    border: isUser
-                        ? null
-                        : Border.all(color: AppColors.borderLight),
+                    border: isUser ? null : Border.all(color: borderColor),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
+                        color: Colors.black.withValues(
+                          alpha: isDark ? 0.2 : 0.03,
+                        ),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -443,7 +459,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                     style: TextStyle(
                       fontSize: 14,
                       height: 1.4,
-                      color: isUser ? Colors.white : AppColors.navy,
+                      color: isUser ? Colors.white : textColor,
                     ),
                   ),
                 ),
@@ -472,16 +488,24 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
   }
 
   Widget _buildAiGroundCard(GroundModel ground) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     return Container(
       width: 240,
       margin: const EdgeInsets.only(right: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -512,10 +536,10 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                         ground.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.navy,
+                          color: textColor,
                         ),
                       ),
                     ),
@@ -528,9 +552,10 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                         ),
                         Text(
                           ' ${ground.rating}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
+                            color: textColor,
                           ),
                         ),
                       ],
@@ -542,10 +567,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                   ground.location,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textSecondaryLight,
-                  ),
+                  style: TextStyle(fontSize: 11, color: subtextColor),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -559,7 +581,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.emeraldDark,
+                          color: AppColors.emerald,
                         ),
                       ),
                     ),

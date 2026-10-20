@@ -7,6 +7,7 @@ import '../../../core/router/route_names.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../models/ground_model.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../notifications/widgets/notification_bell_icon.dart';
 import '../../shared/widgets/app_logo.dart';
 
 class CustomerHomeScreen extends ConsumerStatefulWidget {
@@ -29,9 +30,19 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
     final groundRepo = ref.watch(groundRepositoryProvider);
     final authState = ref.watch(authProvider);
     final user = authState.user;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark
+        ? const Color(0xFF334155)
+        : AppColors.borderLight;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'groundBotHomeFab',
         backgroundColor: AppColors.emerald,
@@ -80,40 +91,8 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                           children: [
                             const GroundZeroLogo(size: 26),
                             const Spacer(),
-                            // Notification bell
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppColors.borderLight,
-                                ),
-                              ),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.notifications_none_rounded,
-                                    color: AppColors.navy,
-                                    size: 18,
-                                  ),
-                                  Positioned(
-                                    top: 7,
-                                    right: 8,
-                                    child: Container(
-                                      width: 7,
-                                      height: 7,
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.emerald,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            // Notification bell with live unread badge
+                            const NotificationBellIcon(),
                             const SizedBox(width: 10),
                             // User avatar
                             GesturableAvatar(
@@ -137,11 +116,9 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: cardColor,
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: AppColors.borderLight,
-                                  ),
+                                  border: Border.all(color: borderColor),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -154,10 +131,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                                     const SizedBox(width: 4),
                                     Text(
                                       _selectedCity,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
-                                        color: AppColors.navy,
+                                        color: textColor,
                                       ),
                                     ),
                                     const SizedBox(width: 4),
@@ -175,10 +152,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                               child: Text(
                                 'Ready to play, ${user?.name.split(' ').first ?? 'Player'}?',
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textSecondaryLight,
+                                  color: subtextColor,
                                 ),
                               ),
                             ),
@@ -194,11 +171,9 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                               child: Container(
                                 height: 50,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: cardColor,
                                   borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: AppColors.borderLight,
-                                  ),
+                                  border: Border.all(color: borderColor),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withValues(
@@ -332,12 +307,12 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
+                              Text(
                                 'Top Rated',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.navy,
+                                  color: textColor,
                                 ),
                               ),
                               TextButton(
@@ -465,12 +440,12 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Near You',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.navy,
+                            color: textColor,
                           ),
                         ),
                         Text(
@@ -518,6 +493,11 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final chipBorder = isDark ? const Color(0xFF334155) : AppColors.borderLight;
+    final chipText = isDark ? Colors.white : AppColors.navy;
+
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: GestureDetector(
@@ -526,10 +506,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.emerald : Colors.white,
+            color: isSelected ? AppColors.emerald : cardBg,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isSelected ? AppColors.emerald : AppColors.borderLight,
+              color: isSelected ? AppColors.emerald : chipBorder,
             ),
             boxShadow: isSelected
                 ? [
@@ -555,7 +535,7 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected ? Colors.white : AppColors.navy,
+                  color: isSelected ? Colors.white : chipText,
                 ),
               ),
             ],
@@ -567,17 +547,21 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
 
   Widget _buildFeaturedGroundCard(GroundModel ground) {
     final isFav = _favoriteGroundIds.contains(ground.id);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final cardBorder = isDark ? const Color(0xFF334155) : AppColors.borderLight;
+    final cardText = isDark ? Colors.white : AppColors.navy;
 
     return GestureDetector(
       onTap: () => context.push('/customer/ground/${ground.id}'),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardBg,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.borderLight),
+          border: Border.all(color: cardBorder),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -680,10 +664,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                       Expanded(
                         child: Text(
                           ground.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.navy,
+                            color: cardText,
                           ),
                         ),
                       ),
@@ -789,6 +773,11 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
   }
 
   Widget _buildGroundRowCard(GroundModel ground) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final cardBorder = isDark ? const Color(0xFF334155) : AppColors.borderLight;
+    final cardText = isDark ? Colors.white : AppColors.navy;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: GestureDetector(
@@ -796,12 +785,12 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardBg,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.borderLight),
+            border: Border.all(color: cardBorder),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
+                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.02),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -833,10 +822,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                             ground.name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
-                              color: AppColors.navy,
+                              color: cardText,
                             ),
                           ),
                         ),
@@ -849,10 +838,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                             ),
                             Text(
                               ' ${ground.rating}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.navy,
+                                color: cardText,
                               ),
                             ),
                           ],

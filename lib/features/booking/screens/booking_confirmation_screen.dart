@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/route_names.dart';
+import '../../../core/utils/map_launcher.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../models/booking_model.dart';
 
@@ -21,35 +22,45 @@ class BookingConfirmationScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookingRepo = ref.watch(bookingRepositoryProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
+    final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final secondaryCardColor = isDark
+        ? const Color(0xFF0F172A)
+        : AppColors.surfaceSecondaryLight;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark
+        ? const Color(0xFF334155)
+        : AppColors.borderLight;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: bgColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: AppColors.navy,
+            color: textColor,
             size: 20,
           ),
           onPressed: () => context.go(AppRoutes.customerRoot),
         ),
-        title: const Text(
+        title: Text(
           'Booking Confirmation',
           style: TextStyle(
-            color: AppColors.navy,
+            color: textColor,
             fontSize: 16,
             fontWeight: FontWeight.w800,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.share_outlined,
-              color: AppColors.navy,
-              size: 22,
-            ),
+            icon: Icon(Icons.share_outlined, color: textColor, size: 22),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -102,31 +113,30 @@ class BookingConfirmationScreen extends ConsumerWidget {
                   ),
                   child: const Center(
                     child: Icon(
-                      Icons.check_circle_rounded,
+                      Icons.check_rounded,
                       color: AppColors.emeraldDark,
-                      size: 48,
+                      size: 42,
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                // Confirmation Headline
-                const Text(
-                  'Booking Confirmed!',
+                // Success Title
+                Text(
+                  'Reservation Locked!',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: -0.5,
-                    color: AppColors.navy,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                Text(
                   'Your pitch is ready. Show this QR code upon arrival at the ground.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13.5,
-                    color: AppColors.textSecondaryLight,
+                    color: subtextColor,
                     height: 1.4,
                   ),
                 ),
@@ -136,9 +146,9 @@ class BookingConfirmationScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceSecondaryLight,
+                    color: secondaryCardColor,
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: AppColors.borderLight),
+                    border: Border.all(color: borderColor),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,18 +175,18 @@ class BookingConfirmationScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   venueName,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w800,
-                                    color: AppColors.navy,
+                                    color: textColor,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   venueLocation,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
-                                    color: AppColors.textSecondaryLight,
+                                    color: subtextColor,
                                   ),
                                 ),
                               ],
@@ -184,7 +194,7 @@ class BookingConfirmationScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      const Divider(height: 24, color: AppColors.borderLight),
+                      Divider(height: 24, color: borderColor),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -192,21 +202,21 @@ class BookingConfirmationScreen extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Date & Time',
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: AppColors.textSecondaryLight,
+                                    color: subtextColor,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
                                   '$dateStr • $timeSlot',
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.navy,
+                                    color: textColor,
                                   ),
                                 ),
                               ],
@@ -243,12 +253,13 @@ class BookingConfirmationScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors
+                        .white, // Always high contrast white for QR reader
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.borderLight),
+                    border: Border.all(color: borderColor),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 16,
                         offset: const Offset(0, 4),
                       ),
@@ -309,6 +320,9 @@ class BookingConfirmationScreen extends ConsumerWidget {
                             ),
                           );
                         },
+                        cardColor: cardColor,
+                        textColor: textColor,
+                        borderColor: borderColor,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -323,6 +337,9 @@ class BookingConfirmationScreen extends ConsumerWidget {
                             ),
                           );
                         },
+                        cardColor: cardColor,
+                        textColor: textColor,
+                        borderColor: borderColor,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -331,12 +348,16 @@ class BookingConfirmationScreen extends ConsumerWidget {
                         Icons.directions_outlined,
                         'Directions',
                         () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Opening navigation directions...'),
-                            ),
+                          MapLauncher.openCoordinates(
+                            context: context,
+                            latitude: 33.7215, // Islamabad ground coordinates
+                            longitude: 73.0560,
+                            title: venueName,
                           );
                         },
+                        cardColor: cardColor,
+                        textColor: textColor,
+                        borderColor: borderColor,
                       ),
                     ),
                   ],
@@ -376,16 +397,23 @@ class BookingConfirmationScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionButton(IconData icon, String label, VoidCallback onTap) {
+  Widget _buildActionButton(
+    IconData icon,
+    String label,
+    VoidCallback onTap, {
+    required Color cardColor,
+    required Color textColor,
+    required Color borderColor,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.surfaceSecondaryLight,
+          color: cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.borderLight),
+          border: Border.all(color: borderColor),
         ),
         child: Column(
           children: [
@@ -393,10 +421,10 @@ class BookingConfirmationScreen extends ConsumerWidget {
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                color: AppColors.navy,
+                color: textColor,
               ),
             ),
           ],

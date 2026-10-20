@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../data/repositories/repository_providers.dart';
+import '../../../core/utils/map_launcher.dart';
 import '../models/ground_model.dart';
 import '../models/review_model.dart';
 import '../../shared/widgets/mini_map_preview.dart';
@@ -33,7 +34,6 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            backgroundColor: Colors.white,
             body: Center(
               child: CircularProgressIndicator(color: AppColors.emerald),
             ),
@@ -47,8 +47,16 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
           );
         }
 
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final bgColor = Theme.of(context).scaffoldBackgroundColor;
+        final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+        final textColor = isDark ? Colors.white : AppColors.navy;
+        final borderColor = isDark
+            ? const Color(0xFF334155)
+            : AppColors.borderLight;
+
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: bgColor,
           body: Stack(
             children: [
               // Scrollable Details Body
@@ -178,10 +186,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                               Expanded(
                                 child: Text(
                                   ground.name,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 22,
                                     fontWeight: FontWeight.w800,
-                                    color: AppColors.navy,
+                                    color: textColor,
                                     letterSpacing: -0.3,
                                   ),
                                 ),
@@ -432,12 +440,11 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                             venueName: ground.name,
                             address: ground.address,
                             onDirectionsTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Opening directions to ${ground.address}',
-                                  ),
-                                ),
+                              MapLauncher.openCoordinates(
+                                context: context,
+                                latitude: ground.latitude,
+                                longitude: ground.longitude,
+                                title: ground.name,
                               );
                             },
                           ),
@@ -463,10 +470,13 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                     vertical: 14,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: cardColor,
+                    border: Border(top: BorderSide(color: borderColor)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
+                        color: Colors.black.withValues(
+                          alpha: isDark ? 0.3 : 0.08,
+                        ),
                         blurRadius: 20,
                         offset: const Offset(0, -4),
                       ),
@@ -494,10 +504,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                                     TextSpan(
                                       text:
                                           'PKR ${ground.pricePerHour.toInt()}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w900,
-                                        color: AppColors.navy,
+                                        color: textColor,
                                       ),
                                     ),
                                     const TextSpan(
@@ -576,22 +586,29 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
   }
 
   Widget _buildSpecTag(String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark
+        ? const Color(0xFF1E293B)
+        : AppColors.surfaceSecondaryLight;
+    final border = isDark ? const Color(0xFF334155) : AppColors.borderLight;
+    final text = isDark ? Colors.white : AppColors.navy;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.surfaceSecondaryLight,
+        color: bg,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             '$label: ',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: AppColors.navy,
+              color: text,
             ),
           ),
           Text(
@@ -607,6 +624,12 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
   }
 
   Widget _buildAmenitiesGrid(List<String> facilities) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark
+        ? const Color(0xFF1E293B)
+        : AppColors.surfaceSecondaryLight;
+    final text = isDark ? Colors.white : AppColors.navy;
+
     final defaultAmenities = [
       {'icon': Icons.bolt, 'name': 'LED Floodlights'},
       {'icon': Icons.meeting_room_outlined, 'name': 'Changing Rooms'},
@@ -624,7 +647,7 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
           width: 100,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: AppColors.surfaceSecondaryLight,
+            color: bg,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -639,10 +662,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
               Text(
                 item['name'] as String,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.navy,
+                  color: text,
                 ),
               ),
             ],
@@ -653,10 +676,16 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
   }
 
   Widget _buildRatingsSummary(double rating) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark
+        ? const Color(0xFF1E293B)
+        : AppColors.surfaceSecondaryLight;
+    final text = isDark ? Colors.white : AppColors.navy;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.surfaceSecondaryLight,
+        color: bg,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -665,10 +694,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
             children: [
               Text(
                 '$rating',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.navy,
+                  color: text,
                 ),
               ),
               Row(
@@ -726,7 +755,7 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: factor,
-                backgroundColor: Colors.white,
+                backgroundColor: Colors.white24,
                 valueColor: const AlwaysStoppedAnimation(AppColors.emerald),
                 minHeight: 5,
               ),
@@ -738,13 +767,18 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
   }
 
   Widget _buildReviewCard(ReviewModel review) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final border = isDark ? const Color(0xFF334155) : AppColors.borderLight;
+    final nameColor = isDark ? Colors.white : AppColors.navy;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -754,10 +788,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
             children: [
               Text(
                 review.customerName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 13,
-                  color: AppColors.navy,
+                  color: nameColor,
                 ),
               ),
               Row(
@@ -765,9 +799,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                   const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
                   Text(
                     ' ${review.rating}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
+                      color: nameColor,
                     ),
                   ),
                 ],
@@ -793,13 +828,18 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
     required double rating,
     required String date,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final border = isDark ? const Color(0xFF334155) : AppColors.borderLight;
+    final nameColor = isDark ? Colors.white : AppColors.navy;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -809,10 +849,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
             children: [
               Text(
                 name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 13,
-                  color: AppColors.navy,
+                  color: nameColor,
                 ),
               ),
               Row(
@@ -820,9 +860,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                   const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
                   Text(
                     ' $rating',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
+                      color: nameColor,
                     ),
                   ),
                 ],

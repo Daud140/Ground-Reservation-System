@@ -525,15 +525,23 @@ class _OwnerGroundManagementScreenState
     final authState = ref.watch(authProvider);
     final ownerId = authState.user?.id ?? 'owner_sport_demo';
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: cardColor,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Manage Ground',
           style: TextStyle(
-            color: AppColors.navy,
+            color: textColor,
             fontSize: 17,
             fontWeight: FontWeight.w800,
           ),
@@ -598,6 +606,7 @@ class _OwnerGroundManagementScreenState
               children: [
                 // Ground Selector Card with Popup Menu to switch grounds
                 PopupMenuButton<GroundModel>(
+                  color: cardColor,
                   onSelected: (g) {
                     setState(() => _syncSelectedGround(g));
                   },
@@ -610,7 +619,7 @@ class _OwnerGroundManagementScreenState
                             Icons.stadium,
                             color: g.id == primaryGround?.id
                                 ? AppColors.emerald
-                                : AppColors.navy,
+                                : (isDark ? Colors.white70 : AppColors.navy),
                             size: 18,
                           ),
                           const SizedBox(width: 8),
@@ -623,8 +632,8 @@ class _OwnerGroundManagementScreenState
                                     ? FontWeight.w800
                                     : FontWeight.w500,
                                 color: g.id == primaryGround?.id
-                                    ? AppColors.emeraldDark
-                                    : AppColors.navy,
+                                    ? AppColors.emerald
+                                    : textColor,
                               ),
                             ),
                           ),
@@ -638,9 +647,11 @@ class _OwnerGroundManagementScreenState
                       vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceSecondaryLight,
+                      color: isDark
+                          ? AppColors.surfaceSecondaryDark
+                          : AppColors.surfaceSecondaryLight,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.borderLight),
+                      border: Border.all(color: borderColor),
                     ),
                     child: Row(
                       children: [
@@ -664,27 +675,24 @@ class _OwnerGroundManagementScreenState
                             children: [
                               Text(
                                 primaryGround?.name ?? 'No Ground Registered',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.navy,
+                                  color: textColor,
                                 ),
                               ),
                               Text(
                                 primaryGround?.location ??
                                     'Tap to select or add ground',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
-                                  color: AppColors.textSecondaryLight,
+                                  color: subtextColor,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const Icon(
-                          Icons.unfold_more,
-                          color: AppColors.textSecondaryLight,
-                        ),
+                        Icon(Icons.unfold_more, color: subtextColor),
                       ],
                     ),
                   ),
@@ -764,12 +772,12 @@ class _OwnerGroundManagementScreenState
                 const SizedBox(height: 22),
 
                 // Venue Photos Section
-                const Text(
+                Text(
                   'Venue Photos',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.navy,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -796,25 +804,27 @@ class _OwnerGroundManagementScreenState
                         child: Container(
                           width: 90,
                           decoration: BoxDecoration(
-                            color: AppColors.surfaceSecondaryLight,
+                            color: isDark
+                                ? AppColors.surfaceSecondaryDark
+                                : AppColors.surfaceSecondaryLight,
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: AppColors.borderLight),
+                            border: Border.all(color: borderColor),
                           ),
-                          child: const Column(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.add_photo_alternate_outlined,
                                 color: AppColors.emerald,
                                 size: 24,
                               ),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Text(
                                 'Add Photo',
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.navy,
+                                  color: textColor,
                                 ),
                               ),
                             ],
@@ -828,12 +838,12 @@ class _OwnerGroundManagementScreenState
                 const SizedBox(height: 24),
 
                 // Ground Information Fields
-                const Text(
+                Text(
                   'Ground Information',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.navy,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -863,12 +873,12 @@ class _OwnerGroundManagementScreenState
                 const SizedBox(height: 24),
 
                 // Facilities & Perks Toggles
-                const Text(
+                Text(
                   'Facilities & Perks',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.navy,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -897,9 +907,7 @@ class _OwnerGroundManagementScreenState
                             fontWeight: isActive
                                 ? FontWeight.w700
                                 : FontWeight.w500,
-                            color: isActive
-                                ? AppColors.emeraldDark
-                                : AppColors.navy,
+                            color: isActive ? AppColors.emeraldDark : textColor,
                           ),
                           onSelected: (selected) {
                             setState(() {
@@ -917,12 +925,12 @@ class _OwnerGroundManagementScreenState
                 const SizedBox(height: 24),
 
                 // Operating Timings
-                const Text(
+                Text(
                   'Operating Timings & Rules',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.navy,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -953,12 +961,12 @@ class _OwnerGroundManagementScreenState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Location on Map',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.navy,
+                        color: textColor,
                       ),
                     ),
                     TextButton.icon(
@@ -1039,31 +1047,45 @@ class _OwnerGroundManagementScreenState
     TextEditingController controller, {
     bool isNumber = false,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: AppColors.textSecondaryLight,
+            color: subtextColor,
           ),
         ),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
+          style: TextStyle(fontSize: 14, color: textColor),
           keyboardType: isNumber ? TextInputType.number : TextInputType.text,
           decoration: InputDecoration(
             filled: true,
-            fillColor: AppColors.surfaceSecondaryLight,
+            fillColor: isDark
+                ? AppColors.surfaceSecondaryDark
+                : AppColors.surfaceSecondaryLight,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 12,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.borderLight),
+              borderSide: BorderSide(color: borderColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: borderColor),
             ),
           ),
         ),
@@ -1077,12 +1099,21 @@ class _OwnerGroundManagementScreenState
     bool isOpen,
     ValueChanged<bool> onChanged,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.surfaceSecondaryLight,
+        color: isDark
+            ? AppColors.surfaceSecondaryDark
+            : AppColors.surfaceSecondaryLight,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1092,18 +1123,15 @@ class _OwnerGroundManagementScreenState
             children: [
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.navy,
+                  color: textColor,
                 ),
               ),
               Text(
                 timeRange,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textSecondaryLight,
-                ),
+                style: TextStyle(fontSize: 11, color: subtextColor),
               ),
             ],
           ),

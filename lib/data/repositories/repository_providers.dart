@@ -5,6 +5,7 @@ import 'ground_repository.dart';
 import 'booking_repository.dart';
 import 'review_repository.dart';
 import 'ai_repository.dart';
+import 'gemini_ai_repository.dart';
 
 // =============================================================================
 // RIVERPOD REPOSITORY PROVIDERS
@@ -32,7 +33,7 @@ final reviewRepositoryProvider = Provider<ReviewRepository>((ref) {
   return MockReviewRepository(); // Replace with FirebaseReviewRepository() for Firebase backend
 });
 
-/// Provides the active AiRepository implementation
+/// Provides the active AiRepository implementation (Gemini Cloud with intelligent fallback)
 final aiRepositoryProvider = Provider<AiRepository>((ref) {
-  return MockAiRepository(); // Replace with GeminiCloudAiRepository() if calling real Gemini API
+  return GeminiAiRepository();
 });

@@ -15,6 +15,7 @@ import '../../features/booking/screens/booking_confirmation_screen.dart';
 import '../../features/booking/models/booking_model.dart';
 import '../../features/ai/screens/ai_assistant_screen.dart';
 import '../../features/customer/screens/grounds_map_screen.dart';
+import '../../features/notifications/screens/notifications_screen.dart';
 import '../../features/owner/screens/owner_main_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -123,6 +124,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.groundsMap,
         builder: (context, state) => const GroundsMapScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        builder: (context, state) => const NotificationsScreen(),
       ),
       GoRoute(
         path: AppRoutes.ownerRoot,

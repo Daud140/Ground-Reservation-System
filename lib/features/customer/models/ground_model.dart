@@ -81,6 +81,52 @@ class GroundModel {
       ? images.first
       : 'assets/images/ground_futsal_rawal.jpg';
 
+  double get latitude {
+    switch (id) {
+      case 'ground_1':
+        return 33.7215; // F-7 Markaz Islamabad
+      case 'ground_2':
+        return 33.7020; // E-11/4 Islamabad
+      case 'ground_3':
+        return 33.6938; // F-10 Padel Islamabad
+      case 'ground_4':
+        return 33.5760; // Ayub Park Rawalpindi
+      case 'ground_5':
+        return 33.7077; // Blue Area Islamabad
+      case 'ground_6':
+        return 33.7000; // Rawal Lake Islamabad
+      case 'ground_7':
+        return 33.5930; // Chaklala Rawalpindi
+      case 'ground_8':
+        return 33.5220; // Bahria Town Phase 7
+      default:
+        return 33.6844;
+    }
+  }
+
+  double get longitude {
+    switch (id) {
+      case 'ground_1':
+        return 73.0560;
+      case 'ground_2':
+        return 72.9780;
+      case 'ground_3':
+        return 73.0160;
+      case 'ground_4':
+        return 73.0720;
+      case 'ground_5':
+        return 73.0538;
+      case 'ground_6':
+        return 73.1200;
+      case 'ground_7':
+        return 73.0900;
+      case 'ground_8':
+        return 73.1100;
+      default:
+        return 73.0479;
+    }
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

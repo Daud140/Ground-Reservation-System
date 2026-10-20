@@ -7,6 +7,7 @@ import '../../../core/router/route_names.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../booking/models/booking_model.dart';
+import '../../notifications/widgets/notification_bell_icon.dart';
 import '../../shared/widgets/app_logo.dart';
 
 class OwnerDashboardScreen extends ConsumerStatefulWidget {
@@ -25,9 +26,16 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
     final authState = ref.watch(authProvider);
     final bookingRepo = ref.watch(bookingRepositoryProvider);
     final user = authState.user;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: FutureBuilder<List<BookingModel>>(
           future: bookingRepo.getAllBookings(),
@@ -100,20 +108,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                       ),
                       const SizedBox(width: 8),
                       // Notifications
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.borderLight),
-                        ),
-                        child: const Icon(
-                          Icons.notifications_none_rounded,
-                          color: AppColors.navy,
-                          size: 18,
-                        ),
-                      ),
+                      const NotificationBellIcon(),
                       const SizedBox(width: 8),
                       // Owner Logout Action
                       InkWell(
@@ -121,23 +116,28 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                           final confirm = await showDialog<bool>(
                             context: context,
                             builder: (ctx) => AlertDialog(
+                              backgroundColor: cardColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              title: const Text(
+                              title: Text(
                                 'Log Out',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.navy,
+                                  color: textColor,
                                 ),
                               ),
-                              content: const Text(
+                              content: Text(
                                 'Are you sure you want to log out of GroundZero?',
+                                style: TextStyle(color: subtextColor),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(ctx, false),
-                                  child: const Text('Cancel'),
+                                  child: Text(
+                                    'Cancel',
+                                    style: TextStyle(color: subtextColor),
+                                  ),
                                 ),
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
@@ -197,19 +197,19 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                             Text(
                               'Welcome back, ${user?.name ?? 'Hamza'}',
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: -0.5,
-                                color: AppColors.navy,
+                                color: textColor,
                               ),
                             ),
                             const SizedBox(height: 2),
-                            const Text(
+                            Text(
                               'Apex Arena • Islamabad',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: AppColors.textSecondaryLight,
+                                color: subtextColor,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -219,10 +219,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                       IconButton(
                         onPressed: () =>
                             widget.onNavigateTab?.call(2), // Manage Ground
-                        icon: const Icon(
-                          Icons.settings_outlined,
-                          color: AppColors.navy,
-                        ),
+                        icon: Icon(Icons.settings_outlined, color: textColor),
                       ),
                     ],
                   ),
@@ -365,12 +362,14 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: cardColor,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.borderLight),
+                      border: Border.all(color: borderColor),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.02),
+                          color: Colors.black.withValues(
+                            alpha: isDark ? 0.2 : 0.02,
+                          ),
                           blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
@@ -382,14 +381,14 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Expanded(
+                            Expanded(
                               child: Text(
                                 'Weekly Slot Utilization',
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.navy,
+                                  color: textColor,
                                 ),
                               ),
                             ),
@@ -449,9 +448,9 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: cardColor,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.borderLight),
+                            border: Border.all(color: borderColor),
                           ),
                           child: Row(
                             children: [
@@ -468,18 +467,18 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                                     Text(
                                       '${ownerBookings.length} Bookings',
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w800,
-                                        color: AppColors.navy,
+                                        color: textColor,
                                       ),
                                     ),
-                                    const Text(
+                                    Text(
                                       'Total Bookings',
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: 11,
-                                        color: AppColors.textSecondaryLight,
+                                        color: subtextColor,
                                       ),
                                     ),
                                   ],
@@ -494,18 +493,18 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: cardColor,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.borderLight),
+                            border: Border.all(color: borderColor),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.pie_chart_outline_rounded,
                                 color: AppColors.limeDark,
                                 size: 24,
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -516,7 +515,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w800,
-                                        color: AppColors.navy,
+                                        color: textColor,
                                       ),
                                     ),
                                     Text(
@@ -524,7 +523,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: 11,
-                                        color: AppColors.textSecondaryLight,
+                                        color: subtextColor,
                                       ),
                                     ),
                                   ],
@@ -543,14 +542,14 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Text(
                           "Today's Bookings",
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.navy,
+                            color: textColor,
                           ),
                         ),
                       ),
@@ -603,6 +602,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
     double heightFactor, {
     bool isPeak = false,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -633,7 +633,11 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
           style: TextStyle(
             fontSize: 11,
             fontWeight: isPeak ? FontWeight.w800 : FontWeight.w500,
-            color: isPeak ? AppColors.navy : AppColors.textSecondaryLight,
+            color: isPeak
+                ? (isDark ? AppColors.lime : AppColors.navy)
+                : (isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondaryLight),
           ),
         ),
       ],
@@ -642,39 +646,45 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
 
   Widget _buildTodayBookingCard(BookingModel booking) {
     final isConfirmed = booking.status == BookingStatus.confirmed;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.surfaceSecondaryLight,
+              color: isDark
+                  ? AppColors.surfaceSecondaryDark
+                  : AppColors.surfaceSecondaryLight,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
               children: [
                 Text(
                   booking.timeSlot.split(' - ').first,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.navy,
+                    color: textColor,
                   ),
                 ),
-                const Text(
+                Text(
                   'Start',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: AppColors.textSecondaryLight,
-                  ),
+                  style: TextStyle(fontSize: 10, color: subtextColor),
                 ),
               ],
             ),
@@ -686,19 +696,16 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
               children: [
                 Text(
                   booking.customerName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.navy,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '${booking.timeSlot} • PKR ${booking.totalPrice.toInt()}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondaryLight,
-                  ),
+                  style: TextStyle(fontSize: 12, color: subtextColor),
                 ),
               ],
             ),
@@ -731,38 +738,45 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
     int price,
     bool isConfirmed,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.surfaceSecondaryLight,
+              color: isDark
+                  ? AppColors.surfaceSecondaryDark
+                  : AppColors.surfaceSecondaryLight,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(
               children: [
                 Text(
                   time.split(' - ').first,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.navy,
+                    color: textColor,
                   ),
                 ),
-                const Text(
+                Text(
                   'Start',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: AppColors.textSecondaryLight,
-                  ),
+                  style: TextStyle(fontSize: 10, color: subtextColor),
                 ),
               ],
             ),
@@ -774,19 +788,16 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
               children: [
                 Text(
                   client,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.navy,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '$time • PKR $price',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondaryLight,
-                  ),
+                  style: TextStyle(fontSize: 12, color: subtextColor),
                 ),
               ],
             ),

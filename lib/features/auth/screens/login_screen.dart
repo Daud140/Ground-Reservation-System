@@ -155,8 +155,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // CRITICAL REQUIREMENT: Route by the role stored in the account,
       // not by any transient button tapped.
       final auth = ref.read(authProvider);
-      final targetRoute =
-          auth.isOwner ? AppRoutes.ownerRoot : AppRoutes.customerRoot;
+      final targetRoute = auth.isOwner
+          ? AppRoutes.ownerRoot
+          : AppRoutes.customerRoot;
       try {
         context.go(targetRoute);
       } catch (_) {
@@ -174,11 +175,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppTheme.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppTheme.borderLight;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         top: false,
@@ -346,12 +353,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Account Role',
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: AppTheme.navy,
+                              color: textColor,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -412,23 +419,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Password',
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: AppTheme.navy,
+                            color: textColor,
                           ),
                         ),
                         const SizedBox(height: 6),
                         TextField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
+                          style: TextStyle(fontSize: 14, color: textColor),
                           decoration: InputDecoration(
                             hintText: '••••••••',
-                            prefixIcon: const Icon(
+                            hintStyle: TextStyle(color: subtextColor),
+                            prefixIcon: Icon(
                               Icons.lock_outline_rounded,
                               size: 20,
+                              color: subtextColor,
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -436,7 +446,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     ? Icons.visibility_outlined
                                     : Icons.visibility_off_outlined,
                                 size: 20,
-                                color: AppColors.textMutedLight,
+                                color: subtextColor,
                               ),
                               onPressed: () {
                                 setState(
@@ -445,22 +455,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               },
                             ),
                             filled: true,
-                            fillColor: AppColors.surfaceSecondaryLight,
+                            fillColor: isDark
+                                ? AppColors.surfaceSecondaryDark
+                                : AppColors.surfaceSecondaryLight,
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 14,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(
-                                color: AppTheme.borderLight,
-                              ),
+                              borderSide: BorderSide(color: borderColor),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(
-                                color: AppTheme.borderLight,
-                              ),
+                              borderSide: BorderSide(color: borderColor),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
@@ -503,8 +511,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5),
                                     ),
-                                    side: const BorderSide(
-                                      color: AppTheme.borderLight,
+                                    side: BorderSide(
+                                      color: borderColor,
                                       width: 1.5,
                                     ),
                                     onChanged: (val) {
@@ -515,12 +523,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                const Text(
+                                Text(
                                   'Remember me',
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
-                                    color: AppTheme.navy,
+                                    color: textColor,
                                   ),
                                 ),
                               ],
@@ -566,9 +574,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     // Divider with "Or continue with"
                     Row(
                       children: [
-                        const Expanded(
-                          child: Divider(color: AppTheme.borderLight),
-                        ),
+                        Expanded(child: Divider(color: borderColor)),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 14),
                           child: Text(
@@ -576,13 +582,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: AppColors.textSecondaryLight,
+                              color: subtextColor,
                             ),
                           ),
                         ),
-                        const Expanded(
-                          child: Divider(color: AppTheme.borderLight),
-                        ),
+                        Expanded(child: Divider(color: borderColor)),
                       ],
                     ),
 
@@ -597,29 +601,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       },
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 52),
-                        side: const BorderSide(
-                          color: AppTheme.borderLight,
-                          width: 1.2,
-                        ),
+                        side: BorderSide(color: borderColor, width: 1.2),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
                             AppTheme.buttonRadius,
                           ),
                         ),
-                        backgroundColor: Colors.white,
+                        backgroundColor: cardColor,
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          GoogleLogoWidget(size: 20),
-                          SizedBox(width: 12),
+                          const GoogleLogoWidget(size: 20),
+                          const SizedBox(width: 12),
                           Flexible(
                             child: Text(
                               'Continue with Google',
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                color: AppTheme.navy,
+                                color: textColor,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 14,
                               ),
@@ -635,15 +636,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppTheme.backgroundLight,
+                        color: cardColor,
                         borderRadius: BorderRadius.circular(
                           AppTheme.cardRadius,
                         ),
-                        border: Border.all(
-                          color: AppTheme.borderLight,
-                          width: 1.2,
-                        ),
-                        boxShadow: AppTheme.softShadowLight,
+                        border: Border.all(color: borderColor, width: 1.2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.2 : 0.04,
+                            ),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -663,26 +669,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Flexible(
+                              Flexible(
                                 child: Text(
                                   'Fast Preview Demo',
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w800,
-                                    color: AppTheme.navy,
+                                    color: textColor,
                                   ),
                                 ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 6),
-                          const Text(
+                          Text(
                             'Tap a role to auto-fill verified test credentials:',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondaryLight,
-                            ),
+                            style: TextStyle(fontSize: 12, color: subtextColor),
                           ),
                           const SizedBox(height: 12),
 
@@ -695,13 +698,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 label: 'Customer',
                                 icon: Icons.person_rounded,
                                 color: AppTheme.emerald,
+                                chipBg: isDark
+                                    ? AppColors.surfaceSecondaryDark
+                                    : Colors.white,
                                 onTap: () =>
                                     _fillDemoCredentials(UserRole.customer),
                               ),
                               _buildDemoChip(
                                 label: 'Arena Owner',
                                 icon: Icons.stadium_rounded,
-                                color: AppTheme.navy,
+                                color: isDark ? AppColors.lime : AppTheme.navy,
+                                chipBg: isDark
+                                    ? AppColors.surfaceSecondaryDark
+                                    : Colors.white,
                                 onTap: () =>
                                     _fillDemoCredentials(UserRole.owner),
                               ),
@@ -717,10 +726,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Center(
                       child: TextButton(
                         onPressed: () => context.go(AppRoutes.roleSelection),
-                        child: const Text(
+                        child: Text(
                           'Change Onboarding Role Selection',
                           style: TextStyle(
-                            color: AppColors.textSecondaryLight,
+                            color: subtextColor,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
@@ -743,6 +752,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required IconData icon,
   }) {
     final isSelected = _selectedRole == role;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : AppTheme.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppTheme.borderLight;
+
     return GestureDetector(
       onTap: () => setState(() => _selectedRole = role),
       child: AnimatedContainer(
@@ -751,10 +767,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         decoration: BoxDecoration(
           color: isSelected
               ? AppTheme.emeraldContainer
-              : AppColors.surfaceSecondaryLight,
+              : (isDark
+                    ? AppColors.surfaceSecondaryDark
+                    : AppColors.surfaceSecondaryLight),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppTheme.emerald : AppTheme.borderLight,
+            color: isSelected ? AppTheme.emerald : borderColor,
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -764,9 +782,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Icon(
               icon,
               size: 16,
-              color: isSelected
-                  ? AppTheme.emeraldDark
-                  : AppColors.textSecondaryLight,
+              color: isSelected ? AppTheme.emeraldDark : subtextColor,
             ),
             const SizedBox(width: 6),
             Flexible(
@@ -776,7 +792,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: isSelected ? AppTheme.emeraldDark : AppTheme.navy,
+                  color: isSelected ? AppTheme.emeraldDark : textColor,
                 ),
               ),
             ),
@@ -790,10 +806,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required String label,
     required IconData icon,
     required Color color,
+    required Color chipBg,
     required VoidCallback onTap,
   }) {
     return Material(
-      color: Colors.white,
+      color: chipBg,
       borderRadius: BorderRadius.circular(AppTheme.pillRadius),
       child: InkWell(
         onTap: onTap,
@@ -835,37 +852,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : AppTheme.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark ? AppColors.borderDark : AppTheme.borderLight;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: AppTheme.navy,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 6),
         TextField(
           controller: controller,
+          style: TextStyle(fontSize: 14, color: textColor),
           keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hintText,
-            prefixIcon: Icon(icon, size: 20),
+            hintStyle: TextStyle(color: subtextColor),
+            prefixIcon: Icon(icon, size: 20, color: subtextColor),
             filled: true,
-            fillColor: AppColors.surfaceSecondaryLight,
+            fillColor: isDark
+                ? AppColors.surfaceSecondaryDark
+                : AppColors.surfaceSecondaryLight,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppTheme.borderLight),
+              borderSide: BorderSide(color: borderColor),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppTheme.borderLight),
+              borderSide: BorderSide(color: borderColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),

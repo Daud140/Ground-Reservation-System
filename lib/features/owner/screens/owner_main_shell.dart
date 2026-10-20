@@ -30,6 +30,10 @@ class _OwnerMainShellState extends State<OwnerMainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final navBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final border = isDark ? const Color(0xFF334155) : AppColors.borderLight;
+
     final List<Widget> screens = [
       OwnerDashboardScreen(onNavigateTab: _onTabSelected),
       const OwnerBookingRequestsScreen(),
@@ -41,11 +45,11 @@ class _OwnerMainShellState extends State<OwnerMainShell> {
       body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: AppColors.borderLight)),
+          color: navBg,
+          border: Border(top: BorderSide(color: border)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
               blurRadius: 16,
               offset: const Offset(0, -2),
             ),
@@ -57,10 +61,20 @@ class _OwnerMainShellState extends State<OwnerMainShell> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(0, Icons.dashboard_rounded, 'Dashboard'),
-                _buildNavItem(1, Icons.pending_actions_rounded, 'Requests'),
-                _buildNavItem(2, Icons.tune_rounded, 'Manage Ground'),
-                _buildNavItem(3, Icons.person_outline_rounded, 'Profile'),
+                _buildNavItem(0, Icons.dashboard_rounded, 'Dashboard', isDark),
+                _buildNavItem(
+                  1,
+                  Icons.pending_actions_rounded,
+                  'Requests',
+                  isDark,
+                ),
+                _buildNavItem(2, Icons.tune_rounded, 'Manage Ground', isDark),
+                _buildNavItem(
+                  3,
+                  Icons.person_outline_rounded,
+                  'Profile',
+                  isDark,
+                ),
               ],
             ),
           ),
@@ -69,8 +83,16 @@ class _OwnerMainShellState extends State<OwnerMainShell> {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label) {
+  Widget _buildNavItem(int index, IconData icon, String label, bool isDark) {
     final isSelected = _currentIndex == index;
+    final selectedBg = isDark
+        ? AppColors.emerald.withValues(alpha: 0.2)
+        : AppColors.emeraldContainer;
+    final selectedFg = isDark ? AppColors.emeraldLight : AppColors.emeraldDark;
+    final unselectedFg = isDark
+        ? const Color(0xFF94A3B8)
+        : AppColors.textSecondaryLight;
+
     return GestureDetector(
       onTap: () => _onTabSelected(index),
       behavior: HitTestBehavior.opaque,
@@ -78,28 +100,20 @@ class _OwnerMainShellState extends State<OwnerMainShell> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.emeraldContainer : Colors.transparent,
+          color: isSelected ? selectedBg : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 22,
-              color: isSelected
-                  ? AppColors.emeraldDark
-                  : AppColors.textSecondaryLight,
-            ),
+            Icon(icon, size: 22, color: isSelected ? selectedFg : unselectedFg),
             const SizedBox(height: 3),
             Text(
               label,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                color: isSelected
-                    ? AppColors.emeraldDark
-                    : AppColors.textSecondaryLight,
+                color: isSelected ? selectedFg : unselectedFg,
               ),
             ),
           ],

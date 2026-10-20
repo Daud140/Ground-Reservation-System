@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/utils/map_launcher.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../models/ground_model.dart';
 
@@ -55,41 +56,49 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
   }
 
   Future<void> _handleLocationPermissionRequest() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+
     // Show standard location permission dialog
     final granted = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
       builder: (ctx) => AlertDialog(
+        backgroundColor: cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.location_on_rounded, color: AppColors.emerald, size: 24),
-            SizedBox(width: 8),
+            const Icon(
+              Icons.location_on_rounded,
+              color: AppColors.emerald,
+              size: 24,
+            ),
+            const SizedBox(width: 8),
             Text(
               'Location Permission',
               style: TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 17,
-                color: AppColors.navy,
+                color: textColor,
               ),
             ),
           ],
         ),
-        content: const Text(
+        content: Text(
           'Allow GroundZero to access your device location to calculate exact distances and show nearby sports turfs in Islamabad & Rawalpindi?',
-          style: TextStyle(
-            fontSize: 13,
-            height: 1.4,
-            color: AppColors.textSecondaryLight,
-          ),
+          style: TextStyle(fontSize: 13, height: 1.4, color: subtextColor),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text(
+            child: Text(
               'Don\'t Allow',
               style: TextStyle(
-                color: AppColors.textSecondaryLight,
+                color: subtextColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -153,9 +162,14 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
   @override
   Widget build(BuildContext context) {
     final groundRepo = ref.watch(groundRepositoryProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppColors.navy;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
+      backgroundColor: isDark
+          ? const Color(0xFF0F172A)
+          : const Color(0xFFF1F5F9),
       body: FutureBuilder<List<GroundModel>>(
         future: groundRepo.getAllGrounds(),
         builder: (context, snapshot) {
@@ -235,20 +249,22 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: cardColor,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.15),
+                              color: Colors.black.withValues(
+                                alpha: isDark ? 0.3 : 0.15,
+                              ),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.arrow_back_ios_new_rounded,
-                            color: AppColors.navy,
+                            color: textColor,
                             size: 18,
                           ),
                           onPressed: () => Navigator.pop(context),
@@ -262,11 +278,13 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
                             vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: cardColor,
                             borderRadius: BorderRadius.circular(24),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
+                                color: Colors.black.withValues(
+                                  alpha: isDark ? 0.3 : 0.1,
+                                ),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -280,14 +298,14 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
-                              const Expanded(
+                              Expanded(
                                 child: Text(
                                   'Islamabad & Rawalpindi Map',
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w800,
                                     fontSize: 13,
-                                    color: AppColors.navy,
+                                    color: textColor,
                                   ),
                                 ),
                               ),
@@ -324,10 +342,10 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
                 bottom: activeSelected != null ? 180 : 32,
                 child: FloatingActionButton(
                   heroTag: 'myLocationBtn',
-                  backgroundColor: Colors.white,
+                  backgroundColor: cardColor,
                   foregroundColor: _hasLocationPermission
                       ? AppColors.emerald
-                      : AppColors.navy,
+                      : textColor,
                   elevation: 4,
                   onPressed: _handleLocationPermissionRequest,
                   child: Icon(
@@ -467,15 +485,21 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
 
   Widget _buildSelectedGroundCard(GroundModel ground) {
     final distance = _groundDistances[ground.id] ?? 2.8;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = Theme.of(context).cardColor;
+    final textColor = isDark ? Colors.white : AppColors.navy;
+    final subtextColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
+            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.15),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
@@ -508,10 +532,10 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
                         ground.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 14,
-                          color: AppColors.navy,
+                          color: textColor,
                         ),
                       ),
                     ),
@@ -524,9 +548,10 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
                         ),
                         Text(
                           ' ${ground.rating}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
+                            color: textColor,
                           ),
                         ),
                       ],
@@ -546,9 +571,9 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
                       '$distance km away • ${ground.location}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.textSecondaryLight,
+                        color: subtextColor,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -566,29 +591,50 @@ class _GroundsMapScreenState extends ConsumerState<GroundsMapScreen> {
                         color: AppColors.emeraldDark,
                       ),
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.emerald,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
+                    Row(
+                      children: [
+                        IconButton(
+                          tooltip: 'Open in Google Maps',
+                          icon: const Icon(
+                            Icons.directions_outlined,
+                            color: AppColors.emerald,
+                            size: 22,
+                          ),
+                          onPressed: () {
+                            MapLauncher.openCoordinates(
+                              context: context,
+                              latitude: ground.latitude,
+                              longitude: ground.longitude,
+                              title: ground.name,
+                            );
+                          },
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        const SizedBox(width: 4),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.emerald,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          onPressed: () {
+                            context.push('/customer/ground/${ground.id}');
+                          },
+                          child: const Text(
+                            'Book Slot',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
-                        elevation: 0,
-                      ),
-                      onPressed: () {
-                        context.push('/customer/ground/${ground.id}');
-                      },
-                      child: const Text(
-                        'Book Slot',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                      ],
                     ),
                   ],
                 ),

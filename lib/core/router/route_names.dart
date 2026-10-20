@@ -16,6 +16,9 @@ class AppRoutes {
   static const String aiAssistant = '/customer/ai-assistant';
   static const String groundsMap = '/customer/map';
 
+  // Shared / General
+  static const String notifications = '/notifications';
+
   // Owner Module
   static const String ownerRoot = '/owner';
 }
