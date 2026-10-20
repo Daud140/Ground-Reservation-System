@@ -36,7 +36,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return AppRoutes.login;
       }
 
-      // If on root splash, default to onboarding
+      // If on root splash, route to app if authenticated, otherwise to onboarding
       if (currentPath == AppRoutes.splash) {
         if (isAuth) {
           return authState.isOwner ? AppRoutes.ownerRoot : AppRoutes.customerRoot;

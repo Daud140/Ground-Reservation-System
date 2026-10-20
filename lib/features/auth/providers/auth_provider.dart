@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/storage/local_storage_service.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../models/user_model.dart';
 
@@ -34,7 +35,13 @@ class AuthState {
 class AuthNotifier extends Notifier<AuthState> {
   @override
   AuthState build() {
-    // Check for stored active session on startup
+    // Check for stored active session on startup synchronously if available
+    try {
+      final storedUser = LocalStorageService.instance.getCurrentUser();
+      if (storedUser != null) {
+        return AuthState(user: storedUser);
+      }
+    } catch (_) {}
     Future.microtask(() => checkCurrentUser());
     return const AuthState();
   }
@@ -104,6 +111,13 @@ class AuthNotifier extends Notifier<AuthState> {
         errorMessage: e.toString().replaceFirst('Exception: ', ''),
       );
     }
+  }
+
+  Future<void> updateUser(UserModel updatedUser) async {
+    state = state.copyWith(user: updatedUser);
+    try {
+      await LocalStorageService.instance.saveCurrentUser(updatedUser);
+    } catch (_) {}
   }
 
   Future<void> signOut() async {

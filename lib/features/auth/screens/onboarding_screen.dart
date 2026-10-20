@@ -260,6 +260,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     onPressed: _onNext,
                   ),
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () => context.go('${AppRoutes.login}?role=customer&tab=login'),
+                    child: const Text(
+                      'Already have an account? Log In / Sign Up',
+                      style: TextStyle(
+                        color: AppColors.textSecondaryLight,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

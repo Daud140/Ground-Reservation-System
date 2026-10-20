@@ -35,7 +35,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
       const CustomerExploreScreen(),
       const CustomerBookingsScreen(),
       const AiAssistantScreen(),
-      const CustomerProfileScreen(),
+      CustomerProfileScreen(onNavigateTab: _onTabSelected),
     ];
 
     return Scaffold(

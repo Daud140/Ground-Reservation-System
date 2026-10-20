@@ -18,7 +18,6 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
   UserRole _selectedRole = UserRole.customer;
 
   void _proceedWithRole() {
-    // Pass selected role to Login/SignUp screen via query parameter
     final roleParam = _selectedRole == UserRole.owner ? 'owner' : 'customer';
     context.go('${AppRoutes.login}?role=$roleParam&tab=signup');
   }
@@ -144,14 +143,34 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
             // Bottom Action Button
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
-              child: GradientButton(
-                text: isCustomer ? 'Continue as Player' : 'Continue as Owner',
-                trailingIcon: const Icon(
-                  Icons.arrow_forward_rounded,
-                  color: Colors.white,
-                  size: 18,
-                ),
-                onPressed: _proceedWithRole,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GradientButton(
+                    text: isCustomer ? 'Continue as Player' : 'Continue as Owner',
+                    trailingIcon: const Icon(
+                      Icons.arrow_forward_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                    onPressed: _proceedWithRole,
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
+                      final roleParam = _selectedRole == UserRole.owner ? 'owner' : 'customer';
+                      context.go('${AppRoutes.login}?role=$roleParam&tab=login');
+                    },
+                    child: const Text(
+                      'Have specific credentials? Sign In / Sign Up',
+                      style: TextStyle(
+                        color: AppColors.textSecondaryLight,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
