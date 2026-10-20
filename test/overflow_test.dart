@@ -3,20 +3,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ground_zero/features/auth/screens/onboarding_screen.dart';
 import 'package:ground_zero/features/auth/screens/login_screen.dart';
+import 'package:ground_zero/features/auth/screens/role_selection_screen.dart';
 import 'package:ground_zero/features/customer/screens/customer_home_screen.dart';
+import 'package:ground_zero/features/customer/screens/customer_explore_screen.dart';
+import 'package:ground_zero/features/customer/screens/ground_detail_screen.dart';
 import 'package:ground_zero/features/owner/screens/owner_dashboard_screen.dart';
+import 'package:ground_zero/features/booking/screens/slot_booking_screen.dart';
 import 'package:ground_zero/features/booking/screens/booking_confirmation_screen.dart';
+import 'package:ground_zero/features/ai/screens/ai_assistant_screen.dart';
 
 void main() {
   const phoneSizes = [
-    Size(360, 800), // Standard Android
-    Size(375, 812), // iPhone SE / Mini
-    Size(390, 844), // iPhone 13/14
-    Size(412, 915), // Pixel / Large Android
+    Size(360, 640), // Small phone
+    Size(393, 852), // Normal phone (iPhone 14/15/16, modern Android)
+    Size(412, 915), // Samsung Galaxy S24 Ultra (tall screen)
   ];
 
   for (final size in phoneSizes) {
-    group('Screen layout tests at width ${size.width}', () {
+    group('Screen layout tests on ${size.width}x${size.height}', () {
       testWidgets('CustomerHomeScreen has no RenderFlex overflow', (WidgetTester tester) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1.0;
@@ -31,15 +35,7 @@ void main() {
           ),
         );
         await tester.pump(const Duration(milliseconds: 500));
-        // expect null but let's see what overflows
-        final exception = tester.takeException();
-        if (exception != null) {
-          debugPrint('OVERFLOW DETAILS:\n${exception.toString()}');
-          if (exception is FlutterError) {
-            debugPrint(exception.toStringDeep());
-          }
-        }
-        expect(exception, isNull);
+        expect(tester.takeException(), isNull);
       });
 
       testWidgets('OwnerDashboardScreen has no RenderFlex overflow', (WidgetTester tester) async {
@@ -76,7 +72,7 @@ void main() {
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('LoginScreen has no RenderFlex overflow', (WidgetTester tester) async {
+      testWidgets('RoleSelectionScreen has no RenderFlex overflow', (WidgetTester tester) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
@@ -85,7 +81,95 @@ void main() {
         await tester.pumpWidget(
           const ProviderScope(
             child: MaterialApp(
-              home: LoginScreen(),
+              home: RoleSelectionScreen(),
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('LoginScreen has no RenderFlex overflow (with normal & large text scaling)', (WidgetTester tester) async {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(
+          const ProviderScope(
+            child: MaterialApp(
+              home: MediaQuery(
+                data: MediaQueryData(textScaler: TextScaler.linear(1.1)),
+                child: LoginScreen(),
+              ),
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('SlotBookingScreen has no RenderFlex overflow', (WidgetTester tester) async {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(
+          const ProviderScope(
+            child: MaterialApp(
+              home: SlotBookingScreen(groundId: 'ground_1'),
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('GroundDetailScreen has no RenderFlex overflow', (WidgetTester tester) async {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(
+          const ProviderScope(
+            child: MaterialApp(
+              home: GroundDetailScreen(groundId: 'ground_1'),
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('CustomerExploreScreen has no RenderFlex overflow', (WidgetTester tester) async {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(
+          const ProviderScope(
+            child: MaterialApp(
+              home: CustomerExploreScreen(),
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('AiAssistantScreen has no RenderFlex overflow', (WidgetTester tester) async {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(
+          const ProviderScope(
+            child: MaterialApp(
+              home: AiAssistantScreen(),
             ),
           ),
         );
@@ -112,3 +196,4 @@ void main() {
     });
   }
 }
+

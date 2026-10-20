@@ -55,11 +55,13 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                   SliverToBoxAdapter(
                     child: Stack(
                       children: [
-                        Image.asset(
-                          ground.primaryImage,
-                          width: double.infinity,
-                          height: 280,
-                          fit: BoxFit.cover,
+                        AspectRatio(
+                          aspectRatio: 16 / 10,
+                          child: Image.asset(
+                            ground.primaryImage,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                         // Top gradient overlay for button visibility
                         Container(
@@ -406,43 +408,45 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Price per hour',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: AppColors.textSecondaryLight,
+                        Flexible(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Price per hour',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.textSecondaryLight,
+                                ),
                               ),
-                            ),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'PKR ${ground.pricePerHour.toInt()}',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w900,
-                                      color: AppColors.navy,
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'PKR ${ground.pricePerHour.toInt()}',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w900,
+                                        color: AppColors.navy,
+                                      ),
                                     ),
-                                  ),
-                                  const TextSpan(
-                                    text: ' / hr',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.textSecondaryLight,
+                                    const TextSpan(
+                                      text: ' / hr',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: AppColors.textSecondaryLight,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          height: 50,
-                          width: 170,
+                        const SizedBox(width: 12),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(minWidth: 140, maxWidth: 180, minHeight: 48, maxHeight: 50),
                           child: ElevatedButton(
                             onPressed: () => context.push('/customer/book/${ground.id}'),
                             style: ElevatedButton.styleFrom(

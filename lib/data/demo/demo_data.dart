@@ -12,7 +12,24 @@ class DemoData {
   // USERS (2 Owners, 3 Customers with Pakistani Names)
   // ---------------------------------------------------------------------------
   static final List<UserModel> users = [
-    // Owners
+    // Requested Demo Accounts for GroundZero
+    const UserModel(
+      id: 'customer_sport_demo',
+      name: 'Ali Raza',
+      email: 'customer@groundzero.sport',
+      phone: '+92 300 1234567',
+      role: UserRole.customer,
+      avatarUrl: null,
+    ),
+    const UserModel(
+      id: 'owner_sport_demo',
+      name: 'Hamza Malik',
+      email: 'owner@groundzero.sport',
+      phone: '+92 333 5123456',
+      role: UserRole.owner,
+      avatarUrl: null,
+    ),
+    // Existing Accounts
     const UserModel(
       id: 'owner_1',
       name: 'Tariq Mehmood',

@@ -102,6 +102,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'sports': _selectedSports.toList(),
       };
       await usersBox.put(newId, jsonEncode(newUserMap));
+      debugPrint('========================================================');
+      debugPrint('📦 [HIVE DATABASE] SAVED NEW ACCOUNT TO BOX: ${HiveBoxes.usersBox}');
+      debugPrint('🔑 KEY: $newId');
+      debugPrint('📄 STORED DATA: ${jsonEncode(newUserMap)}');
+      debugPrint('========================================================');
     } catch (e) {
       debugPrint('Registration storage note: $e');
     }

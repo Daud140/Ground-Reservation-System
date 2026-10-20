@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
@@ -9,6 +10,12 @@ import 'core/storage/local_storage_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   debugPrint('GROUNDZERO: App starting...');
+
+  // Lock the app to portrait mode to prevent layout breaks on phone rotation
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   // Initialize Hive storage and seed initial demo data safely
   try {
@@ -37,6 +44,25 @@ class GroundZeroApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       routerConfig: router,
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        // Rule 7: Clamp system text scale between 0.9 and 1.1 so large system fonts don't break layout
+        final clampedTextScaler = mediaQuery.textScaler.clamp(
+          minScaleFactor: 0.9,
+          maxScaleFactor: 1.1,
+        );
+        return MediaQuery(
+          data: mediaQuery.copyWith(textScaler: clampedTextScaler),
+          // Rule 8: Limit content width on very wide screens (tablets/foldables) using ConstrainedBox with maxWidth around 500 and Center
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: child ?? const SizedBox.shrink(),
+            ),
+          ),
+        );
+      },
     );
   }
 }
+

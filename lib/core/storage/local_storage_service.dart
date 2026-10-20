@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../data/demo/demo_data.dart';
+import '../../data/demo/fake_database.dart';
 import '../../features/auth/models/user_model.dart';
 import 'hive_boxes.dart';
 
@@ -33,14 +35,38 @@ class LocalStorageService {
         }
       }
 
+      // Initialize in-memory fake database
+      FakeDatabase.instance.init();
+
       // Check if initial demo data needs seeding
       final settingsBox = Hive.box(HiveBoxes.settingsBox);
       final isSeeded = settingsBox.get(_keySeeded, defaultValue: false) as bool;
-      if (!isSeeded) {
+      final usersBox = Hive.box(HiveBoxes.usersBox);
+      final hasSportDemo = usersBox.containsKey('customer_sport_demo');
+      if (!isSeeded || !hasSportDemo) {
         await seedDemoData();
       }
+
+      printAllStoredUsers();
     } catch (e) {
       // Graceful fallback: do not crash main() if Hive storage has file lock contention
+    }
+  }
+
+  /// Print all users currently stored in the Hive database to the debug console
+  void printAllStoredUsers() {
+    try {
+      if (Hive.isBoxOpen(HiveBoxes.usersBox)) {
+        final usersBox = Hive.box(HiveBoxes.usersBox);
+        debugPrint('📦 =================== HIVE DATABASE: USERS ===================');
+        debugPrint('📦 Total Users in "${HiveBoxes.usersBox}": ${usersBox.length}');
+        for (final key in usersBox.keys) {
+          debugPrint('  🔑 Key: $key => ${usersBox.get(key)}');
+        }
+        debugPrint('📦 =============================================================');
+      }
+    } catch (e) {
+      debugPrint('Error printing Hive users: $e');
     }
   }
 
@@ -57,11 +83,12 @@ class LocalStorageService {
     await bookingsBox.clear();
     await reviewsBox.clear();
 
-    // 1. Seed Users
+    // 1. Seed Users (password: 123456 as requested for demo accounts)
     for (final user in DemoData.users) {
       final userMap = user.toJson();
-      userMap['password'] = user.isOwner ? 'Owner123' : 'Customer123';
+      userMap['password'] = '123456';
       await usersBox.put(user.id, jsonEncode(userMap));
+      FakeDatabase.instance.addUser(user: user, password: '123456');
     }
 
     // 2. Seed Grounds
@@ -87,12 +114,31 @@ class LocalStorageService {
   Future<void> resetDemoData() async {
     final favoritesBox = Hive.box(HiveBoxes.favoritesBox);
     await favoritesBox.clear();
+    FakeDatabase.instance.reset();
     await seedDemoData();
   }
 
   // ---------------------------------------------------------------------------
   // AUTH SESSION MANAGEMENT
   // ---------------------------------------------------------------------------
+  static const String _keyRememberMe = 'remember_me_preference';
+
+  bool get isRememberMe {
+    try {
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      return settingsBox.get(_keyRememberMe, defaultValue: true) as bool;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  Future<void> setRememberMe(bool value) async {
+    try {
+      final settingsBox = Hive.box(HiveBoxes.settingsBox);
+      await settingsBox.put(_keyRememberMe, value);
+    } catch (_) {}
+  }
+
   UserModel? getCurrentUser() {
     try {
       final settingsBox = Hive.box(HiveBoxes.settingsBox);

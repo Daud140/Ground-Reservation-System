@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'route_names.dart';
 import '../../features/auth/providers/auth_provider.dart';
+import '../../features/auth/models/user_model.dart';
 import '../../features/auth/screens/onboarding_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/role_selection_screen.dart';
@@ -56,7 +57,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.login,
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) {
+          final roleParam = state.uri.queryParameters['role'];
+          final initialRole = roleParam == 'owner' ? UserRole.owner : UserRole.customer;
+          final tabParam = state.uri.queryParameters['tab'];
+          final isLogin = tabParam != 'signup';
+          return LoginScreen(
+            initialRole: initialRole,
+            initialIsLogin: isLogin,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.roleSelection,

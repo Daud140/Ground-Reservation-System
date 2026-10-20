@@ -183,10 +183,11 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Row(
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 8,
                       children: [
                         _buildCourtPill('Pitch A (5v5)'),
-                        const SizedBox(width: 10),
                         _buildCourtPill('Pitch B (7v7)'),
                       ],
                     ),
@@ -194,12 +195,12 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                     const SizedBox(height: 24),
 
                     // Slot Legend
-                    Row(
+                    Wrap(
+                      spacing: 14,
+                      runSpacing: 8,
                       children: [
                         _buildLegendItem(AppColors.emerald, 'Selected'),
-                        const SizedBox(width: 16),
                         _buildLegendItem(AppColors.borderLight, 'Available', isBorder: true),
-                        const SizedBox(width: 16),
                         _buildLegendItem(const Color(0xFFE2E8F0), 'Booked'),
                       ],
                     ),
@@ -296,27 +297,31 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Total Amount',
-                              style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
-                            ),
-                            Text(
-                              'PKR ${totalPayable.toInt()}',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900,
-                                color: AppColors.navy,
+                        Flexible(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Total Amount',
+                                style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
                               ),
-                            ),
-                          ],
+                              Text(
+                                'PKR ${totalPayable.toInt()}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                  color: AppColors.navy,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          height: 50,
-                          width: 180,
+                        const SizedBox(width: 12),
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(minWidth: 140, maxWidth: 190, minHeight: 48, maxHeight: 50),
                           child: ElevatedButton(
                             onPressed: _isBookingLoading ? null : () => _handleConfirmBooking(ground),
                             style: ElevatedButton.styleFrom(
