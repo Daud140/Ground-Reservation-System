@@ -65,4 +65,3 @@ class GroundZeroApp extends ConsumerWidget {
     );
   }
 }
-

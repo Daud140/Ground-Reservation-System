@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:hive/hive.dart';
+
 import '../../core/storage/hive_boxes.dart';
 import '../../features/customer/models/review_model.dart';
 
@@ -19,7 +21,9 @@ class MockReviewRepository implements ReviewRepository {
     for (final key in reviewsBox.keys) {
       final raw = reviewsBox.get(key);
       if (raw != null) {
-        final review = ReviewModel.fromJson(Map<String, dynamic>.from(jsonDecode(raw as String)));
+        final review = ReviewModel.fromJson(
+          Map<String, dynamic>.from(jsonDecode(raw as String)),
+        );
         if (review.groundId == groundId) {
           list.add(review);
         }

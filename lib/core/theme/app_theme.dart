@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/app_colors.dart';
 
 /// Centralized Material 3 Theme for GroundZero ("Arena & Turf OS")
@@ -77,61 +78,61 @@ class AppTheme {
   // SOFT SHADOWS
   // ---------------------------------------------------------------------------
   static List<BoxShadow> get softShadowLight => [
-        BoxShadow(
-          color: const Color(0xFF0F172A).withValues(alpha: 0.04),
-          offset: const Offset(0, 6),
-          blurRadius: 18,
-          spreadRadius: 0,
-        ),
-        BoxShadow(
-          color: emerald.withValues(alpha: 0.03),
-          offset: const Offset(0, 2),
-          blurRadius: 6,
-          spreadRadius: 0,
-        ),
-      ];
+    BoxShadow(
+      color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+      offset: const Offset(0, 6),
+      blurRadius: 18,
+      spreadRadius: 0,
+    ),
+    BoxShadow(
+      color: emerald.withValues(alpha: 0.03),
+      offset: const Offset(0, 2),
+      blurRadius: 6,
+      spreadRadius: 0,
+    ),
+  ];
 
   static List<BoxShadow> get buttonShadow => [
-        BoxShadow(
-          color: emerald.withValues(alpha: 0.38),
-          offset: const Offset(0, 6),
-          blurRadius: 16,
-          spreadRadius: 0,
-        ),
-      ];
+    BoxShadow(
+      color: emerald.withValues(alpha: 0.38),
+      offset: const Offset(0, 6),
+      blurRadius: 16,
+      spreadRadius: 0,
+    ),
+  ];
 
   static List<BoxShadow> get softShadowDark => [
-        BoxShadow(
-          color: Colors.black.withValues(alpha: 0.35),
-          offset: const Offset(0, 4),
-          blurRadius: 16,
-          spreadRadius: 0,
-        ),
-      ];
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.35),
+      offset: const Offset(0, 4),
+      blurRadius: 16,
+      spreadRadius: 0,
+    ),
+  ];
 
   // ---------------------------------------------------------------------------
   // REUSABLE CARD DECORATIONS
   // ---------------------------------------------------------------------------
   static BoxDecoration get cardDecoration => BoxDecoration(
-        color: surfaceLight,
-        borderRadius: BorderRadius.circular(cardRadius),
-        border: Border.all(color: borderLight, width: 1.2),
-        boxShadow: softShadowLight,
-      );
+    color: surfaceLight,
+    borderRadius: BorderRadius.circular(cardRadius),
+    border: Border.all(color: borderLight, width: 1.2),
+    boxShadow: softShadowLight,
+  );
 
   static BoxDecoration get selectedCardDecoration => BoxDecoration(
-        color: surfaceLight,
-        borderRadius: BorderRadius.circular(cardRadius),
-        border: Border.all(color: emerald, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: emerald.withValues(alpha: 0.15),
-            offset: const Offset(0, 8),
-            blurRadius: 20,
-            spreadRadius: 0,
-          ),
-        ],
-      );
+    color: surfaceLight,
+    borderRadius: BorderRadius.circular(cardRadius),
+    border: Border.all(color: emerald, width: 2),
+    boxShadow: [
+      BoxShadow(
+        color: emerald.withValues(alpha: 0.15),
+        offset: const Offset(0, 8),
+        blurRadius: 20,
+        spreadRadius: 0,
+      ),
+    ],
+  );
 
   // ---------------------------------------------------------------------------
   // THEME DATA
@@ -176,7 +177,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surfaceLight,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 16,
+        ),
         hintStyle: const TextStyle(
           color: AppColors.textMutedLight,
           fontSize: 14,
@@ -307,12 +311,7 @@ class GradientButton extends StatelessWidget {
     final isEnabled = onPressed != null && !isLoading;
     final effectiveGradient = isEnabled
         ? (gradient ?? AppTheme.primaryGradient)
-        : LinearGradient(
-            colors: [
-              Colors.grey.shade400,
-              Colors.grey.shade500,
-            ],
-          );
+        : LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500]);
 
     return Container(
       width: width,
@@ -345,16 +344,14 @@ class GradientButton extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (icon != null) ...[
-                          icon!,
-                          const SizedBox(width: 8),
-                        ],
+                        if (icon != null) ...[icon!, const SizedBox(width: 8)],
                         Flexible(
                           child: Text(
                             text,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: textStyle ??
+                            style:
+                                textStyle ??
                                 const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../models/ground_model.dart';
@@ -33,7 +34,9 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             backgroundColor: Colors.white,
-            body: Center(child: CircularProgressIndicator(color: AppColors.emerald)),
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.emerald),
+            ),
           );
         }
 
@@ -68,7 +71,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                           height: 100,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Colors.black.withValues(alpha: 0.6), Colors.transparent],
+                              colors: [
+                                Colors.black.withValues(alpha: 0.6),
+                                Colors.transparent,
+                              ],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                             ),
@@ -77,7 +83,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                         // Nav Buttons
                         SafeArea(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -90,16 +99,27 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                                     _buildCircleButton(
                                       icon: Icons.share_outlined,
                                       onTap: () {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Ground link copied to clipboard!')),
-                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Ground link copied to clipboard!',
+                                                ),
+                                              ),
+                                            );
                                       },
                                     ),
                                     const SizedBox(width: 10),
                                     _buildCircleButton(
-                                      icon: _isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                                      iconColor: _isFavorite ? Colors.red : Colors.white,
-                                      onTap: () => setState(() => _isFavorite = !_isFavorite),
+                                      icon: _isFavorite
+                                          ? Icons.favorite_rounded
+                                          : Icons.favorite_border_rounded,
+                                      iconColor: _isFavorite
+                                          ? Colors.red
+                                          : Colors.white,
+                                      onTap: () => setState(
+                                        () => _isFavorite = !_isFavorite,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -112,7 +132,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                           bottom: 16,
                           left: 16,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.black.withValues(alpha: 0.7),
                               borderRadius: BorderRadius.circular(20),
@@ -120,7 +143,11 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.sports_soccer, color: AppColors.lime, size: 14),
+                                const Icon(
+                                  Icons.sports_soccer,
+                                  color: AppColors.lime,
+                                  size: 14,
+                                ),
                                 const SizedBox(width: 6),
                                 Text(
                                   '${ground.sportType.displayName} Turf • 5v5',
@@ -159,16 +186,26 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                                   ),
                                 ),
                               ),
-                              const Icon(Icons.verified, color: AppColors.emerald, size: 22),
+                              const Icon(
+                                Icons.verified,
+                                color: AppColors.emerald,
+                                size: 22,
+                              ),
                             ],
                           ),
                           const SizedBox(height: 6),
 
                           // Rating and Reviews Count
-                          Row(
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 8,
+                            runSpacing: 4,
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFEF3C7),
                                   borderRadius: BorderRadius.circular(8),
@@ -176,7 +213,11 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                                    const Icon(
+                                      Icons.star_rounded,
+                                      color: Colors.amber,
+                                      size: 16,
+                                    ),
                                     const SizedBox(width: 4),
                                     Text(
                                       '${ground.rating}',
@@ -189,7 +230,6 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 8),
                               Text(
                                 '(${ground.reviewsCount} reviews)',
                                 style: const TextStyle(
@@ -197,9 +237,12 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                                   fontSize: 13,
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              const Text('•', style: TextStyle(color: AppColors.textMutedLight)),
-                              const SizedBox(width: 12),
+                              const Text(
+                                '•',
+                                style: TextStyle(
+                                  color: AppColors.textMutedLight,
+                                ),
+                              ),
                               Text(
                                 'Open ${ground.openTime} - ${ground.closeTime}',
                                 style: const TextStyle(
@@ -216,7 +259,11 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                           // Address
                           Row(
                             children: [
-                              const Icon(Icons.location_on_outlined, color: AppColors.emerald, size: 16),
+                              const Icon(
+                                Icons.location_on_outlined,
+                                color: AppColors.emerald,
+                                size: 16,
+                              ),
                               const SizedBox(width: 6),
                               Expanded(
                                 child: Text(
@@ -277,7 +324,9 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                           Text(
                             ground.description,
                             maxLines: _isDescriptionExpanded ? null : 3,
-                            overflow: _isDescriptionExpanded ? null : TextOverflow.ellipsis,
+                            overflow: _isDescriptionExpanded
+                                ? null
+                                : TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: AppColors.textSecondaryLight,
                               fontSize: 14,
@@ -285,11 +334,16 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => setState(() => _isDescriptionExpanded = !_isDescriptionExpanded),
+                            onTap: () => setState(
+                              () => _isDescriptionExpanded =
+                                  !_isDescriptionExpanded,
+                            ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4),
                               child: Text(
-                                _isDescriptionExpanded ? 'Read less' : 'Read more',
+                                _isDescriptionExpanded
+                                    ? 'Read less'
+                                    : 'Read more',
                                 style: const TextStyle(
                                   color: AppColors.emeraldDark,
                                   fontWeight: FontWeight.w700,
@@ -312,14 +366,17 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
-                                        'Ratings & Reviews',
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w800,
-                                          color: AppColors.navy,
+                                      const Expanded(
+                                        child: Text(
+                                          'Ratings & Reviews',
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColors.navy,
+                                          ),
                                         ),
                                       ),
                                       Text(
@@ -335,7 +392,9 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                                   _buildRatingsSummary(ground.rating),
                                   const SizedBox(height: 16),
                                   if (reviews.isNotEmpty) ...[
-                                    ...reviews.take(2).map((r) => _buildReviewCard(r)),
+                                    ...reviews
+                                        .take(2)
+                                        .map((r) => _buildReviewCard(r)),
                                   ] else ...[
                                     _buildSampleReview(
                                       name: 'Hamza Tariq',
@@ -374,12 +433,18 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                             address: ground.address,
                             onDirectionsTap: () {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Opening directions to ${ground.address}')),
+                                SnackBar(
+                                  content: Text(
+                                    'Opening directions to ${ground.address}',
+                                  ),
+                                ),
                               );
                             },
                           ),
 
-                          const SizedBox(height: 100), // Bottom padding for sticky booking bar
+                          const SizedBox(
+                            height: 100,
+                          ), // Bottom padding for sticky booking bar
                         ],
                       ),
                     ),
@@ -393,7 +458,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
@@ -424,7 +492,8 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                                 text: TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: 'PKR ${ground.pricePerHour.toInt()}',
+                                      text:
+                                          'PKR ${ground.pricePerHour.toInt()}',
                                       style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w900,
@@ -446,31 +515,32 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
                         ),
                         const SizedBox(width: 12),
                         ConstrainedBox(
-                          constraints: const BoxConstraints(minWidth: 140, maxWidth: 180, minHeight: 48, maxHeight: 50),
+                          constraints: const BoxConstraints(
+                            minWidth: 140,
+                            maxWidth: 180,
+                            minHeight: 48,
+                            maxHeight: 50,
+                          ),
                           child: ElevatedButton(
-                            onPressed: () => context.push('/customer/book/${ground.id}'),
+                            onPressed: () =>
+                                context.push('/customer/book/${ground.id}'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.emerald,
                               foregroundColor: Colors.white,
                               elevation: 3,
-                              shadowColor: AppColors.emerald.withValues(alpha: 0.4),
+                              shadowColor: AppColors.emerald.withValues(
+                                alpha: 0.4,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Book Slot',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                SizedBox(width: 6),
-                                Icon(Icons.arrow_forward_rounded, size: 18),
-                              ],
+                            child: const Text(
+                              'Book Slot',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ),
@@ -560,7 +630,11 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(item['icon'] as IconData, color: AppColors.emerald, size: 22),
+              Icon(
+                item['icon'] as IconData,
+                color: AppColors.emerald,
+                size: 22,
+              ),
               const SizedBox(height: 6),
               Text(
                 item['name'] as String,
@@ -600,13 +674,20 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
               Row(
                 children: List.generate(
                   5,
-                  (index) => const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                  (index) => const Icon(
+                    Icons.star_rounded,
+                    color: Colors.amber,
+                    size: 16,
+                  ),
                 ),
               ),
               const SizedBox(height: 2),
               const Text(
                 'Pitch Score',
-                style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textSecondaryLight,
+                ),
               ),
             ],
           ),
@@ -632,7 +713,13 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Text('$stars ★', style: const TextStyle(fontSize: 10, color: AppColors.textSecondaryLight)),
+          Text(
+            '$stars ★',
+            style: const TextStyle(
+              fontSize: 10,
+              color: AppColors.textSecondaryLight,
+            ),
+          ),
           const SizedBox(width: 6),
           Expanded(
             child: ClipRRect(
@@ -667,12 +754,22 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
             children: [
               Text(
                 review.customerName,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  color: AppColors.navy,
+                ),
               ),
               Row(
                 children: [
                   const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
-                  Text(' ${review.rating}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text(
+                    ' ${review.rating}',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -680,7 +777,10 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
           const SizedBox(height: 4),
           Text(
             review.comment,
-            style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondaryLight,
+            ),
           ),
         ],
       ),
@@ -709,12 +809,22 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
             children: [
               Text(
                 name,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.navy),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  color: AppColors.navy,
+                ),
               ),
               Row(
                 children: [
                   const Icon(Icons.star_rounded, color: Colors.amber, size: 14),
-                  Text(' $rating', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
+                  Text(
+                    ' $rating',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -722,12 +832,18 @@ class _GroundDetailScreenState extends ConsumerState<GroundDetailScreen> {
           const SizedBox(height: 4),
           Text(
             comment,
-            style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondaryLight,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             date,
-            style: const TextStyle(fontSize: 10, color: AppColors.textMutedLight),
+            style: const TextStyle(
+              fontSize: 10,
+              color: AppColors.textMutedLight,
+            ),
           ),
         ],
       ),

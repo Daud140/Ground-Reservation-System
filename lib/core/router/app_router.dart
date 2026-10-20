@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'route_names.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/models/user_model.dart';
@@ -13,6 +14,7 @@ import '../../features/booking/screens/slot_booking_screen.dart';
 import '../../features/booking/screens/booking_confirmation_screen.dart';
 import '../../features/booking/models/booking_model.dart';
 import '../../features/ai/screens/ai_assistant_screen.dart';
+import '../../features/customer/screens/grounds_map_screen.dart';
 import '../../features/owner/screens/owner_main_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -26,7 +28,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final currentPath = state.uri.path;
 
       // Allow public routes
-      final isPublic = currentPath == AppRoutes.splash ||
+      final isPublic =
+          currentPath == AppRoutes.splash ||
           currentPath == AppRoutes.onboarding ||
           currentPath == AppRoutes.login ||
           currentPath == AppRoutes.roleSelection;
@@ -39,9 +42,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // If on root splash, route to app if authenticated, otherwise to onboarding
       if (currentPath == AppRoutes.splash) {
         if (isAuth) {
-          return authState.isOwner ? AppRoutes.ownerRoot : AppRoutes.customerRoot;
+          return authState.isOwner
+              ? AppRoutes.ownerRoot
+              : AppRoutes.customerRoot;
         }
         return AppRoutes.onboarding;
+      }
+
+      // Role security: Customers cannot reach owner screens, owners cannot reach customer screens
+      if (isAuth) {
+        if (!authState.isOwner && currentPath.startsWith(AppRoutes.ownerRoot)) {
+          return AppRoutes.customerRoot;
+        }
+        if (authState.isOwner &&
+            currentPath.startsWith(AppRoutes.customerRoot)) {
+          return AppRoutes.ownerRoot;
+        }
       }
 
       return null;
@@ -59,13 +75,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.login,
         builder: (context, state) {
           final roleParam = state.uri.queryParameters['role'];
-          final initialRole = roleParam == 'owner' ? UserRole.owner : UserRole.customer;
+          final initialRole = roleParam == 'owner'
+              ? UserRole.owner
+              : UserRole.customer;
           final tabParam = state.uri.queryParameters['tab'];
           final isLogin = tabParam != 'signup';
-          return LoginScreen(
-            initialRole: initialRole,
-            initialIsLogin: isLogin,
-          );
+          return LoginScreen(initialRole: initialRole, initialIsLogin: isLogin);
         },
       ),
       GoRoute(
@@ -104,6 +119,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.aiAssistant,
         builder: (context, state) => const AiAssistantScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.groundsMap,
+        builder: (context, state) => const GroundsMapScreen(),
       ),
       GoRoute(
         path: AppRoutes.ownerRoot,

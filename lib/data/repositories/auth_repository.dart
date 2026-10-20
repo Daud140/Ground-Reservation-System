@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
+
 import '../../core/storage/hive_boxes.dart';
 import '../../core/storage/local_storage_service.dart';
 import '../../features/auth/models/user_model.dart';
@@ -33,8 +35,13 @@ class MockAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<UserModel> signIn({required String email, required String password}) async {
-    await Future.delayed(const Duration(milliseconds: 300)); // Simulate async latency
+  Future<UserModel> signIn({
+    required String email,
+    required String password,
+  }) async {
+    await Future.delayed(
+      const Duration(milliseconds: 300),
+    ); // Simulate async latency
     final cleanEmail = email.trim().toLowerCase();
 
     // 1. Check in-memory FakeDatabase first (covers customer@groundzero.sport & owner@groundzero.sport)
@@ -60,7 +67,9 @@ class MockAuthRepository implements AuthRepository {
           if (user.email.toLowerCase() == cleanEmail) {
             final savedPassword = map['password'] as String?;
             if (savedPassword != null && savedPassword != password) {
-              throw Exception('Incorrect password. Please verify and try again.');
+              throw Exception(
+                'Incorrect password. Please verify and try again.',
+              );
             }
             await _storage.saveCurrentUser(user);
             return user;
@@ -69,7 +78,9 @@ class MockAuthRepository implements AuthRepository {
       }
     }
 
-    throw Exception('No account found with this email ($email). Please register first.');
+    throw Exception(
+      'No account found with this email ($email). Please register first.',
+    );
   }
 
   @override
@@ -85,7 +96,9 @@ class MockAuthRepository implements AuthRepository {
 
     // Prevent duplicate accounts: check FakeDatabase & Hive
     if (FakeDatabase.instance.findByEmail(cleanEmail) != null) {
-      throw Exception('An account with this email already exists. Please sign in instead.');
+      throw Exception(
+        'An account with this email already exists. Please sign in instead.',
+      );
     }
 
     if (Hive.isBoxOpen(HiveBoxes.usersBox)) {
@@ -93,9 +106,13 @@ class MockAuthRepository implements AuthRepository {
       for (final key in usersBox.keys) {
         final raw = usersBox.get(key);
         if (raw != null) {
-          final existing = UserModel.fromJson(Map<String, dynamic>.from(jsonDecode(raw as String)));
+          final existing = UserModel.fromJson(
+            Map<String, dynamic>.from(jsonDecode(raw as String)),
+          );
           if (existing.email.toLowerCase() == cleanEmail) {
-            throw Exception('An account with this email already exists. Please sign in instead.');
+            throw Exception(
+              'An account with this email already exists. Please sign in instead.',
+            );
           }
         }
       }
@@ -119,7 +136,9 @@ class MockAuthRepository implements AuthRepository {
       final userMap = newUser.toJson();
       userMap['password'] = password;
       await usersBox.put(newId, jsonEncode(userMap));
-      debugPrint('📦 [HIVE DATABASE] SAVED NEW ACCOUNT: $newId ($cleanEmail, role: ${role.name})');
+      debugPrint(
+        '📦 [HIVE DATABASE] SAVED NEW ACCOUNT: $newId ($cleanEmail, role: ${role.name})',
+      );
     }
 
     await _storage.saveCurrentUser(newUser);
@@ -138,7 +157,8 @@ class MockAuthRepository implements AuthRepository {
         ? 'customer@groundzero.sport'
         : 'owner@groundzero.sport';
 
-    final user = FakeDatabase.instance.findByEmail(targetEmail) ??
+    final user =
+        FakeDatabase.instance.findByEmail(targetEmail) ??
         (role == UserRole.customer ? DemoData.users[0] : DemoData.users[1]);
 
     await _storage.saveCurrentUser(user);

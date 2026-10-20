@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../../core/constants/app_colors.dart';
+import '../../../data/demo/fake_database.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../customer/models/ground_model.dart';
@@ -77,7 +79,7 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
         groundName: ground.name,
         groundLocation: ground.location,
         sportType: ground.sportType,
-        customerId: user?.id ?? 'customer_1',
+        customerId: user?.id ?? 'customer_sport_demo',
         customerName: user?.name ?? 'Ali Raza',
         customerPhone: user?.phone ?? '+92 300 1234567',
         ownerId: ground.ownerId,
@@ -119,14 +121,29 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
 
         if (ground == null) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator(color: AppColors.emerald)),
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.emerald),
+            ),
           );
         }
 
         final double baseRate = ground.pricePerHour;
         const double serviceFee = 200.0;
         const double platformDiscount = 500.0;
-        final double totalPayable = (baseRate + serviceFee - platformDiscount).clamp(0, 99999);
+        final double totalPayable = (baseRate + serviceFee - platformDiscount)
+            .clamp(0, 99999);
+
+        // Dynamically identify booked slots for selected date
+        final dateFormatted = DateFormat('yyyy-MM-dd').format(_selectedDate);
+        final bookedSlots = FakeDatabase.instance
+            .getBookingsForGroundAndDate(widget.groundId, dateFormatted)
+            .where(
+              (b) =>
+                  b.status == BookingStatus.confirmed ||
+                  b.status == BookingStatus.pending,
+            )
+            .map((b) => b.timeSlot)
+            .toSet();
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -134,7 +151,11 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
             backgroundColor: Colors.white,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.navy, size: 20),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: AppColors.navy,
+                size: 20,
+              ),
               onPressed: () => context.pop(),
             ),
             title: Text(
@@ -147,7 +168,11 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
             ),
             actions: [
               IconButton(
-                icon: const Icon(Icons.info_outline_rounded, color: AppColors.navy, size: 22),
+                icon: const Icon(
+                  Icons.info_outline_rounded,
+                  color: AppColors.navy,
+                  size: 22,
+                ),
                 onPressed: () {},
               ),
             ],
@@ -155,7 +180,10 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
           body: Stack(
             children: [
               SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -183,11 +211,10 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 8,
+                    Row(
                       children: [
                         _buildCourtPill('Pitch A (5v5)'),
+                        const SizedBox(width: 10),
                         _buildCourtPill('Pitch B (7v7)'),
                       ],
                     ),
@@ -200,7 +227,11 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                       runSpacing: 8,
                       children: [
                         _buildLegendItem(AppColors.emerald, 'Selected'),
-                        _buildLegendItem(AppColors.borderLight, 'Available', isBorder: true),
+                        _buildLegendItem(
+                          AppColors.borderLight,
+                          'Available',
+                          isBorder: true,
+                        ),
                         _buildLegendItem(const Color(0xFFE2E8F0), 'Booked'),
                       ],
                     ),
@@ -208,15 +239,27 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                     const SizedBox(height: 20),
 
                     // Slot Category: Afternoon
-                    _buildSlotSection('Afternoon Slots', _afternoonSlots),
+                    _buildSlotSection(
+                      'Afternoon Slots',
+                      _afternoonSlots,
+                      bookedSlots,
+                    ),
                     const SizedBox(height: 16),
 
                     // Slot Category: Evening / Night (Peak)
-                    _buildSlotSection('Evening & Night Slots (Floodlit)', _eveningSlots),
+                    _buildSlotSection(
+                      'Evening & Night Slots (Floodlit)',
+                      _eveningSlots,
+                      bookedSlots,
+                    ),
                     const SizedBox(height: 16),
 
                     // Slot Category: Morning
-                    _buildSlotSection('Morning Slots', _morningSlots),
+                    _buildSlotSection(
+                      'Morning Slots',
+                      _morningSlots,
+                      bookedSlots,
+                    ),
 
                     const SizedBox(height: 24),
 
@@ -240,21 +283,36 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          _buildCostRow('Hourly Pitch Rate', 'PKR ${baseRate.toInt()}'),
+                          _buildCostRow(
+                            'Hourly Pitch Rate',
+                            'PKR ${baseRate.toInt()}',
+                          ),
                           const SizedBox(height: 6),
-                          _buildCostRow('Lighting & Service Fee', 'PKR ${serviceFee.toInt()}'),
+                          _buildCostRow(
+                            'Lighting & Service Fee',
+                            'PKR ${serviceFee.toInt()}',
+                          ),
                           const SizedBox(height: 6),
-                          _buildCostRow('App Welcome Voucher', '- PKR ${platformDiscount.toInt()}', isDiscount: true),
-                          const Divider(height: 20, color: AppColors.borderLight),
+                          _buildCostRow(
+                            'App Welcome Voucher',
+                            '- PKR ${platformDiscount.toInt()}',
+                            isDiscount: true,
+                          ),
+                          const Divider(
+                            height: 20,
+                            color: AppColors.borderLight,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
-                                'Total Payable',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.navy,
+                              const Expanded(
+                                child: Text(
+                                  'Total Payable',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.navy,
+                                  ),
                                 ),
                               ),
                               Text(
@@ -271,7 +329,9 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 120), // Bottom padding for sticky button
+                    const SizedBox(
+                      height: 120,
+                    ), // Bottom padding for sticky button
                   ],
                 ),
               ),
@@ -282,7 +342,10 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
@@ -304,7 +367,10 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                             children: [
                               const Text(
                                 'Total Amount',
-                                style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.textSecondaryLight,
+                                ),
                               ),
                               Text(
                                 'PKR ${totalPayable.toInt()}',
@@ -321,14 +387,23 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                         ),
                         const SizedBox(width: 12),
                         ConstrainedBox(
-                          constraints: const BoxConstraints(minWidth: 140, maxWidth: 190, minHeight: 48, maxHeight: 50),
+                          constraints: const BoxConstraints(
+                            minWidth: 140,
+                            maxWidth: 190,
+                            minHeight: 48,
+                            maxHeight: 50,
+                          ),
                           child: ElevatedButton(
-                            onPressed: _isBookingLoading ? null : () => _handleConfirmBooking(ground),
+                            onPressed: _isBookingLoading
+                                ? null
+                                : () => _handleConfirmBooking(ground),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.emerald,
                               foregroundColor: Colors.white,
                               elevation: 3,
-                              shadowColor: AppColors.emerald.withValues(alpha: 0.4),
+                              shadowColor: AppColors.emerald.withValues(
+                                alpha: 0.4,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
@@ -337,21 +412,17 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                                 ? const SizedBox(
                                     width: 22,
                                     height: 22,
-                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
                                   )
-                                : const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Proceed to Pay',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      SizedBox(width: 6),
-                                      Icon(Icons.arrow_forward_rounded, size: 18),
-                                    ],
+                                : const Text(
+                                    'Proceed to Pay',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
                           ),
                         ),
@@ -378,7 +449,8 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
         itemCount: days.length,
         itemBuilder: (context, index) {
           final day = days[index];
-          final isSelected = day.day == _selectedDate.day &&
+          final isSelected =
+              day.day == _selectedDate.day &&
               day.month == _selectedDate.month &&
               day.year == _selectedDate.year;
 
@@ -395,7 +467,9 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                 color: isSelected ? const Color(0xFF064E3B) : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isSelected ? const Color(0xFF064E3B) : AppColors.borderLight,
+                  color: isSelected
+                      ? const Color(0xFF064E3B)
+                      : AppColors.borderLight,
                   width: isSelected ? 2 : 1,
                 ),
                 boxShadow: isSelected
@@ -416,7 +490,9 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white70 : AppColors.textSecondaryLight,
+                      color: isSelected
+                          ? Colors.white70
+                          : AppColors.textSecondaryLight,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -482,13 +558,20 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
         const SizedBox(width: 6),
         Text(
           text,
-          style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+          style: const TextStyle(
+            fontSize: 11,
+            color: AppColors.textSecondaryLight,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildSlotSection(String title, List<String> slots) {
+  Widget _buildSlotSection(
+    String title,
+    List<String> slots,
+    Set<String> bookedSlots,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -506,47 +589,61 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
           runSpacing: 10,
           children: slots.map((slot) {
             final isSelected = _selectedTimeSlot == slot;
-            // Mark 09:00 AM as already booked for demonstration
-            final isBooked = slot == '09:00 AM - 10:00 AM';
+            // Mark dynamically booked slots + 09:00 AM demo slot as booked
+            final isBooked =
+                bookedSlots.contains(slot) || slot == '09:00 AM - 10:00 AM';
 
             return GestureDetector(
-              onTap: isBooked ? null : () => setState(() => _selectedTimeSlot = slot),
+              onTap: isBooked
+                  ? null
+                  : () => setState(() => _selectedTimeSlot = slot),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.emerald
                       : isBooked
-                          ? const Color(0xFFF1F5F9)
-                          : Colors.white,
+                      ? const Color(0xFFF1F5F9)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected
                         ? AppColors.emerald
                         : isBooked
-                            ? const Color(0xFFE2E8F0)
-                            : AppColors.borderLight,
+                        ? const Color(0xFFE2E8F0)
+                        : AppColors.borderLight,
                   ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (isSelected) ...[
-                      const Icon(Icons.check_circle, size: 14, color: Colors.white),
+                      const Icon(
+                        Icons.check_circle,
+                        size: 14,
+                        color: Colors.white,
+                      ),
                       const SizedBox(width: 4),
                     ],
                     Text(
                       slot,
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                         color: isSelected
                             ? Colors.white
                             : isBooked
-                                ? AppColors.textMutedLight
-                                : AppColors.navy,
-                        decoration: isBooked ? TextDecoration.lineThrough : null,
+                            ? AppColors.textMutedLight
+                            : AppColors.navy,
+                        decoration: isBooked
+                            ? TextDecoration.lineThrough
+                            : null,
                       ),
                     ),
                   ],
@@ -563,11 +660,15 @@ class _SlotBookingScreenState extends ConsumerState<SlotBookingScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 13,
-            color: isDiscount ? AppColors.emeraldDark : AppColors.textSecondaryLight,
+        Expanded(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 13,
+              color: isDiscount
+                  ? AppColors.emeraldDark
+                  : AppColors.textSecondaryLight,
+            ),
           ),
         ),
         Text(

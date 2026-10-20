@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/route_names.dart';
 import '../../../core/theme/app_theme.dart';
@@ -67,7 +68,10 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -97,8 +101,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                       isSelected: isCustomer,
                       title: 'I want to play',
                       roleSubtitle: 'Customer / Player',
-                      description:
-                          'Book grounds near you, find open slots, play with friends',
+                      description: 'Book grounds near you, find open slots, play with friends',
                       illustration: const RunnerIllustrationWidget(
                         width: double.infinity,
                         height: 110,
@@ -109,7 +112,8 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                         'Verified Arenas',
                         'Match Squads',
                       ],
-                      onTap: () => setState(() => _selectedRole = UserRole.customer),
+                      onTap: () =>
+                          setState(() => _selectedRole = UserRole.customer),
                     ),
 
                     const SizedBox(height: 18),
@@ -120,8 +124,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                       isSelected: !isCustomer,
                       title: 'I own a ground',
                       roleSubtitle: 'Ground Owner',
-                      description:
-                          'List your venue, manage bookings, boost revenue with analytics',
+                      description: 'List your venue, manage bookings, boost revenue with analytics',
                       illustration: const StadiumIllustrationWidget(
                         width: double.infinity,
                         height: 110,
@@ -132,7 +135,8 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                         'Booking Approvals',
                         'Dynamic Pricing',
                       ],
-                      onTap: () => setState(() => _selectedRole = UserRole.owner),
+                      onTap: () =>
+                          setState(() => _selectedRole = UserRole.owner),
                     ),
                     const SizedBox(height: 16),
                   ],
@@ -147,7 +151,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   GradientButton(
-                    text: isCustomer ? 'Continue as Player' : 'Continue as Owner',
+                    text: isCustomer
+                        ? 'Continue as Player'
+                        : 'Continue as Owner',
                     trailingIcon: const Icon(
                       Icons.arrow_forward_rounded,
                       color: Colors.white,
@@ -158,8 +164,12 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () {
-                      final roleParam = _selectedRole == UserRole.owner ? 'owner' : 'customer';
-                      context.go('${AppRoutes.login}?role=$roleParam&tab=login');
+                      final roleParam = _selectedRole == UserRole.owner
+                          ? 'owner'
+                          : 'customer';
+                      context.go(
+                        '${AppRoutes.login}?role=$roleParam&tab=login',
+                      );
                     },
                     child: const Text(
                       'Have specific credentials? Sign In / Sign Up',
@@ -222,12 +232,17 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? AppTheme.emeraldContainer
                                   : AppColors.surfaceSecondaryLight,
-                              borderRadius: BorderRadius.circular(AppTheme.pillRadius),
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.pillRadius,
+                              ),
                             ),
                             child: Text(
                               roleSubtitle,
@@ -265,7 +280,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                     color: isSelected ? AppTheme.emerald : Colors.transparent,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isSelected ? AppTheme.emerald : AppTheme.borderLight,
+                      color: isSelected
+                          ? AppTheme.emerald
+                          : AppTheme.borderLight,
                       width: 2,
                     ),
                   ),
@@ -296,7 +313,10 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
               runSpacing: 8,
               children: chips.map((chipText) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? const Color(0xFFF0FDF4)

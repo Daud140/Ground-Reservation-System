@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/route_names.dart';
 import '../../../data/repositories/repository_providers.dart';
@@ -14,7 +15,8 @@ class OwnerDashboardScreen extends ConsumerStatefulWidget {
   const OwnerDashboardScreen({super.key, this.onNavigateTab});
 
   @override
-  ConsumerState<OwnerDashboardScreen> createState() => _OwnerDashboardScreenState();
+  ConsumerState<OwnerDashboardScreen> createState() =>
+      _OwnerDashboardScreenState();
 }
 
 class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
@@ -31,11 +33,17 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
           future: bookingRepo.getAllBookings(),
           builder: (context, snapshot) {
             final bookings = snapshot.data ?? [];
-            final ownerId = user?.id ?? 'owner_1';
-            final ownerBookings = bookings.where((b) => b.ownerId == ownerId || (user?.isOwner ?? true)).toList();
+            final ownerId = user?.id ?? 'owner_sport_demo';
+            final ownerBookings = bookings
+                .where((b) => b.ownerId == ownerId)
+                .toList();
             // Task 7: Revenue increases when confirmed, never increases for unconfirmed/cancelled, reduces if cancelled
             final confirmedRevenue = ownerBookings
-                .where((b) => b.status == BookingStatus.confirmed || b.status == BookingStatus.completed)
+                .where(
+                  (b) =>
+                      b.status == BookingStatus.confirmed ||
+                      b.status == BookingStatus.completed,
+                )
                 .fold<double>(0.0, (sum, b) => sum + b.totalPrice);
             final todayBookings = ownerBookings.take(4).toList();
 
@@ -55,7 +63,10 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                             // Owner Mode Pill
                             Flexible(
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: AppColors.emeraldContainer,
                                   borderRadius: BorderRadius.circular(20),
@@ -63,7 +74,11 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                                 child: const Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.shield, color: AppColors.emeraldDark, size: 13),
+                                    Icon(
+                                      Icons.shield,
+                                      color: AppColors.emeraldDark,
+                                      size: 13,
+                                    ),
                                     SizedBox(width: 4),
                                     Flexible(
                                       child: Text(
@@ -93,23 +108,76 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                           shape: BoxShape.circle,
                           border: Border.all(color: AppColors.borderLight),
                         ),
-                        child: const Icon(Icons.notifications_none_rounded, color: AppColors.navy, size: 18),
+                        child: const Icon(
+                          Icons.notifications_none_rounded,
+                          color: AppColors.navy,
+                          size: 18,
+                        ),
                       ),
                       const SizedBox(width: 8),
-                      // Switch to customer role quickly
+                      // Owner Logout Action
                       InkWell(
-                        onTap: () {
-                          context.go(AppRoutes.customerRoot);
+                        onTap: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              title: const Text(
+                                'Log Out',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.navy,
+                                ),
+                              ),
+                              content: const Text(
+                                'Are you sure you want to log out of GroundZero?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.error,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: const Text(
+                                    'Log Out',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            await ref.read(authProvider.notifier).signOut();
+                            if (context.mounted) {
+                              context.go(AppRoutes.login);
+                            }
+                          }
                         },
                         child: Container(
                           width: 36,
                           height: 36,
-                          decoration: const BoxDecoration(
-                            color: AppColors.navy,
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
                           child: const Center(
-                            child: Icon(Icons.sports_soccer, color: Colors.white, size: 16),
+                            child: Icon(
+                              Icons.logout_rounded,
+                              color: AppColors.error,
+                              size: 18,
+                            ),
                           ),
                         ),
                       ),
@@ -149,8 +217,12 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                         ),
                       ),
                       IconButton(
-                        onPressed: () => widget.onNavigateTab?.call(2), // Manage Ground
-                        icon: const Icon(Icons.settings_outlined, color: AppColors.navy),
+                        onPressed: () =>
+                            widget.onNavigateTab?.call(2), // Manage Ground
+                        icon: const Icon(
+                          Icons.settings_outlined,
+                          color: AppColors.navy,
+                        ),
                       ),
                     ],
                   ),
@@ -163,7 +235,11 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF064E3B), Color(0xFF047857), Color(0xFF059669)],
+                        colors: [
+                          Color(0xFF064E3B),
+                          Color(0xFF047857),
+                          Color(0xFF059669),
+                        ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -195,7 +271,10 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                             ),
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.lime,
                                 borderRadius: BorderRadius.circular(8),
@@ -228,17 +307,28 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                               child: ElevatedButton.icon(
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Total confirmed revenue is PKR ${confirmedRevenue.toInt()}')),
+                                    SnackBar(
+                                      content: Text(
+                                        'Total confirmed revenue is PKR ${confirmedRevenue.toInt()}',
+                                      ),
+                                    ),
                                   );
                                 },
-                                icon: const Icon(Icons.account_balance_wallet_outlined, size: 16),
+                                icon: const Icon(
+                                  Icons.account_balance_wallet_outlined,
+                                  size: 16,
+                                ),
                                 label: const Text('View Payout'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   foregroundColor: AppColors.navy,
                                   elevation: 0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
                                 ),
                               ),
                             ),
@@ -249,11 +339,17 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                                 icon: const Icon(Icons.add, size: 16),
                                 label: const Text('Add Slot'),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                                  backgroundColor: Colors.white.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   foregroundColor: Colors.white,
                                   elevation: 0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
                                 ),
                               ),
                             ),
@@ -299,7 +395,10 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                             ),
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.emeraldContainer,
                                 borderRadius: BorderRadius.circular(6),
@@ -327,7 +426,11 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                               _buildBarColumn('Tue', 0.62),
                               _buildBarColumn('Wed', 0.70),
                               _buildBarColumn('Thu', 0.85),
-                              _buildBarColumn('Fri', 0.95, isPeak: true), // Peak Friday in Lime
+                              _buildBarColumn(
+                                'Fri',
+                                0.95,
+                                isPeak: true,
+                              ), // Peak Friday in Lime
                               _buildBarColumn('Sat', 0.90),
                               _buildBarColumn('Sun', 0.82),
                             ],
@@ -352,14 +455,33 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.calendar_month, color: AppColors.emerald, size: 24),
+                              const Icon(
+                                Icons.calendar_month,
+                                color: AppColors.emerald,
+                                size: 24,
+                              ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('${ownerBookings.length} Bookings', overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.navy)),
-                                    const Text('Total Bookings', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
+                                    Text(
+                                      '${ownerBookings.length} Bookings',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.navy,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Total Bookings',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: AppColors.textSecondaryLight,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -378,14 +500,33 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                           ),
                           child: const Row(
                             children: [
-                              Icon(Icons.pie_chart_outline_rounded, color: AppColors.limeDark, size: 24),
+                              Icon(
+                                Icons.pie_chart_outline_rounded,
+                                color: AppColors.limeDark,
+                                size: 24,
+                              ),
                               SizedBox(width: 10),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('92% Occupancy', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.navy)),
-                                    Text('Evening slots', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
+                                    Text(
+                                      '92% Occupancy',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w800,
+                                        color: AppColors.navy,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Evening slots',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: AppColors.textSecondaryLight,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -414,7 +555,8 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () => widget.onNavigateTab?.call(1), // View all requests
+                        onPressed: () =>
+                            widget.onNavigateTab?.call(1), // View all requests
                         child: const Text(
                           'View all',
                           style: TextStyle(
@@ -432,8 +574,18 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                   if (todayBookings.isNotEmpty) ...[
                     ...todayBookings.map((b) => _buildTodayBookingCard(b)),
                   ] else ...[
-                    _buildSampleBookingCard('06:00 PM - 07:00 PM', 'Ali Raza (5v5)', 4500, true),
-                    _buildSampleBookingCard('08:00 PM - 09:00 PM', 'Zain Malik (5v5)', 4500, false),
+                    _buildSampleBookingCard(
+                      '06:00 PM - 07:00 PM',
+                      'Ali Raza (5v5)',
+                      4500,
+                      true,
+                    ),
+                    _buildSampleBookingCard(
+                      '08:00 PM - 09:00 PM',
+                      'Zain Malik (5v5)',
+                      4500,
+                      false,
+                    ),
                   ],
 
                   const SizedBox(height: 90), // Bottom padding for navigation
@@ -446,12 +598,23 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
     );
   }
 
-  Widget _buildBarColumn(String day, double heightFactor, {bool isPeak = false}) {
+  Widget _buildBarColumn(
+    String day,
+    double heightFactor, {
+    bool isPeak = false,
+  }) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         if (isPeak)
-          const Text('92%', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.emeraldDark)),
+          const Text(
+            '92%',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              color: AppColors.emeraldDark,
+            ),
+          ),
         Container(
           width: 28,
           height: 80 * heightFactor,
@@ -500,9 +663,19 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
               children: [
                 Text(
                   booking.timeSlot.split(' - ').first,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.navy),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.navy,
+                  ),
                 ),
-                const Text('Start', style: TextStyle(fontSize: 10, color: AppColors.textSecondaryLight)),
+                const Text(
+                  'Start',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: AppColors.textSecondaryLight,
+                  ),
+                ),
               ],
             ),
           ),
@@ -513,12 +686,19 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
               children: [
                 Text(
                   booking.customerName,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.navy),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.navy,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '${booking.timeSlot} • PKR ${booking.totalPrice.toInt()}',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondaryLight,
+                  ),
                 ),
               ],
             ),
@@ -526,7 +706,9 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: isConfirmed ? AppColors.emeraldContainer : const Color(0xFFFEF3C7),
+              color: isConfirmed
+                  ? AppColors.emeraldContainer
+                  : const Color(0xFFFEF3C7),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -543,7 +725,12 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
     );
   }
 
-  Widget _buildSampleBookingCard(String time, String client, int price, bool isConfirmed) {
+  Widget _buildSampleBookingCard(
+    String time,
+    String client,
+    int price,
+    bool isConfirmed,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -564,9 +751,19 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
               children: [
                 Text(
                   time.split(' - ').first,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.navy),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.navy,
+                  ),
                 ),
-                const Text('Start', style: TextStyle(fontSize: 10, color: AppColors.textSecondaryLight)),
+                const Text(
+                  'Start',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: AppColors.textSecondaryLight,
+                  ),
+                ),
               ],
             ),
           ),
@@ -577,12 +774,19 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
               children: [
                 Text(
                   client,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.navy),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.navy,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '$time • PKR $price',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondaryLight,
+                  ),
                 ),
               ],
             ),
@@ -590,7 +794,9 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: isConfirmed ? AppColors.emeraldContainer : const Color(0xFFFEF3C7),
+              color: isConfirmed
+                  ? AppColors.emeraldContainer
+                  : const Color(0xFFFEF3C7),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(

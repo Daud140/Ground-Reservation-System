@@ -38,7 +38,9 @@ class ReviewModel {
       customerName: json['customerName'] as String,
       rating: (json['rating'] as num).toDouble(),
       comment: json['comment'] as String,
-      createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+          DateTime.now(),
     );
   }
 }

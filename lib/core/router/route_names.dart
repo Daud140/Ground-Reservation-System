@@ -14,6 +14,7 @@ class AppRoutes {
   static const String slotBooking = '/customer/book/:id';
   static const String confirmationTicket = '/customer/ticket/:bookingId';
   static const String aiAssistant = '/customer/ai-assistant';
+  static const String groundsMap = '/customer/map';
 
   // Owner Module
   static const String ownerRoot = '/owner';

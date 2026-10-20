@@ -77,7 +77,9 @@ class GroundModel {
     this.isActive = true,
   });
 
-  String get primaryImage => images.isNotEmpty ? images.first : 'assets/images/ground_futsal_rawal.jpg';
+  String get primaryImage => images.isNotEmpty
+      ? images.first
+      : 'assets/images/ground_futsal_rawal.jpg';
 
   Map<String, dynamic> toJson() {
     return {

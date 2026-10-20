@@ -6,11 +6,7 @@ import 'package:ground_zero/data/repositories/ai_repository.dart';
 
 void main() {
   testWidgets('GroundZeroApp initial smoke test', (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const ProviderScope(
-        child: GroundZeroApp(),
-      ),
-    );
+    await tester.pumpWidget(const ProviderScope(child: GroundZeroApp()));
 
     expect(find.byType(GroundZeroApp), findsOneWidget);
   });

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../customer/models/ground_model.dart';
 import '../../../core/constants/app_colors.dart';
 
@@ -58,8 +59,8 @@ enum BookingStatus {
 /// Time slot representation for booking calendar
 class TimeSlotModel {
   final String slotString; // e.g., "18:00 - 19:00"
-  final String startTime;  // "18:00"
-  final String endTime;    // "19:00"
+  final String startTime; // "18:00"
+  final String endTime; // "19:00"
   final bool isAvailable;
   final bool isBooked;
   final bool isBlocked;
@@ -156,7 +157,9 @@ class BookingModel {
       ),
       paymentMethod: json['paymentMethod'] as String? ?? 'EasyPaisa',
       qrCodeData: json['qrCodeData'] as String? ?? '',
-      createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+          DateTime.now(),
     );
   }
 

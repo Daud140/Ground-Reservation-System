@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import 'customer_home_screen.dart';
 import 'customer_explore_screen.dart';
@@ -39,10 +40,7 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
     ];
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -63,7 +61,11 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
               children: [
                 _buildNavItem(0, Icons.sports_soccer_rounded, 'Home'),
                 _buildNavItem(1, Icons.explore_outlined, 'Explore'),
-                _buildNavItem(2, Icons.confirmation_number_outlined, 'Bookings'),
+                _buildNavItem(
+                  2,
+                  Icons.confirmation_number_outlined,
+                  'Bookings',
+                ),
                 _buildNavItem(3, Icons.smart_toy_outlined, 'GroundBot'),
                 _buildNavItem(4, Icons.person_outline_rounded, 'Profile'),
               ],
@@ -92,7 +94,9 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
             Icon(
               icon,
               size: 22,
-              color: isSelected ? AppColors.emeraldDark : AppColors.textSecondaryLight,
+              color: isSelected
+                  ? AppColors.emeraldDark
+                  : AppColors.textSecondaryLight,
             ),
             const SizedBox(height: 3),
             Text(
@@ -100,7 +104,9 @@ class _CustomerMainShellState extends State<CustomerMainShell> {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                color: isSelected ? AppColors.emeraldDark : AppColors.textSecondaryLight,
+                color: isSelected
+                    ? AppColors.emeraldDark
+                    : AppColors.textSecondaryLight,
               ),
             ),
           ],

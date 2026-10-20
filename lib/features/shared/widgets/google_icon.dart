@@ -10,9 +10,7 @@ class GoogleLogoWidget extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: CustomPaint(
-        painter: _GoogleLogoPainter(),
-      ),
+      child: CustomPaint(painter: _GoogleLogoPainter()),
     );
   }
 }
@@ -34,7 +32,10 @@ class _GoogleLogoPainter extends CustomPainter {
 
     // Blue horizontal bar
     final blueBar = Rect.fromLTWH(w * 0.45, h * 0.4, w * 0.55, h * 0.2);
-    canvas.drawRRect(RRect.fromRectAndRadius(blueBar, const Radius.circular(2)), blue);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(blueBar, const Radius.circular(2)),
+      blue,
+    );
 
     // Blue arc
     canvas.drawArc(
@@ -42,7 +43,9 @@ class _GoogleLogoPainter extends CustomPainter {
       -0.78,
       1.57,
       false,
-      blue..style = PaintingStyle.stroke..strokeWidth = w * 0.2,
+      blue
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w * 0.2,
     );
 
     // Green arc (bottom)
@@ -51,7 +54,9 @@ class _GoogleLogoPainter extends CustomPainter {
       0.79,
       1.57,
       false,
-      green..style = PaintingStyle.stroke..strokeWidth = w * 0.2,
+      green
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w * 0.2,
     );
 
     // Yellow arc (left bottom)
@@ -60,7 +65,9 @@ class _GoogleLogoPainter extends CustomPainter {
       2.36,
       1.57,
       false,
-      yellow..style = PaintingStyle.stroke..strokeWidth = w * 0.2,
+      yellow
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w * 0.2,
     );
 
     // Red arc (top)
@@ -69,7 +76,9 @@ class _GoogleLogoPainter extends CustomPainter {
       3.93,
       1.57,
       false,
-      red..style = PaintingStyle.stroke..strokeWidth = w * 0.2,
+      red
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = w * 0.2,
     );
   }
 

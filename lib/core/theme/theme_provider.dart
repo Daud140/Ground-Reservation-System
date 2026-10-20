@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import '../storage/hive_boxes.dart';
 
 /// Riverpod Notifier managing ThemeMode (Light / Dark) with Hive persistence
@@ -34,4 +35,6 @@ class ThemeNotifier extends Notifier<ThemeMode> {
   }
 }
 
-final themeProvider = NotifierProvider<ThemeNotifier, ThemeMode>(ThemeNotifier.new);
+final themeProvider = NotifierProvider<ThemeNotifier, ThemeMode>(
+  ThemeNotifier.new,
+);

@@ -21,95 +21,95 @@ void main() {
 
   for (final size in phoneSizes) {
     group('Screen layout tests on ${size.width}x${size.height}', () {
-      testWidgets('CustomerHomeScreen has no RenderFlex overflow', (WidgetTester tester) async {
+      testWidgets('CustomerHomeScreen has no RenderFlex overflow', (
+        WidgetTester tester,
+      ) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
 
         await tester.pumpWidget(
-          const ProviderScope(
-            child: MaterialApp(
-              home: CustomerHomeScreen(),
-            ),
-          ),
+          const ProviderScope(child: MaterialApp(home: CustomerHomeScreen())),
+        );
+        final exception = tester.takeException();
+        if (exception != null) {
+          debugPrint('>>> OVERFLOW DETAILS: $exception');
+        }
+        expect(exception, isNull);
+      });
+
+      testWidgets('OwnerDashboardScreen has no RenderFlex overflow', (
+        WidgetTester tester,
+      ) async {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(
+          const ProviderScope(child: MaterialApp(home: OwnerDashboardScreen())),
         );
         await tester.pump(const Duration(milliseconds: 500));
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('OwnerDashboardScreen has no RenderFlex overflow', (WidgetTester tester) async {
+      testWidgets('OnboardingScreen has no RenderFlex overflow', (
+        WidgetTester tester,
+      ) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
 
         await tester.pumpWidget(
-          const ProviderScope(
-            child: MaterialApp(
-              home: OwnerDashboardScreen(),
-            ),
-          ),
+          const ProviderScope(child: MaterialApp(home: OnboardingScreen())),
         );
         await tester.pump(const Duration(milliseconds: 500));
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('OnboardingScreen has no RenderFlex overflow', (WidgetTester tester) async {
+      testWidgets('RoleSelectionScreen has no RenderFlex overflow', (
+        WidgetTester tester,
+      ) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
 
         await tester.pumpWidget(
-          const ProviderScope(
-            child: MaterialApp(
-              home: OnboardingScreen(),
-            ),
-          ),
+          const ProviderScope(child: MaterialApp(home: RoleSelectionScreen())),
         );
         await tester.pump(const Duration(milliseconds: 500));
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('RoleSelectionScreen has no RenderFlex overflow', (WidgetTester tester) async {
-        tester.view.physicalSize = size;
-        tester.view.devicePixelRatio = 1.0;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
+      testWidgets(
+        'LoginScreen has no RenderFlex overflow (with normal & large text scaling)',
+        (WidgetTester tester) async {
+          tester.view.physicalSize = size;
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
 
-        await tester.pumpWidget(
-          const ProviderScope(
-            child: MaterialApp(
-              home: RoleSelectionScreen(),
-            ),
-          ),
-        );
-        await tester.pump(const Duration(milliseconds: 500));
-        expect(tester.takeException(), isNull);
-      });
-
-      testWidgets('LoginScreen has no RenderFlex overflow (with normal & large text scaling)', (WidgetTester tester) async {
-        tester.view.physicalSize = size;
-        tester.view.devicePixelRatio = 1.0;
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-
-        await tester.pumpWidget(
-          const ProviderScope(
-            child: MaterialApp(
-              home: MediaQuery(
-                data: MediaQueryData(textScaler: TextScaler.linear(1.1)),
-                child: LoginScreen(),
+          await tester.pumpWidget(
+            const ProviderScope(
+              child: MaterialApp(
+                home: MediaQuery(
+                  data: MediaQueryData(textScaler: TextScaler.linear(1.1)),
+                  child: LoginScreen(),
+                ),
               ),
             ),
-          ),
-        );
-        await tester.pump(const Duration(milliseconds: 500));
-        expect(tester.takeException(), isNull);
-      });
+          );
+          await tester.pump(const Duration(milliseconds: 500));
+          expect(tester.takeException(), isNull);
+        },
+      );
 
-      testWidgets('SlotBookingScreen has no RenderFlex overflow', (WidgetTester tester) async {
+      testWidgets('SlotBookingScreen has no RenderFlex overflow', (
+        WidgetTester tester,
+      ) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
@@ -117,16 +117,16 @@ void main() {
 
         await tester.pumpWidget(
           const ProviderScope(
-            child: MaterialApp(
-              home: SlotBookingScreen(groundId: 'ground_1'),
-            ),
+            child: MaterialApp(home: SlotBookingScreen(groundId: 'ground_1')),
           ),
         );
         await tester.pump(const Duration(milliseconds: 500));
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('GroundDetailScreen has no RenderFlex overflow', (WidgetTester tester) async {
+      testWidgets('GroundDetailScreen has no RenderFlex overflow', (
+        WidgetTester tester,
+      ) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
@@ -134,16 +134,16 @@ void main() {
 
         await tester.pumpWidget(
           const ProviderScope(
-            child: MaterialApp(
-              home: GroundDetailScreen(groundId: 'ground_1'),
-            ),
+            child: MaterialApp(home: GroundDetailScreen(groundId: 'ground_1')),
           ),
         );
         await tester.pump(const Duration(milliseconds: 500));
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('CustomerExploreScreen has no RenderFlex overflow', (WidgetTester tester) async {
+      testWidgets('CustomerExploreScreen has no RenderFlex overflow', (
+        WidgetTester tester,
+      ) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
@@ -151,33 +151,31 @@ void main() {
 
         await tester.pumpWidget(
           const ProviderScope(
-            child: MaterialApp(
-              home: CustomerExploreScreen(),
-            ),
+            child: MaterialApp(home: CustomerExploreScreen()),
           ),
         );
         await tester.pump(const Duration(milliseconds: 500));
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('AiAssistantScreen has no RenderFlex overflow', (WidgetTester tester) async {
+      testWidgets('AiAssistantScreen has no RenderFlex overflow', (
+        WidgetTester tester,
+      ) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
 
         await tester.pumpWidget(
-          const ProviderScope(
-            child: MaterialApp(
-              home: AiAssistantScreen(),
-            ),
-          ),
+          const ProviderScope(child: MaterialApp(home: AiAssistantScreen())),
         );
         await tester.pump(const Duration(milliseconds: 500));
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('BookingConfirmationScreen has no RenderFlex overflow', (WidgetTester tester) async {
+      testWidgets('BookingConfirmationScreen has no RenderFlex overflow', (
+        WidgetTester tester,
+      ) async {
         tester.view.physicalSize = size;
         tester.view.devicePixelRatio = 1.0;
         addTearDown(tester.view.resetPhysicalSize);
@@ -196,4 +194,3 @@ void main() {
     });
   }
 }
-

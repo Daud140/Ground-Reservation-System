@@ -6,15 +6,17 @@ class AppStrings {
   static const String appTagline = 'Book Your Arena in Seconds';
   static const String currency = 'PKR';
   static const String currencyPrefix = 'PKR ';
-  
+
   // Auth Strings
   static const String welcomeBack = 'Welcome back';
-  static const String signInSubtitle = 'Sign in to access your booked grounds and games';
+  static const String signInSubtitle =
+      'Sign in to access your booked grounds and games';
   static const String createAccount = 'Create Account';
-  static const String createAccountSubtitle = 'Join the premier sports reservation community';
+  static const String createAccountSubtitle =
+      'Join the premier sports reservation community';
   static const String demoCustomerLogin = 'Demo: Customer';
   static const String demoOwnerLogin = 'Demo: Owner';
-  
+
   // Navigation Labels
   static const String navHome = 'Home';
   static const String navSearch = 'Search';

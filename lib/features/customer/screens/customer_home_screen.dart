@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
+import '../../../core/router/route_names.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../models/ground_model.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -30,16 +32,33 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'groundBotHomeFab',
+        backgroundColor: AppColors.emerald,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        icon: const Icon(Icons.smart_toy_rounded, size: 20),
+        label: const Text(
+          'GroundBot AI',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+        ),
+        onPressed: () {
+          widget.onNavigateTab?.call(3); // Switch to GroundBot AI Tab
+        },
+      ),
       body: SafeArea(
         child: FutureBuilder<List<GroundModel>>(
           future: groundRepo.getAllGrounds(),
           builder: (context, snapshot) {
             final grounds = snapshot.data ?? [];
             final filteredGrounds = grounds.where((g) {
-              if (_selectedSport != null && g.sportType != _selectedSport) return false;
+              if (_selectedSport != null && g.sportType != _selectedSport) {
+                return false;
+              }
               if (_searchQuery.isNotEmpty) {
                 final q = _searchQuery.toLowerCase();
-                return g.name.toLowerCase().contains(q) || g.location.toLowerCase().contains(q);
+                return g.name.toLowerCase().contains(q) ||
+                    g.location.toLowerCase().contains(q);
               }
               return true;
             }).toList();
@@ -68,12 +87,18 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.borderLight),
+                                border: Border.all(
+                                  color: AppColors.borderLight,
+                                ),
                               ),
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
-                                  const Icon(Icons.notifications_none_rounded, color: AppColors.navy, size: 18),
+                                  const Icon(
+                                    Icons.notifications_none_rounded,
+                                    color: AppColors.navy,
+                                    size: 18,
+                                  ),
                                   Positioned(
                                     top: 7,
                                     right: 8,
@@ -107,16 +132,25 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                               onTap: _showCityPicker,
                               borderRadius: BorderRadius.circular(20),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: AppColors.borderLight),
+                                  border: Border.all(
+                                    color: AppColors.borderLight,
+                                  ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.location_on, color: AppColors.emerald, size: 14),
+                                    const Icon(
+                                      Icons.location_on,
+                                      color: AppColors.emerald,
+                                      size: 14,
+                                    ),
                                     const SizedBox(width: 4),
                                     Text(
                                       _selectedCity,
@@ -127,7 +161,11 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                                       ),
                                     ),
                                     const SizedBox(width: 4),
-                                    const Icon(Icons.keyboard_arrow_down, size: 16, color: AppColors.textSecondaryLight),
+                                    const Icon(
+                                      Icons.keyboard_arrow_down,
+                                      size: 16,
+                                      color: AppColors.textSecondaryLight,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -158,31 +196,42 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(color: AppColors.borderLight),
+                                  border: Border.all(
+                                    color: AppColors.borderLight,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.02),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.02,
+                                      ),
                                       blurRadius: 10,
                                       offset: const Offset(0, 2),
                                     ),
                                   ],
                                 ),
                                 child: TextField(
-                                  onChanged: (val) => setState(() => _searchQuery = val),
+                                  onChanged: (val) =>
+                                      setState(() => _searchQuery = val),
                                   decoration: const InputDecoration(
                                     hintText: 'Find your pitch today...',
                                     hintStyle: TextStyle(
                                       color: AppColors.textMutedLight,
                                       fontSize: 14,
                                     ),
-                                    prefixIcon: Icon(Icons.search, color: AppColors.textMutedLight, size: 22),
+                                    prefixIcon: Icon(
+                                      Icons.search,
+                                      color: AppColors.textMutedLight,
+                                      size: 22,
+                                    ),
                                     border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(vertical: 14),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: 8),
                             Container(
                               width: 50,
                               height: 50,
@@ -191,15 +240,50 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.emerald.withValues(alpha: 0.35),
+                                    color: AppColors.emerald.withValues(
+                                      alpha: 0.35,
+                                    ),
                                     blurRadius: 10,
                                     offset: const Offset(0, 4),
                                   ),
                                 ],
                               ),
                               child: IconButton(
-                                icon: const Icon(Icons.tune_rounded, color: Colors.white, size: 22),
+                                tooltip: 'Filter Grounds',
+                                icon: const Icon(
+                                  Icons.tune_rounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
                                 onPressed: _showFilterModal,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: AppColors.navy,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.navy.withValues(
+                                      alpha: 0.25,
+                                    ),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: IconButton(
+                                tooltip: 'Interactive Grounds Map',
+                                icon: const Icon(
+                                  Icons.map_rounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
+                                onPressed: () =>
+                                    context.push(AppRoutes.groundsMap),
                               ),
                             ),
                           ],
@@ -217,14 +301,16 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                                 label: 'All',
                                 icon: Icons.sports,
                                 isSelected: _selectedSport == null,
-                                onTap: () => setState(() => _selectedSport = null),
+                                onTap: () =>
+                                    setState(() => _selectedSport = null),
                               ),
                               ...SportType.values.map((sport) {
                                 return _buildSportCategoryChip(
                                   label: sport.displayName,
                                   icon: _getSportIcon(sport),
                                   isSelected: _selectedSport == sport,
-                                  onTap: () => setState(() => _selectedSport = sport),
+                                  onTap: () =>
+                                      setState(() => _selectedSport = sport),
                                 );
                               }),
                             ],
@@ -283,7 +369,11 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF065F46), Color(0xFF047857), Color(0xFF059669)],
+                          colors: [
+                            Color(0xFF065F46),
+                            Color(0xFF047857),
+                            Color(0xFF059669),
+                          ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -303,7 +393,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: AppColors.lime,
                                     borderRadius: BorderRadius.circular(6),
@@ -340,7 +433,8 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                           ),
                           const SizedBox(width: 12),
                           InkWell(
-                            onTap: () => widget.onNavigateTab?.call(3), // Open AI tab
+                            onTap: () =>
+                                widget.onNavigateTab?.call(3), // Open AI tab
                             child: Container(
                               width: 44,
                               height: 44,
@@ -364,7 +458,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                 // "Near You" Section Header
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 4,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -390,20 +487,22 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
 
                 // Near You Grounds List
                 SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
                   sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final ground = filteredGrounds[index];
-                        return _buildGroundRowCard(ground);
-                      },
-                      childCount: filteredGrounds.length,
-                    ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final ground = filteredGrounds[index];
+                      return _buildGroundRowCard(ground);
+                    }, childCount: filteredGrounds.length),
                   ),
                 ),
 
                 const SliverToBoxAdapter(
-                  child: SizedBox(height: 90), // Bottom padding for navigation bar
+                  child: SizedBox(
+                    height: 90,
+                  ), // Bottom padding for navigation bar
                 ),
               ],
             );
@@ -491,7 +590,9 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(19)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(19),
+                  ),
                   child: Image.asset(
                     ground.primaryImage,
                     height: 180,
@@ -504,7 +605,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                   top: 12,
                   left: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.75),
                       borderRadius: BorderRadius.circular(12),
@@ -512,7 +616,11 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                        const Icon(
+                          Icons.star_rounded,
+                          color: Colors.amber,
+                          size: 16,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${ground.rating}',
@@ -548,7 +656,9 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        isFav
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
                         color: isFav ? Colors.red : AppColors.navy,
                         size: 20,
                       ),
@@ -578,7 +688,10 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.emeraldContainer,
                           borderRadius: BorderRadius.circular(8),
@@ -597,7 +710,11 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined, color: AppColors.textMutedLight, size: 15),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        color: AppColors.textMutedLight,
+                        size: 15,
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
@@ -614,33 +731,40 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'PKR ${ground.pricePerHour.toInt()}',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.emeraldDark,
+                      Flexible(
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'PKR ${ground.pricePerHour.toInt()}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.emeraldDark,
+                                ),
                               ),
-                            ),
-                            const TextSpan(
-                              text: ' / hr',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSecondaryLight,
+                              const TextSpan(
+                                text: ' / hr',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textSecondaryLight,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
+                      const SizedBox(width: 8),
                       ElevatedButton(
-                        onPressed: () => context.push('/customer/ground/${ground.id}'),
+                        onPressed: () =>
+                            context.push('/customer/ground/${ground.id}'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -718,7 +842,11 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                            const Icon(
+                              Icons.star_rounded,
+                              color: Colors.amber,
+                              size: 16,
+                            ),
                             Text(
                               ' ${ground.rating}',
                               style: const TextStyle(
@@ -745,16 +873,24 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'PKR ${ground.pricePerHour.toInt()}/hr',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.emeraldDark,
+                        Flexible(
+                          child: Text(
+                            'PKR ${ground.pricePerHour.toInt()}/hr',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.emeraldDark,
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.surfaceSecondaryLight,
                             borderRadius: BorderRadius.circular(6),
@@ -812,17 +948,28 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
               children: [
                 const Text(
                   'Select City',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.navy),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.navy,
+                  ),
                 ),
                 const SizedBox(height: 12),
-                ...cities.map((c) => ListTile(
-                      title: Text(c, style: const TextStyle(fontWeight: FontWeight.w600)),
-                      trailing: _selectedCity == c ? const Icon(Icons.check, color: AppColors.emerald) : null,
-                      onTap: () {
-                        setState(() => _selectedCity = c);
-                        Navigator.pop(ctx);
-                      },
-                    )),
+                ...cities.map(
+                  (c) => ListTile(
+                    title: Text(
+                      c,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    trailing: _selectedCity == c
+                        ? const Icon(Icons.check, color: AppColors.emerald)
+                        : null,
+                    onTap: () {
+                      setState(() => _selectedCity = c);
+                      Navigator.pop(ctx);
+                    },
+                  ),
+                ),
               ],
             ),
           ),
@@ -845,9 +992,15 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Filter Pitches', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                const Text(
+                  'Filter Pitches',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                ),
                 const SizedBox(height: 16),
-                const Text('Max Hourly Price (PKR)', style: TextStyle(fontWeight: FontWeight.w600)),
+                const Text(
+                  'Max Hourly Price (PKR)',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
                 Slider(
                   value: 6000,
                   min: 2000,
@@ -865,9 +1018,14 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.emerald,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
-                    child: const Text('Apply Filters', style: TextStyle(fontWeight: FontWeight.w700)),
+                    child: const Text(
+                      'Apply Filters',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ],

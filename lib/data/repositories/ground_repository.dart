@@ -1,7 +1,10 @@
 import 'dart:convert';
+
 import 'package:hive/hive.dart';
+
 import '../../core/storage/hive_boxes.dart';
 import '../../features/customer/models/ground_model.dart';
+import '../demo/fake_database.dart';
 
 /// Abstract contract for Ground management operations
 abstract class GroundRepository {
@@ -19,20 +22,33 @@ abstract class GroundRepository {
   });
 }
 
-/// Offline Hive-persisted Mock implementation for Mid-Term
+/// In-memory FakeDatabase backed with Hive persistence sync
 class MockGroundRepository implements GroundRepository {
   @override
   Future<List<GroundModel>> getAllGrounds() async {
-    final groundsBox = Hive.box(HiveBoxes.groundsBox);
-    final List<GroundModel> list = [];
-
-    for (final key in groundsBox.keys) {
-      final raw = groundsBox.get(key);
-      if (raw != null) {
-        list.add(GroundModel.fromJson(Map<String, dynamic>.from(jsonDecode(raw as String))));
+    // 1. Try Hive if available
+    try {
+      if (Hive.isBoxOpen(HiveBoxes.groundsBox)) {
+        final groundsBox = Hive.box(HiveBoxes.groundsBox);
+        if (groundsBox.isNotEmpty) {
+          final List<GroundModel> list = [];
+          for (final key in groundsBox.keys) {
+            final raw = groundsBox.get(key);
+            if (raw != null) {
+              list.add(
+                GroundModel.fromJson(
+                  Map<String, dynamic>.from(jsonDecode(raw as String)),
+                ),
+              );
+            }
+          }
+          if (list.isNotEmpty) return list;
+        }
       }
-    }
-    return list;
+    } catch (_) {}
+
+    // 2. In-memory FakeDatabase fallback
+    return FakeDatabase.instance.getAllGrounds();
   }
 
   @override
@@ -43,28 +59,52 @@ class MockGroundRepository implements GroundRepository {
 
   @override
   Future<GroundModel?> getGroundById(String id) async {
-    final groundsBox = Hive.box(HiveBoxes.groundsBox);
-    final raw = groundsBox.get(id);
-    if (raw == null) return null;
-    return GroundModel.fromJson(Map<String, dynamic>.from(jsonDecode(raw as String)));
+    try {
+      if (Hive.isBoxOpen(HiveBoxes.groundsBox)) {
+        final groundsBox = Hive.box(HiveBoxes.groundsBox);
+        final raw = groundsBox.get(id);
+        if (raw != null) {
+          return GroundModel.fromJson(
+            Map<String, dynamic>.from(jsonDecode(raw as String)),
+          );
+        }
+      }
+    } catch (_) {}
+
+    return FakeDatabase.instance.getGroundById(id);
   }
 
   @override
   Future<void> addGround(GroundModel ground) async {
-    final groundsBox = Hive.box(HiveBoxes.groundsBox);
-    await groundsBox.put(ground.id, jsonEncode(ground.toJson()));
+    FakeDatabase.instance.addGround(ground);
+    try {
+      if (Hive.isBoxOpen(HiveBoxes.groundsBox)) {
+        final groundsBox = Hive.box(HiveBoxes.groundsBox);
+        await groundsBox.put(ground.id, jsonEncode(ground.toJson()));
+      }
+    } catch (_) {}
   }
 
   @override
   Future<void> updateGround(GroundModel ground) async {
-    final groundsBox = Hive.box(HiveBoxes.groundsBox);
-    await groundsBox.put(ground.id, jsonEncode(ground.toJson()));
+    FakeDatabase.instance.updateGround(ground);
+    try {
+      if (Hive.isBoxOpen(HiveBoxes.groundsBox)) {
+        final groundsBox = Hive.box(HiveBoxes.groundsBox);
+        await groundsBox.put(ground.id, jsonEncode(ground.toJson()));
+      }
+    } catch (_) {}
   }
 
   @override
   Future<void> deleteGround(String id) async {
-    final groundsBox = Hive.box(HiveBoxes.groundsBox);
-    await groundsBox.delete(id);
+    FakeDatabase.instance.deleteGround(id);
+    try {
+      if (Hive.isBoxOpen(HiveBoxes.groundsBox)) {
+        final groundsBox = Hive.box(HiveBoxes.groundsBox);
+        await groundsBox.delete(id);
+      }
+    } catch (_) {}
   }
 
   @override

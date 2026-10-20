@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/route_names.dart';
 import '../../../core/theme/theme_provider.dart';
@@ -16,7 +17,8 @@ class CustomerProfileScreen extends ConsumerStatefulWidget {
   const CustomerProfileScreen({super.key, this.onNavigateTab});
 
   @override
-  ConsumerState<CustomerProfileScreen> createState() => _CustomerProfileScreenState();
+  ConsumerState<CustomerProfileScreen> createState() =>
+      _CustomerProfileScreenState();
 }
 
 class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
@@ -85,7 +87,9 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
         content: Row(
           children: [
             Icon(
-              isSuccess ? Icons.check_circle_rounded : Icons.info_outline_rounded,
+              isSuccess
+                  ? Icons.check_circle_rounded
+                  : Icons.info_outline_rounded,
               color: Colors.white,
               size: 20,
             ),
@@ -93,7 +97,10 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
             ),
           ],
@@ -114,10 +121,16 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
     final isDark = themeMode == ThemeMode.dark;
 
     final bgColor = isDark ? const Color(0xFF0F172A) : Colors.white;
-    final cardColor = isDark ? const Color(0xFF1E293B) : AppColors.surfaceSecondaryLight;
+    final cardColor = isDark
+        ? const Color(0xFF1E293B)
+        : AppColors.surfaceSecondaryLight;
     final textColor = isDark ? Colors.white : AppColors.navy;
-    final subtextColor = isDark ? const Color(0xFF94A3B8) : AppColors.textSecondaryLight;
-    final borderColor = isDark ? const Color(0xFF334155) : AppColors.borderLight;
+    final subtextColor = isDark
+        ? const Color(0xFF94A3B8)
+        : AppColors.textSecondaryLight;
+    final borderColor = isDark
+        ? const Color(0xFF334155)
+        : AppColors.borderLight;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -158,9 +171,14 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                           width: 88,
                           height: 88,
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF064E3B) : AppColors.emeraldContainer,
+                            color: isDark
+                                ? const Color(0xFF064E3B)
+                                : AppColors.emeraldContainer,
                             shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.emerald, width: 2.5),
+                            border: Border.all(
+                              color: AppColors.emerald,
+                              width: 2.5,
+                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: AppColors.emerald.withValues(alpha: 0.2),
@@ -173,7 +191,9 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                             child: Text(
                               _selectedAvatarEmoji.isNotEmpty
                                   ? _selectedAvatarEmoji
-                                  : (user?.name.isNotEmpty == true ? user!.name[0] : '⚽'),
+                                  : (user?.name.isNotEmpty == true
+                                        ? user!.name[0]
+                                        : '⚽'),
                               style: const TextStyle(fontSize: 36),
                             ),
                           ),
@@ -191,7 +211,11 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                                 shape: BoxShape.circle,
                                 border: Border.all(color: bgColor, width: 2),
                               ),
-                              child: const Icon(Icons.camera_alt, color: Colors.white, size: 15),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 15,
+                              ),
                             ),
                           ),
                         ),
@@ -210,7 +234,11 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        Icon(Icons.edit_outlined, size: 16, color: subtextColor),
+                        Icon(
+                          Icons.edit_outlined,
+                          size: 16,
+                          color: subtextColor,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 2),
@@ -220,15 +248,24 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                     ),
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF365314) : AppColors.limeContainer,
+                        color: isDark
+                            ? const Color(0xFF365314)
+                            : AppColors.limeContainer,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.workspace_premium, color: AppColors.limeDark, size: 16),
+                          const Icon(
+                            Icons.workspace_premium,
+                            color: AppColors.limeDark,
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             _rankBadge,
@@ -288,68 +325,112 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
 
             const SizedBox(height: 20),
 
-            // Switch to Ground Owner Mode Banner
-            GestureDetector(
-              onTap: () async {
-                _showSnackBar('Switching to Ground Owner Mode...');
-                await ref.read(authProvider.notifier).quickDemoLogin(UserRole.owner);
-                if (context.mounted) {
-                  context.go(AppRoutes.ownerRoot);
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF065F46), Color(0xFF047857)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.emerald.withValues(alpha: 0.25),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(Icons.stadium_outlined, color: Colors.white, size: 24),
-                    ),
-                    const SizedBox(width: 14),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Switch to Ground Owner Mode',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w800,
+            // Dynamic Switch Role Mode Banner (Player vs Ground Owner)
+            Builder(
+              builder: (ctx) {
+                final isCurrentOwner = ref.watch(authProvider).isOwner;
+                return GestureDetector(
+                  onTap: () async {
+                    if (isCurrentOwner) {
+                      _showSnackBar('Switching to Player Mode...');
+                      await ref
+                          .read(authProvider.notifier)
+                          .quickDemoLogin(UserRole.customer);
+                      if (context.mounted) {
+                        context.go(AppRoutes.customerRoot);
+                      }
+                    } else {
+                      _showSnackBar('Switching to Ground Owner Mode...');
+                      await ref
+                          .read(authProvider.notifier)
+                          .quickDemoLogin(UserRole.owner);
+                      if (context.mounted) {
+                        context.go(AppRoutes.ownerRoot);
+                      }
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: isCurrentOwner
+                          ? const LinearGradient(
+                              colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            )
+                          : const LinearGradient(
+                              colors: [Color(0xFF065F46), Color(0xFF047857)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            'Manage Apex Arena slots & bookings',
-                            style: TextStyle(color: Colors.white70, fontSize: 11),
-                          ),
-                        ],
-                      ),
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              (isCurrentOwner
+                                      ? AppColors.navy
+                                      : AppColors.emerald)
+                                  .withValues(alpha: 0.25),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
-                  ],
-                ),
-              ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            isCurrentOwner
+                                ? Icons.sports_soccer_rounded
+                                : Icons.stadium_outlined,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isCurrentOwner
+                                    ? 'Switch to Player Mode'
+                                    : 'Switch to Ground Owner Mode',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                isCurrentOwner
+                                    ? 'Explore sports turfs & book match slots'
+                                    : 'Manage arenas, slots & incoming bookings',
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
 
             const SizedBox(height: 24),
@@ -412,7 +493,11 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                       children: [
                         Text(
                           'Dark Mode',
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: textColor),
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: textColor,
+                          ),
                         ),
                         Text(
                           isDark ? 'Dark theme active' : 'Light theme active',
@@ -455,8 +540,12 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
             // Log Out Button (Interactive confirmation)
             ListTile(
               onTap: () => _openLogoutDialog(context, ref, isDark),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              tileColor: isDark ? const Color(0xFF450A0A) : const Color(0xFFFEE2E2),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              tileColor: isDark
+                  ? const Color(0xFF450A0A)
+                  : const Color(0xFFFEE2E2),
               leading: const Icon(Icons.logout_rounded, color: AppColors.error),
               title: const Text(
                 'Log Out',
@@ -466,7 +555,11 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                   fontSize: 14,
                 ),
               ),
-              trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.error),
+              trailing: const Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: AppColors.error,
+              ),
             ),
 
             const SizedBox(height: 80),
@@ -493,8 +586,12 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             final sheetText = isDark ? Colors.white : AppColors.navy;
-            final sheetSubtext = isDark ? const Color(0xFF94A3B8) : AppColors.textSecondaryLight;
-            final tileBg = isDark ? const Color(0xFF0F172A) : AppColors.surfaceSecondaryLight;
+            final sheetSubtext = isDark
+                ? const Color(0xFF94A3B8)
+                : AppColors.textSecondaryLight;
+            final tileBg = isDark
+                ? const Color(0xFF0F172A)
+                : AppColors.surfaceSecondaryLight;
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -516,25 +613,51 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       'Settings & Security',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: sheetText),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: sheetText,
+                      ),
                     ),
                     const SizedBox(height: 16),
 
                     // Biometrics toggle
                     Container(
                       margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(color: tileBg, borderRadius: BorderRadius.circular(14)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: tileBg,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                       child: Row(
                         children: [
-                          const Icon(Icons.fingerprint_rounded, color: AppColors.emerald),
+                          const Icon(
+                            Icons.fingerprint_rounded,
+                            color: AppColors.emerald,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Biometric Login', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: sheetText)),
-                                Text('Use FaceID / Fingerprint for quick checkouts', style: TextStyle(fontSize: 11, color: sheetSubtext)),
+                                Text(
+                                  'Biometric Login',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                    color: sheetText,
+                                  ),
+                                ),
+                                Text(
+                                  'Use FaceID / Fingerprint for quick checkouts',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: sheetSubtext,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -542,7 +665,11 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                             value: true,
                             activeThumbColor: AppColors.emerald,
                             onChanged: (val) {
-                              _showSnackBar(val ? 'Biometric login enabled' : 'Biometric login disabled');
+                              _showSnackBar(
+                                val
+                                    ? 'Biometric login enabled'
+                                    : 'Biometric login disabled',
+                              );
                             },
                           ),
                         ],
@@ -552,26 +679,57 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                     // Language Selector
                     Container(
                       margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                      decoration: BoxDecoration(color: tileBg, borderRadius: BorderRadius.circular(14)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: tileBg,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                       child: Row(
                         children: [
-                          const Icon(Icons.language_rounded, color: AppColors.emerald),
+                          const Icon(
+                            Icons.language_rounded,
+                            color: AppColors.emerald,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('App Language', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: sheetText)),
-                                Text('English (Default)', style: TextStyle(fontSize: 11, color: sheetSubtext)),
+                                Text(
+                                  'App Language',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                    color: sheetText,
+                                  ),
+                                ),
+                                Text(
+                                  'English (Default)',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: sheetSubtext,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                           TextButton(
                             onPressed: () {
-                              _showSnackBar('اردو زبان جلد دستیاب ہوگی (Urdu coming soon)', isSuccess: false);
+                              _showSnackBar(
+                                'اردو زبان جلد دستیاب ہوگی (Urdu coming soon)',
+                                isSuccess: false,
+                              );
                             },
-                            child: const Text('اردو', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.emerald)),
+                            child: const Text(
+                              'اردو',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.emerald,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -580,32 +738,68 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                     // Clear Cache / Reset Data
                     Container(
                       margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                      decoration: BoxDecoration(color: tileBg, borderRadius: BorderRadius.circular(14)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: tileBg,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                       child: Row(
                         children: [
-                          const Icon(Icons.cleaning_services_rounded, color: AppColors.emerald),
+                          const Icon(
+                            Icons.cleaning_services_rounded,
+                            color: AppColors.emerald,
+                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Storage & Cache', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: sheetText)),
-                                Text('App cached data: 14.8 MB', style: TextStyle(fontSize: 11, color: sheetSubtext)),
+                                Text(
+                                  'Storage & Cache',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                    color: sheetText,
+                                  ),
+                                ),
+                                Text(
+                                  'App cached data: 14.8 MB',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: sheetSubtext,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.emerald,
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                             onPressed: () {
-                              _showSnackBar('Cache cleared successfully! (0 MB)');
+                              _showSnackBar(
+                                'Cache cleared successfully! (0 MB)',
+                              );
                               Navigator.pop(ctx);
                             },
-                            child: const Text('Clear', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
+                            child: const Text(
+                              'Clear',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -613,11 +807,26 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
 
                     // Reset Demo Data
                     ListTile(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                       tileColor: tileBg,
-                      leading: const Icon(Icons.refresh_rounded, color: AppColors.navy),
-                      title: Text('Reset Demo Data', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: sheetText)),
-                      subtitle: Text('Restore pristine university mid-term database', style: TextStyle(fontSize: 11, color: sheetSubtext)),
+                      leading: const Icon(
+                        Icons.refresh_rounded,
+                        color: AppColors.navy,
+                      ),
+                      title: Text(
+                        'Reset Demo Data',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                          color: sheetText,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Restore pristine university mid-term database',
+                        style: TextStyle(fontSize: 11, color: sheetSubtext),
+                      ),
                       onTap: () {
                         FakeDatabase.instance.reset();
                         _showSnackBar('Demo database reset to default state');
@@ -676,7 +885,11 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
               const SizedBox(height: 16),
               Text(
                 'Select Player Avatar',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: sheetText),
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: sheetText,
+                ),
               ),
               const SizedBox(height: 16),
               Wrap(
@@ -695,10 +908,16 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                       width: 58,
                       height: 58,
                       decoration: BoxDecoration(
-                        color: isSelected ? AppColors.emeraldContainer : (isDark ? const Color(0xFF0F172A) : AppColors.surfaceSecondaryLight),
+                        color: isSelected
+                            ? AppColors.emeraldContainer
+                            : (isDark
+                                  ? const Color(0xFF0F172A)
+                                  : AppColors.surfaceSecondaryLight),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: isSelected ? AppColors.emerald : Colors.transparent,
+                          color: isSelected
+                              ? AppColors.emerald
+                              : Colors.transparent,
                           width: 2.5,
                         ),
                       ),
@@ -715,11 +934,22 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     side: const BorderSide(color: AppColors.emerald),
                   ),
-                  icon: const Icon(Icons.add_a_photo_rounded, color: AppColors.emerald),
-                  label: const Text('Simulate Camera Upload', style: TextStyle(color: AppColors.emerald, fontWeight: FontWeight.w700)),
+                  icon: const Icon(
+                    Icons.add_a_photo_rounded,
+                    color: AppColors.emerald,
+                  ),
+                  label: const Text(
+                    'Simulate Camera Upload',
+                    style: TextStyle(
+                      color: AppColors.emerald,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   onPressed: () {
                     setState(() => _selectedAvatarEmoji = '🌟');
                     Navigator.pop(ctx);
@@ -736,8 +966,12 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
 
   /// 3. Edit Profile Dialog
   void _openEditProfileDialog(UserModel? user, bool isDark) {
-    final nameController = TextEditingController(text: user?.name ?? 'Hamza Malik');
-    final phoneController = TextEditingController(text: user?.phone ?? '+92 333 5123456');
+    final nameController = TextEditingController(
+      text: user?.name ?? 'Hamza Malik',
+    );
+    final phoneController = TextEditingController(
+      text: user?.phone ?? '+92 333 5123456',
+    );
     String selectedRank = _rankBadge;
 
     showDialog(
@@ -748,8 +982,13 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
 
         return AlertDialog(
           backgroundColor: dialogBg,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text('Edit Player Profile', style: TextStyle(fontWeight: FontWeight.w800, color: dialogText)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Edit Player Profile',
+            style: TextStyle(fontWeight: FontWeight.w800, color: dialogText),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -759,7 +998,10 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                   style: TextStyle(color: dialogText),
                   decoration: const InputDecoration(
                     labelText: 'Full Name',
-                    prefixIcon: Icon(Icons.person_outline_rounded, color: AppColors.emerald),
+                    prefixIcon: Icon(
+                      Icons.person_outline_rounded,
+                      color: AppColors.emerald,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -768,24 +1010,50 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                   style: TextStyle(color: dialogText),
                   decoration: const InputDecoration(
                     labelText: 'Phone Number',
-                    prefixIcon: Icon(Icons.phone_outlined, color: AppColors.emerald),
+                    prefixIcon: Icon(
+                      Icons.phone_outlined,
+                      color: AppColors.emerald,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 14),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('Position / Skill Badge', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: dialogText)),
+                  child: Text(
+                    'Position / Skill Badge',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: dialogText,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 6),
                 DropdownButtonFormField<String>(
                   initialValue: selectedRank,
                   dropdownColor: dialogBg,
-                  style: TextStyle(color: dialogText, fontWeight: FontWeight.w600, fontSize: 13),
+                  style: TextStyle(
+                    color: dialogText,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
                   items: const [
-                    DropdownMenuItem(value: 'Pro Striker • Rank 4', child: Text('⚽ Pro Striker • Rank 4')),
-                    DropdownMenuItem(value: 'Safe Hands Goalkeeper', child: Text('🧤 Safe Hands Goalkeeper')),
-                    DropdownMenuItem(value: 'Elite Playmaker • Rank 5', child: Text('⚡ Elite Playmaker • Rank 5')),
-                    DropdownMenuItem(value: 'All-Rounder Captain', child: Text('🏏 All-Rounder Captain')),
+                    DropdownMenuItem(
+                      value: 'Pro Striker • Rank 4',
+                      child: Text('⚽ Pro Striker • Rank 4'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Safe Hands Goalkeeper',
+                      child: Text('🧤 Safe Hands Goalkeeper'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Elite Playmaker • Rank 5',
+                      child: Text('⚡ Elite Playmaker • Rank 5'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'All-Rounder Captain',
+                      child: Text('🏏 All-Rounder Captain'),
+                    ),
                   ],
                   onChanged: (val) {
                     if (val != null) selectedRank = val;
@@ -802,16 +1070,24 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.emerald,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onPressed: () async {
                 final newName = nameController.text.trim();
                 final newPhone = phoneController.text.trim();
                 if (newName.isNotEmpty) {
-                  final updated = (user ?? const UserModel(id: 'customer_sport_demo', name: '', email: '', phone: '', role: UserRole.customer)).copyWith(
-                    name: newName,
-                    phone: newPhone,
-                  );
+                  final updated =
+                      (user ??
+                              const UserModel(
+                                id: 'customer_sport_demo',
+                                name: '',
+                                email: '',
+                                phone: '',
+                                role: UserRole.customer,
+                              ))
+                          .copyWith(name: newName, phone: newPhone);
                   await ref.read(authProvider.notifier).updateUser(updated);
                   setState(() {
                     _rankBadge = selectedRank;
@@ -820,7 +1096,13 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                 }
                 if (ctx.mounted) Navigator.pop(ctx);
               },
-              child: const Text('Save Changes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+              child: const Text(
+                'Save Changes',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ],
         );
@@ -839,8 +1121,12 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
       ),
       builder: (ctx) {
         final sheetText = isDark ? Colors.white : AppColors.navy;
-        final sheetSubtext = isDark ? const Color(0xFF94A3B8) : AppColors.textSecondaryLight;
-        final cardBg = isDark ? const Color(0xFF0F172A) : AppColors.surfaceSecondaryLight;
+        final sheetSubtext = isDark
+            ? const Color(0xFF94A3B8)
+            : AppColors.textSecondaryLight;
+        final cardBg = isDark
+            ? const Color(0xFF0F172A)
+            : AppColors.surfaceSecondaryLight;
 
         return Padding(
           padding: const EdgeInsets.all(20),
@@ -862,11 +1148,31 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Player Match Record', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: sheetText)),
+                  Text(
+                    'Player Match Record',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: sheetText,
+                    ),
+                  ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(color: AppColors.emeraldContainer, borderRadius: BorderRadius.circular(12)),
-                    child: const Text('16 Matches', style: TextStyle(color: AppColors.emeraldDark, fontWeight: FontWeight.w800, fontSize: 11)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.emeraldContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      '16 Matches',
+                      style: TextStyle(
+                        color: AppColors.emeraldDark,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 11,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -884,11 +1190,42 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
               ),
               const SizedBox(height: 16),
 
-              Text('Recent Pitch Appearances', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: sheetText)),
+              Text(
+                'Recent Pitch Appearances',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  color: sheetText,
+                ),
+              ),
               const SizedBox(height: 8),
-              _buildRecentMatchItem('Rawal Sports Arena (F-7)', '5-a-side vs F-7 Wolves', 'Won 7 - 4', 'Yesterday', sheetText, sheetSubtext, cardBg),
-              _buildRecentMatchItem('Margalla Turf Club (E-11)', '7-a-side Friendly', 'Draw 3 - 3', '3 days ago', sheetText, sheetSubtext, cardBg),
-              _buildRecentMatchItem('Capital Padel Club (F-10)', 'Padel Doubles Match', 'Won 2 - 0 sets', 'Last weekend', sheetText, sheetSubtext, cardBg),
+              _buildRecentMatchItem(
+                'Rawal Sports Arena (F-7)',
+                '5-a-side vs F-7 Wolves',
+                'Won 7 - 4',
+                'Yesterday',
+                sheetText,
+                sheetSubtext,
+                cardBg,
+              ),
+              _buildRecentMatchItem(
+                'Margalla Turf Club (E-11)',
+                '7-a-side Friendly',
+                'Draw 3 - 3',
+                '3 days ago',
+                sheetText,
+                sheetSubtext,
+                cardBg,
+              ),
+              _buildRecentMatchItem(
+                'Capital Padel Club (F-10)',
+                'Padel Doubles Match',
+                'Won 2 - 0 sets',
+                'Last weekend',
+                sheetText,
+                sheetSubtext,
+                cardBg,
+              ),
 
               const SizedBox(height: 16),
               SizedBox(
@@ -897,10 +1234,22 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.emerald,
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
-                  icon: const Icon(Icons.confirmation_number_outlined, color: Colors.white, size: 18),
-                  label: const Text('View All Bookings & Passes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                  icon: const Icon(
+                    Icons.confirmation_number_outlined,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  label: const Text(
+                    'View All Bookings & Passes',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   onPressed: () {
                     Navigator.pop(ctx);
                     widget.onNavigateTab?.call(2);
@@ -926,18 +1275,33 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
         child: Center(
           child: Text(
             title,
-            style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 12),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w800,
+              fontSize: 12,
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildRecentMatchItem(String arena, String desc, String result, String time, Color textColor, Color subtextColor, Color bg) {
+  Widget _buildRecentMatchItem(
+    String arena,
+    String desc,
+    String result,
+    String time,
+    Color textColor,
+    Color subtextColor,
+    Color bg,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -945,15 +1309,27 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(arena, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: textColor)),
-                Text('$desc • $time', style: TextStyle(fontSize: 10, color: subtextColor)),
+                Text(
+                  arena,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    color: textColor,
+                  ),
+                ),
+                Text(
+                  '$desc • $time',
+                  style: TextStyle(fontSize: 10, color: subtextColor),
+                ),
               ],
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              color: result.startsWith('Won') ? AppColors.emeraldContainer : Colors.grey.withValues(alpha: 0.2),
+              color: result.startsWith('Won')
+                  ? AppColors.emeraldContainer
+                  : Colors.grey.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -961,7 +1337,9 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
-                color: result.startsWith('Won') ? AppColors.emeraldDark : textColor,
+                color: result.startsWith('Won')
+                    ? AppColors.emeraldDark
+                    : textColor,
               ),
             ),
           ),
@@ -983,8 +1361,12 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             final sheetText = isDark ? Colors.white : AppColors.navy;
-            final sheetSubtext = isDark ? const Color(0xFF94A3B8) : AppColors.textSecondaryLight;
-            final cardBg = isDark ? const Color(0xFF0F172A) : AppColors.surfaceSecondaryLight;
+            final sheetSubtext = isDark
+                ? const Color(0xFF94A3B8)
+                : AppColors.textSecondaryLight;
+            final cardBg = isDark
+                ? const Color(0xFF0F172A)
+                : AppColors.surfaceSecondaryLight;
 
             return Padding(
               padding: const EdgeInsets.all(20),
@@ -1007,10 +1389,28 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Saved Pitches (${_savedPitches.length})', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: sheetText)),
+                        Text(
+                          'Saved Pitches (${_savedPitches.length})',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: sheetText,
+                          ),
+                        ),
                         TextButton.icon(
-                          icon: const Icon(Icons.explore_rounded, size: 16, color: AppColors.emerald),
-                          label: const Text('Explore More', style: TextStyle(color: AppColors.emerald, fontWeight: FontWeight.w700, fontSize: 12)),
+                          icon: const Icon(
+                            Icons.explore_rounded,
+                            size: 16,
+                            color: AppColors.emerald,
+                          ),
+                          label: const Text(
+                            'Explore More',
+                            style: TextStyle(
+                              color: AppColors.emerald,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
+                          ),
                           onPressed: () {
                             Navigator.pop(ctx);
                             widget.onNavigateTab?.call(1);
@@ -1023,8 +1423,11 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 30),
                         child: Center(
-                          child: Text('No saved pitches yet.\nExplore grounds to bookmark your favorites!',
-                              textAlign: TextAlign.center, style: TextStyle(color: sheetSubtext, fontSize: 13)),
+                          child: Text(
+                            'No saved pitches yet.\nExplore grounds to bookmark your favorites!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: sheetSubtext, fontSize: 13),
+                          ),
                         ),
                       )
                     else
@@ -1045,12 +1448,16 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                                   width: 60,
                                   height: 60,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Container(
-                                    width: 60,
-                                    height: 60,
-                                    color: AppColors.emeraldContainer,
-                                    child: const Icon(Icons.sports_soccer, color: AppColors.emerald),
-                                  ),
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Container(
+                                        width: 60,
+                                        height: 60,
+                                        color: AppColors.emeraldContainer,
+                                        child: const Icon(
+                                          Icons.sports_soccer,
+                                          color: AppColors.emerald,
+                                        ),
+                                      ),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -1058,15 +1465,48 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(ground.name, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: sheetText), maxLines: 1),
+                                    Text(
+                                      ground.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 13,
+                                        color: sheetText,
+                                      ),
+                                      maxLines: 1,
+                                    ),
                                     const SizedBox(height: 2),
-                                    Text(ground.location, style: TextStyle(fontSize: 11, color: sheetSubtext), maxLines: 1),
+                                    Text(
+                                      ground.location,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: sheetSubtext,
+                                      ),
+                                      maxLines: 1,
+                                    ),
                                     const SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        const Icon(Icons.star_rounded, size: 14, color: Colors.amber),
-                                        Text(' ${ground.rating}  •  ', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: sheetText)),
-                                        Text('PKR ${ground.pricePerHour.toInt()}/hr', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.emerald)),
+                                        const Icon(
+                                          Icons.star_rounded,
+                                          size: 14,
+                                          color: Colors.amber,
+                                        ),
+                                        Text(
+                                          ' ${ground.rating}  •  ',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w700,
+                                            color: sheetText,
+                                          ),
+                                        ),
+                                        Text(
+                                          'PKR ${ground.pricePerHour.toInt()}/hr',
+                                          style: const TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColors.emerald,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -1075,29 +1515,52 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                               Column(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.favorite_rounded, color: Colors.red, size: 20),
+                                    icon: const Icon(
+                                      Icons.favorite_rounded,
+                                      color: Colors.red,
+                                      size: 20,
+                                    ),
                                     tooltip: 'Remove from Favorites',
                                     onPressed: () {
                                       setSheetState(() {
-                                        _savedPitches.removeWhere((g) => g.id == ground.id);
+                                        _savedPitches.removeWhere(
+                                          (g) => g.id == ground.id,
+                                        );
                                       });
                                       setState(() {});
-                                      _showSnackBar('Removed ${ground.name} from saved pitches');
+                                      _showSnackBar(
+                                        'Removed ${ground.name} from saved pitches',
+                                      );
                                     },
                                   ),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppColors.emerald,
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
                                       minimumSize: Size.zero,
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                     ),
                                     onPressed: () {
                                       Navigator.pop(ctx);
-                                      context.push('/customer/book/${ground.id}');
+                                      context.push(
+                                        '/customer/book/${ground.id}',
+                                      );
                                     },
-                                    child: const Text('Book', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)),
+                                    child: const Text(
+                                      'Book',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -1125,8 +1588,12 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
       ),
       builder: (ctx) {
         final sheetText = isDark ? Colors.white : AppColors.navy;
-        final sheetSubtext = isDark ? const Color(0xFF94A3B8) : AppColors.textSecondaryLight;
-        final cardBg = isDark ? const Color(0xFF0F172A) : AppColors.surfaceSecondaryLight;
+        final sheetSubtext = isDark
+            ? const Color(0xFF94A3B8)
+            : AppColors.textSecondaryLight;
+        final cardBg = isDark
+            ? const Color(0xFF0F172A)
+            : AppColors.surfaceSecondaryLight;
 
         return Padding(
           padding: const EdgeInsets.all(20),
@@ -1147,28 +1614,56 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(Icons.verified_user_rounded, color: AppColors.emerald, size: 28),
+                  const Icon(
+                    Icons.verified_user_rounded,
+                    color: AppColors.emerald,
+                    size: 28,
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Fair Play Score Rating', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: sheetText)),
-                        Text('Sportsmanship score across all bookings', style: TextStyle(fontSize: 11, color: sheetSubtext)),
+                        Text(
+                          'Fair Play Score Rating',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                            color: sheetText,
+                          ),
+                        ),
+                        Text(
+                          'Sportsmanship score across all bookings',
+                          style: TextStyle(fontSize: 11, color: sheetSubtext),
+                        ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.emeraldContainer,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.star_rounded, size: 18, color: Colors.amber),
+                        const Icon(
+                          Icons.star_rounded,
+                          size: 18,
+                          color: Colors.amber,
+                        ),
                         const SizedBox(width: 4),
-                        Text('$_fairPlayScore', style: const TextStyle(fontWeight: FontWeight.w900, color: AppColors.emeraldDark, fontSize: 16)),
+                        Text(
+                          '$_fairPlayScore',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.emeraldDark,
+                            fontSize: 16,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -1176,21 +1671,50 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
               ),
               const SizedBox(height: 18),
 
-              _buildScoreBar('Punctuality (Arrives 10m early)', 5.0, Colors.green, sheetText, cardBg),
-              _buildScoreBar('Pitch Etiquette & Conduct', 4.9, AppColors.emerald, sheetText, cardBg),
-              _buildScoreBar('Zero Disciplinary Violations', 5.0, Colors.blue, sheetText, cardBg),
-              _buildScoreBar('Prompt Payment Clearance', 4.8, Colors.orange, sheetText, cardBg),
+              _buildScoreBar(
+                'Punctuality (Arrives 10m early)',
+                5.0,
+                Colors.green,
+                sheetText,
+                cardBg,
+              ),
+              _buildScoreBar(
+                'Pitch Etiquette & Conduct',
+                4.9,
+                AppColors.emerald,
+                sheetText,
+                cardBg,
+              ),
+              _buildScoreBar(
+                'Zero Disciplinary Violations',
+                5.0,
+                Colors.blue,
+                sheetText,
+                cardBg,
+              ),
+              _buildScoreBar(
+                'Prompt Payment Clearance',
+                4.8,
+                Colors.orange,
+                sheetText,
+                cardBg,
+              ),
 
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF064E3B) : AppColors.limeContainer,
+                  color: isDark
+                      ? const Color(0xFF064E3B)
+                      : AppColors.limeContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.military_tech_rounded, color: AppColors.limeDark),
+                    const Icon(
+                      Icons.military_tech_rounded,
+                      color: AppColors.limeDark,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -1213,16 +1737,41 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
     );
   }
 
-  Widget _buildScoreBar(String title, double score, Color color, Color textColor, Color bg) {
+  Widget _buildScoreBar(
+    String title,
+    double score,
+    Color color,
+    Color textColor,
+    Color bg,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(child: Text(title, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: textColor))),
-          Text('$score / 5.0', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: color)),
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
+            ),
+          ),
+          Text(
+            '$score / 5.0',
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 12,
+              color: color,
+            ),
+          ),
         ],
       ),
     );
@@ -1241,8 +1790,12 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             final sheetText = isDark ? Colors.white : AppColors.navy;
-            final sheetSubtext = isDark ? const Color(0xFF94A3B8) : AppColors.textSecondaryLight;
-            final cardBg = isDark ? const Color(0xFF0F172A) : AppColors.surfaceSecondaryLight;
+            final sheetSubtext = isDark
+                ? const Color(0xFF94A3B8)
+                : AppColors.textSecondaryLight;
+            final cardBg = isDark
+                ? const Color(0xFF0F172A)
+                : AppColors.surfaceSecondaryLight;
 
             return Padding(
               padding: const EdgeInsets.all(20),
@@ -1265,11 +1818,22 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Payment Methods', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: sheetText)),
+                        Text(
+                          'Payment Methods',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: sheetText,
+                          ),
+                        ),
                         IconButton(
-                          icon: const Icon(Icons.add_circle_outline_rounded, color: AppColors.emerald),
+                          icon: const Icon(
+                            Icons.add_circle_outline_rounded,
+                            color: AppColors.emerald,
+                          ),
                           tooltip: 'Add Payment Method',
-                          onPressed: () => _openAddPaymentDialog(isDark, setSheetState),
+                          onPressed: () =>
+                              _openAddPaymentDialog(isDark, setSheetState),
                         ),
                       ],
                     ),
@@ -1279,21 +1843,32 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                       final isDefault = pm['isDefault'] as bool;
                       return Container(
                         margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: cardBg,
                           borderRadius: BorderRadius.circular(16),
-                          border: isDefault ? Border.all(color: AppColors.emerald, width: 1.5) : null,
+                          border: isDefault
+                              ? Border.all(color: AppColors.emerald, width: 1.5)
+                              : null,
                         ),
                         child: Row(
                           children: [
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: (pm['color'] as Color).withValues(alpha: 0.15),
+                                color: (pm['color'] as Color).withValues(
+                                  alpha: 0.15,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Icon(pm['icon'] as IconData, color: pm['color'] as Color, size: 24),
+                              child: Icon(
+                                pm['icon'] as IconData,
+                                color: pm['color'] as Color,
+                                size: 24,
+                              ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
@@ -1302,49 +1877,101 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(pm['title'] as String, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: sheetText)),
+                                      Text(
+                                        pm['title'] as String,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 13,
+                                          color: sheetText,
+                                        ),
+                                      ),
                                       if (isDefault) ...[
                                         const SizedBox(width: 8),
                                         Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(color: AppColors.emeraldContainer, borderRadius: BorderRadius.circular(6)),
-                                          child: const Text('DEFAULT', style: TextStyle(color: AppColors.emeraldDark, fontSize: 9, fontWeight: FontWeight.w900)),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.emeraldContainer,
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'DEFAULT',
+                                            style: TextStyle(
+                                              color: AppColors.emeraldDark,
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ],
                                   ),
                                   const SizedBox(height: 2),
-                                  Text(pm['subtitle'] as String, style: TextStyle(fontSize: 11, color: sheetSubtext)),
+                                  Text(
+                                    pm['subtitle'] as String,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: sheetSubtext,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                             PopupMenuButton<String>(
-                              icon: Icon(Icons.more_vert_rounded, color: sheetSubtext),
-                              color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                              icon: Icon(
+                                Icons.more_vert_rounded,
+                                color: sheetSubtext,
+                              ),
+                              color: isDark
+                                  ? const Color(0xFF1E293B)
+                                  : Colors.white,
                               onSelected: (val) {
                                 if (val == 'default') {
                                   setSheetState(() {
                                     for (var item in _paymentMethods) {
-                                      item['isDefault'] = (item['id'] == pm['id']);
+                                      item['isDefault'] =
+                                          (item['id'] == pm['id']);
                                     }
                                   });
                                   setState(() {});
-                                  _showSnackBar('${pm['type']} set as default payment method');
+                                  _showSnackBar(
+                                    '${pm['type']} set as default payment method',
+                                  );
                                 } else if (val == 'remove') {
                                   if (_paymentMethods.length <= 1) {
-                                    _showSnackBar('Cannot remove your only payment method', isSuccess: false);
+                                    _showSnackBar(
+                                      'Cannot remove your only payment method',
+                                      isSuccess: false,
+                                    );
                                     return;
                                   }
                                   setSheetState(() {
-                                    _paymentMethods.removeWhere((item) => item['id'] == pm['id']);
+                                    _paymentMethods.removeWhere(
+                                      (item) => item['id'] == pm['id'],
+                                    );
                                   });
                                   setState(() {});
-                                  _showSnackBar('Removed ${pm['type']} account');
+                                  _showSnackBar(
+                                    'Removed ${pm['type']} account',
+                                  );
                                 }
                               },
                               itemBuilder: (ctx) => [
-                                const PopupMenuItem(value: 'default', child: Text('Set as Default')),
-                                const PopupMenuItem(value: 'remove', child: Text('Remove Account', style: TextStyle(color: Colors.red))),
+                                const PopupMenuItem(
+                                  value: 'default',
+                                  child: Text('Set as Default'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'remove',
+                                  child: Text(
+                                    'Remove Account',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -1359,11 +1986,23 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
-                        icon: const Icon(Icons.add_rounded, color: Colors.white),
-                        label: const Text('Add JazzCash / EasyPaisa / Card', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-                        onPressed: () => _openAddPaymentDialog(isDark, setSheetState),
+                        icon: const Icon(
+                          Icons.add_rounded,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          'Add JazzCash / EasyPaisa / Card',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        onPressed: () =>
+                            _openAddPaymentDialog(isDark, setSheetState),
                       ),
                     ),
                   ],
@@ -1390,14 +2029,24 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
           builder: (context, setDialogState) {
             return AlertDialog(
               backgroundColor: dialogBg,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              title: Text('Link New Account', style: TextStyle(fontWeight: FontWeight.w800, color: dialogText)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Text(
+                'Link New Account',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: dialogText,
+                ),
+              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: ['JazzCash', 'EasyPaisa', 'Visa Card'].map((type) {
+                    children: ['JazzCash', 'EasyPaisa', 'Visa Card'].map((
+                      type,
+                    ) {
                       final isSel = selectedType == type;
                       return ChoiceChip(
                         label: Text(type),
@@ -1417,13 +2066,21 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                   const SizedBox(height: 14),
                   TextField(
                     controller: accountController,
-                    keyboardType: selectedType == 'Visa Card' ? TextInputType.number : TextInputType.phone,
+                    keyboardType: selectedType == 'Visa Card'
+                        ? TextInputType.number
+                        : TextInputType.phone,
                     style: TextStyle(color: dialogText),
                     decoration: InputDecoration(
-                      labelText: selectedType == 'Visa Card' ? '16-Digit Card Number' : 'Mobile Account Number',
-                      hintText: selectedType == 'Visa Card' ? '4111 2222 3333 4444' : '0300 1234567',
+                      labelText: selectedType == 'Visa Card'
+                          ? '16-Digit Card Number'
+                          : 'Mobile Account Number',
+                      hintText: selectedType == 'Visa Card'
+                          ? '4111 2222 3333 4444'
+                          : '0300 1234567',
                       prefixIcon: Icon(
-                        selectedType == 'Visa Card' ? Icons.credit_card : Icons.phone_android,
+                        selectedType == 'Visa Card'
+                            ? Icons.credit_card
+                            : Icons.phone_android,
                         color: AppColors.emerald,
                       ),
                     ),
@@ -1431,11 +2088,16 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                 ],
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Cancel'),
+                ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.emerald,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   onPressed: () {
                     final text = accountController.text.trim();
@@ -1445,21 +2107,33 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                         'type': selectedType,
                         'title': '$selectedType Account',
                         'subtitle': text,
-                        'icon': selectedType == 'Visa Card' ? Icons.credit_card_rounded : Icons.phone_android_rounded,
+                        'icon': selectedType == 'Visa Card'
+                            ? Icons.credit_card_rounded
+                            : Icons.phone_android_rounded,
                         'color': selectedType == 'JazzCash'
                             ? const Color(0xFFDC2626)
-                            : (selectedType == 'EasyPaisa' ? const Color(0xFF16A34A) : const Color(0xFF2563EB)),
+                            : (selectedType == 'EasyPaisa'
+                                  ? const Color(0xFF16A34A)
+                                  : const Color(0xFF2563EB)),
                         'isDefault': false,
                       };
                       setSheetState(() {
                         _paymentMethods.add(newPm);
                       });
                       setState(() {});
-                      _showSnackBar('Successfully linked $selectedType ($text)');
+                      _showSnackBar(
+                        'Successfully linked $selectedType ($text)',
+                      );
                     }
                     Navigator.pop(ctx);
                   },
-                  child: const Text('Link', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                  child: const Text(
+                    'Link',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ],
             );
@@ -1482,8 +2156,12 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             final sheetText = isDark ? Colors.white : AppColors.navy;
-            final sheetSubtext = isDark ? const Color(0xFF94A3B8) : AppColors.textSecondaryLight;
-            final cardBg = isDark ? const Color(0xFF0F172A) : AppColors.surfaceSecondaryLight;
+            final sheetSubtext = isDark
+                ? const Color(0xFF94A3B8)
+                : AppColors.textSecondaryLight;
+            final cardBg = isDark
+                ? const Color(0xFF0F172A)
+                : AppColors.surfaceSecondaryLight;
 
             return Padding(
               padding: const EdgeInsets.all(20),
@@ -1503,30 +2181,80 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text('Notification Settings', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: sheetText)),
-                    Text('Manage match alerts and pitch notifications', style: TextStyle(fontSize: 11, color: sheetSubtext)),
+                    Text(
+                      'Notification Settings',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: sheetText,
+                      ),
+                    ),
+                    Text(
+                      'Manage match alerts and pitch notifications',
+                      style: TextStyle(fontSize: 11, color: sheetSubtext),
+                    ),
                     const SizedBox(height: 14),
 
-                    _buildNotificationToggle('Match Reminders', '1 hour prior to kickoff with pitch directions', _matchReminders, sheetText, sheetSubtext, cardBg, (val) {
-                      setSheetState(() => _matchReminders = val);
-                      setState(() {});
-                    }),
-                    _buildNotificationToggle('Slot Drop Alerts', 'Instant ping when prime 8 PM slots open up', _slotDropAlerts, sheetText, sheetSubtext, cardBg, (val) {
-                      setSheetState(() => _slotDropAlerts = val);
-                      setState(() {});
-                    }),
-                    _buildNotificationToggle('Rain & Weather Alerts', 'Warnings on turf waterlogging & pitch delays', _weatherAlerts, sheetText, sheetSubtext, cardBg, (val) {
-                      setSheetState(() => _weatherAlerts = val);
-                      setState(() {});
-                    }),
-                    _buildNotificationToggle('Special Offers & Tournaments', 'Weekend tournament invitations & discounts', _promoAlerts, sheetText, sheetSubtext, cardBg, (val) {
-                      setSheetState(() => _promoAlerts = val);
-                      setState(() {});
-                    }),
-                    _buildNotificationToggle('Sound & In-App Alerts', 'Vibrate and play whistle on confirmation', _soundAlerts, sheetText, sheetSubtext, cardBg, (val) {
-                      setSheetState(() => _soundAlerts = val);
-                      setState(() {});
-                    }),
+                    _buildNotificationToggle(
+                      'Match Reminders',
+                      '1 hour prior to kickoff with pitch directions',
+                      _matchReminders,
+                      sheetText,
+                      sheetSubtext,
+                      cardBg,
+                      (val) {
+                        setSheetState(() => _matchReminders = val);
+                        setState(() {});
+                      },
+                    ),
+                    _buildNotificationToggle(
+                      'Slot Drop Alerts',
+                      'Instant ping when prime 8 PM slots open up',
+                      _slotDropAlerts,
+                      sheetText,
+                      sheetSubtext,
+                      cardBg,
+                      (val) {
+                        setSheetState(() => _slotDropAlerts = val);
+                        setState(() {});
+                      },
+                    ),
+                    _buildNotificationToggle(
+                      'Rain & Weather Alerts',
+                      'Warnings on turf waterlogging & pitch delays',
+                      _weatherAlerts,
+                      sheetText,
+                      sheetSubtext,
+                      cardBg,
+                      (val) {
+                        setSheetState(() => _weatherAlerts = val);
+                        setState(() {});
+                      },
+                    ),
+                    _buildNotificationToggle(
+                      'Special Offers & Tournaments',
+                      'Weekend tournament invitations & discounts',
+                      _promoAlerts,
+                      sheetText,
+                      sheetSubtext,
+                      cardBg,
+                      (val) {
+                        setSheetState(() => _promoAlerts = val);
+                        setState(() {});
+                      },
+                    ),
+                    _buildNotificationToggle(
+                      'Sound & In-App Alerts',
+                      'Vibrate and play whistle on confirmation',
+                      _soundAlerts,
+                      sheetText,
+                      sheetSubtext,
+                      cardBg,
+                      (val) {
+                        setSheetState(() => _soundAlerts = val);
+                        setState(() {});
+                      },
+                    ),
 
                     const SizedBox(height: 12),
                     SizedBox(
@@ -1535,13 +2263,23 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.emerald,
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
                         onPressed: () {
                           Navigator.pop(ctx);
-                          _showSnackBar('Notification preferences saved successfully!');
+                          _showSnackBar(
+                            'Notification preferences saved successfully!',
+                          );
                         },
-                        child: const Text('Save Preferences', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                        child: const Text(
+                          'Save Preferences',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -1554,19 +2292,40 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
     );
   }
 
-  Widget _buildNotificationToggle(String title, String subtitle, bool value, Color textColor, Color subtextColor, Color bg, ValueChanged<bool> onChanged) {
+  Widget _buildNotificationToggle(
+    String title,
+    String subtitle,
+    bool value,
+    Color textColor,
+    Color subtextColor,
+    Color bg,
+    ValueChanged<bool> onChanged,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(14),
+      ),
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: textColor)),
-                Text(subtitle, style: TextStyle(fontSize: 10, color: subtextColor)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: textColor,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: TextStyle(fontSize: 10, color: subtextColor),
+                ),
               ],
             ),
           ),
@@ -1593,8 +2352,12 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
       ),
       builder: (ctx) {
         final sheetText = isDark ? Colors.white : AppColors.navy;
-        final sheetSubtext = isDark ? const Color(0xFF94A3B8) : AppColors.textSecondaryLight;
-        final cardBg = isDark ? const Color(0xFF0F172A) : AppColors.surfaceSecondaryLight;
+        final sheetSubtext = isDark
+            ? const Color(0xFF94A3B8)
+            : AppColors.textSecondaryLight;
+        final cardBg = isDark
+            ? const Color(0xFF0F172A)
+            : AppColors.surfaceSecondaryLight;
 
         return Padding(
           padding: EdgeInsets.only(
@@ -1619,20 +2382,51 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text('Help & Pitch Support', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: sheetText)),
-                Text('24/7 assistance for match slots in Islamabad & Rawalpindi', style: TextStyle(fontSize: 11, color: sheetSubtext)),
+                Text(
+                  'Help & Pitch Support',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: sheetText,
+                  ),
+                ),
+                Text(
+                  '24/7 assistance for match slots in Islamabad & Rawalpindi',
+                  style: TextStyle(fontSize: 11, color: sheetSubtext),
+                ),
                 const SizedBox(height: 16),
 
                 // WhatsApp Support Action
                 ListTile(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   tileColor: const Color(0xFFDCFCE7),
-                  leading: const Icon(Icons.chat_bubble_rounded, color: Color(0xFF15803D)),
-                  title: const Text('WhatsApp 24/7 Concierge', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: Color(0xFF15803D))),
-                  subtitle: const Text('+92 333 5123456 • Instant response for slot queries', style: TextStyle(fontSize: 11, color: Color(0xFF166534))),
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF15803D)),
+                  leading: const Icon(
+                    Icons.chat_bubble_rounded,
+                    color: Color(0xFF15803D),
+                  ),
+                  title: const Text(
+                    'WhatsApp 24/7 Concierge',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                      color: Color(0xFF15803D),
+                    ),
+                  ),
+                  subtitle: const Text(
+                    '+92 333 5123456 • Instant response for slot queries',
+                    style: TextStyle(fontSize: 11, color: Color(0xFF166534)),
+                  ),
+                  trailing: const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 14,
+                    color: Color(0xFF15803D),
+                  ),
                   onTap: () {
-                    _showSnackBar('Connecting to GroundZero WhatsApp concierge...');
+                    _showSnackBar(
+                      'Connecting to GroundZero WhatsApp concierge...',
+                    );
                   },
                 ),
 
@@ -1640,25 +2434,68 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
 
                 // Direct Call Helpline
                 ListTile(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   tileColor: cardBg,
-                  leading: const Icon(Icons.phone_in_talk_rounded, color: AppColors.emerald),
-                  title: Text('Helpline: +92 (51) 8899000', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: sheetText)),
-                  subtitle: Text('Call GroundZero operational desk', style: TextStyle(fontSize: 11, color: sheetSubtext)),
+                  leading: const Icon(
+                    Icons.phone_in_talk_rounded,
+                    color: AppColors.emerald,
+                  ),
+                  title: Text(
+                    'Helpline: +92 (51) 8899000',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      color: sheetText,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Call GroundZero operational desk',
+                    style: TextStyle(fontSize: 11, color: sheetSubtext),
+                  ),
                   onTap: () {
-                    _showSnackBar('Dialing GroundZero Hotline: +92 (51) 8899000');
+                    _showSnackBar(
+                      'Dialing GroundZero Hotline: +92 (51) 8899000',
+                    );
                   },
                 ),
 
                 const SizedBox(height: 14),
 
-                Text('Frequently Asked Questions', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: sheetText)),
+                Text(
+                  'Frequently Asked Questions',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                    color: sheetText,
+                  ),
+                ),
                 const SizedBox(height: 6),
-                _buildFaqItem('Can I cancel or reschedule a booking?', 'Yes, cancellations made up to 6 hours before kickoff receive a 100% wallet credit or refund.', sheetText, sheetSubtext, cardBg),
-                _buildFaqItem('What if it rains on an outdoor pitch?', 'Ground owners notify players 2 hours prior and issue an automatic rain-check rescheduling token.', sheetText, sheetSubtext, cardBg),
+                _buildFaqItem(
+                  'Can I cancel or reschedule a booking?',
+                  'Yes, cancellations made up to 6 hours before kickoff receive a 100% wallet credit or refund.',
+                  sheetText,
+                  sheetSubtext,
+                  cardBg,
+                ),
+                _buildFaqItem(
+                  'What if it rains on an outdoor pitch?',
+                  'Ground owners notify players 2 hours prior and issue an automatic rain-check rescheduling token.',
+                  sheetText,
+                  sheetSubtext,
+                  cardBg,
+                ),
 
                 const SizedBox(height: 14),
-                Text('Send Feedback / Report an Issue', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: sheetText)),
+                Text(
+                  'Send Feedback / Report an Issue',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                    color: sheetText,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 TextField(
                   controller: feedbackController,
@@ -1674,18 +2511,31 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.emerald,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     onPressed: () {
                       final text = feedbackController.text.trim();
                       if (text.isNotEmpty) {
                         Navigator.pop(ctx);
-                        _showSnackBar('Thank you! Your feedback has been sent to our desk.');
+                        _showSnackBar(
+                          'Thank you! Your feedback has been sent to our desk.',
+                        );
                       } else {
-                        _showSnackBar('Please enter your feedback first', isSuccess: false);
+                        _showSnackBar(
+                          'Please enter your feedback first',
+                          isSuccess: false,
+                        );
                       }
                     },
-                    child: const Text('Submit Feedback', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                    child: const Text(
+                      'Submit Feedback',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -1696,16 +2546,35 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
     );
   }
 
-  Widget _buildFaqItem(String q, String a, Color textColor, Color subtextColor, Color bg) {
+  Widget _buildFaqItem(
+    String q,
+    String a,
+    Color textColor,
+    Color subtextColor,
+    Color bg,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: ExpansionTile(
-        title: Text(q, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: textColor)),
+        title: Text(
+          q,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: textColor,
+          ),
+        ),
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
-            child: Text(a, style: TextStyle(fontSize: 11, color: subtextColor, height: 1.4)),
+            child: Text(
+              a,
+              style: TextStyle(fontSize: 11, color: subtextColor, height: 1.4),
+            ),
           ),
         ],
       ),
@@ -1722,17 +2591,30 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
 
         return AlertDialog(
           backgroundColor: dialogBg,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: Row(
             children: [
               const Icon(Icons.logout_rounded, color: AppColors.error),
               const SizedBox(width: 10),
-              Text('Log Out?', style: TextStyle(fontWeight: FontWeight.w800, color: dialogText)),
+              Text(
+                'Log Out?',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: dialogText,
+                ),
+              ),
             ],
           ),
           content: Text(
             'Are you sure you want to log out of GroundZero? You will need to log back in to access your digital passes and pitch reservations.',
-            style: TextStyle(color: isDark ? const Color(0xFF94A3B8) : AppColors.textSecondaryLight, fontSize: 13),
+            style: TextStyle(
+              color: isDark
+                  ? const Color(0xFF94A3B8)
+                  : AppColors.textSecondaryLight,
+              fontSize: 13,
+            ),
           ),
           actions: [
             TextButton(
@@ -1742,7 +2624,9 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onPressed: () async {
                 Navigator.pop(ctx);
@@ -1752,7 +2636,13 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
                   context.go(AppRoutes.login);
                 }
               },
-              child: const Text('Log Out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+              child: const Text(
+                'Log Out',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ],
         );
@@ -1850,9 +2740,23 @@ class _CustomerProfileScreenState extends ConsumerState<CustomerProfileScreen> {
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         leading: Icon(icon, color: AppColors.emerald, size: 20),
-        title: Text(title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: textColor)),
-        subtitle: Text(subtitle, style: TextStyle(fontSize: 11, color: subtextColor)),
-        trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14, color: subtextColor),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: textColor,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(fontSize: 11, color: subtextColor),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios_rounded,
+          size: 14,
+          color: subtextColor,
+        ),
       ),
     );
   }

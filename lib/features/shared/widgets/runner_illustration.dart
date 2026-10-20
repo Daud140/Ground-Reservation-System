@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 
 class RunnerIllustrationWidget extends StatelessWidget {
@@ -51,14 +52,17 @@ class _RunnerAuraPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width * 0.52, size.height * 0.48);
     final paintAura = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          AppColors.lime.withValues(alpha: 0.35),
-          AppColors.emeraldLight.withValues(alpha: 0.2),
-          Colors.transparent,
-        ],
-        stops: const [0.0, 0.5, 1.0],
-      ).createShader(Rect.fromCircle(center: center, radius: size.width * 0.45));
+      ..shader =
+          RadialGradient(
+            colors: [
+              AppColors.lime.withValues(alpha: 0.35),
+              AppColors.emeraldLight.withValues(alpha: 0.2),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ).createShader(
+            Rect.fromCircle(center: center, radius: size.width * 0.45),
+          );
 
     canvas.drawCircle(center, size.width * 0.45, paintAura);
 
@@ -71,12 +75,22 @@ class _RunnerAuraPainter extends CustomPainter {
 
     final path1 = Path()
       ..moveTo(size.width * 0.15, size.height * 0.45)
-      ..quadraticBezierTo(size.width * 0.35, size.height * 0.3, size.width * 0.7, size.height * 0.25);
+      ..quadraticBezierTo(
+        size.width * 0.35,
+        size.height * 0.3,
+        size.width * 0.7,
+        size.height * 0.25,
+      );
     canvas.drawPath(path1, streakPaint);
 
     final path2 = Path()
       ..moveTo(size.width * 0.1, size.height * 0.65)
-      ..quadraticBezierTo(size.width * 0.4, size.height * 0.58, size.width * 0.85, size.height * 0.5);
+      ..quadraticBezierTo(
+        size.width * 0.4,
+        size.height * 0.58,
+        size.width * 0.85,
+        size.height * 0.5,
+      );
     canvas.drawPath(path2, streakPaint);
   }
 
@@ -135,7 +149,8 @@ class _RunnerFigurePainter extends CustomPainter {
 
     // 2. Stylized athlete figure (solid emerald silhouette with motion)
     final bodyPaint = Paint()
-      ..color = const Color(0xFF047857) // Deep energetic forest emerald
+      ..color =
+          const Color(0xFF047857) // Deep energetic forest emerald
       ..style = PaintingStyle.fill;
 
     final limbPaint = Paint()

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 import 'owner_dashboard_screen.dart';
 import 'owner_booking_requests_screen.dart';
@@ -37,10 +38,7 @@ class _OwnerMainShellState extends State<OwnerMainShell> {
     ];
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -89,7 +87,9 @@ class _OwnerMainShellState extends State<OwnerMainShell> {
             Icon(
               icon,
               size: 22,
-              color: isSelected ? AppColors.emeraldDark : AppColors.textSecondaryLight,
+              color: isSelected
+                  ? AppColors.emeraldDark
+                  : AppColors.textSecondaryLight,
             ),
             const SizedBox(height: 3),
             Text(
@@ -97,7 +97,9 @@ class _OwnerMainShellState extends State<OwnerMainShell> {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                color: isSelected ? AppColors.emeraldDark : AppColors.textSecondaryLight,
+                color: isSelected
+                    ? AppColors.emeraldDark
+                    : AppColors.textSecondaryLight,
               ),
             ),
           ],

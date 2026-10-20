@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 
 class MiniMapPreviewWidget extends StatelessWidget {
@@ -40,7 +41,10 @@ class MiniMapPreviewWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.navy,
                       borderRadius: BorderRadius.circular(12),
@@ -55,7 +59,11 @@ class MiniMapPreviewWidget extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.location_on, color: AppColors.emerald, size: 14),
+                        const Icon(
+                          Icons.location_on,
+                          color: AppColors.emerald,
+                          size: 14,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           venueName,
@@ -85,7 +93,11 @@ class MiniMapPreviewWidget extends StatelessWidget {
                       ],
                     ),
                     child: const Center(
-                      child: Icon(Icons.sports_soccer, color: Colors.white, size: 11),
+                      child: Icon(
+                        Icons.sports_soccer,
+                        color: Colors.white,
+                        size: 11,
+                      ),
                     ),
                   ),
                 ],
@@ -99,7 +111,10 @@ class MiniMapPreviewWidget extends StatelessWidget {
                 onTap: onDirectionsTap,
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
@@ -114,7 +129,11 @@ class MiniMapPreviewWidget extends StatelessWidget {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.directions, color: AppColors.emerald, size: 14),
+                      Icon(
+                        Icons.directions,
+                        color: AppColors.emerald,
+                        size: 14,
+                      ),
                       SizedBox(width: 4),
                       Text(
                         'Directions',
@@ -148,8 +167,20 @@ class _MapStylingPainter extends CustomPainter {
 
     // Green parks/open areas
     final parkPaint = Paint()..color = const Color(0xFFDCFCE7);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.05, h * 0.1, w * 0.25, h * 0.5), const Radius.circular(8)), parkPaint);
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.65, h * 0.4, w * 0.3, h * 0.5), const Radius.circular(8)), parkPaint);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(w * 0.05, h * 0.1, w * 0.25, h * 0.5),
+        const Radius.circular(8),
+      ),
+      parkPaint,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(w * 0.65, h * 0.4, w * 0.3, h * 0.5),
+        const Radius.circular(8),
+      ),
+      parkPaint,
+    );
 
     // Minor roads
     final roadPaint = Paint()

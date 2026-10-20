@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../constants/app_colors.dart';
 import '../widgets/custom_button.dart';
 import 'login_screen.dart';
@@ -109,8 +110,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<GroundItem> get _filteredGrounds {
     return _grounds.where((item) {
-      final matchesCategory = _selectedCategory == 'All' || item.sport == _selectedCategory;
-      final matchesSearch = item.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+      final matchesCategory =
+          _selectedCategory == 'All' || item.sport == _selectedCategory;
+      final matchesSearch =
+          item.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           item.location.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           item.sport.toLowerCase().contains(_searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
@@ -156,7 +159,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: AppColors.primaryLight,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Icon(ground.sportIcon, color: AppColors.primaryDark),
+                        child: Icon(
+                          ground.sportIcon,
+                          color: AppColors.primaryDark,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -204,7 +210,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         selected: isSelected,
                         selectedColor: AppColors.primary,
                         labelStyle: TextStyle(
-                          color: isSelected ? Colors.white : AppColors.textPrimary,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textPrimary,
                           fontWeight: FontWeight.w600,
                         ),
                         onSelected: (selected) {
@@ -217,7 +225,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 24),
                   CustomButton(
-                    text: 'Confirm & Reserve Ground (\$${ground.pricePerHour.toStringAsFixed(0)})',
+                    text:
+                        'Confirm & Reserve Ground (\$${ground.pricePerHour.toStringAsFixed(0)})',
                     icon: Icons.check_circle_outline,
                     onPressed: () {
                       Navigator.pop(ctx);
@@ -247,11 +256,16 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to log out of Ground Reservation System?'),
+        content: const Text(
+          'Are you sure you want to log out of Ground Reservation System?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
@@ -262,7 +276,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 (route) => false,
               );
             },
-            child: const Text('Sign Out', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Sign Out',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -285,7 +302,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 gradient: AppColors.primaryGradient,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.sports_soccer_rounded, color: Colors.white, size: 20),
+              child: const Icon(
+                Icons.sports_soccer_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 10),
             const Column(
@@ -312,7 +333,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_none_rounded, color: AppColors.textPrimary),
+            icon: const Icon(
+              Icons.notifications_none_rounded,
+              color: AppColors.textPrimary,
+            ),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('No new notifications')),
@@ -334,10 +358,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Signed in as:', style: TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                    const Text(
+                      'Signed in as:',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
                     Text(
                       widget.userEmail.isNotEmpty ? widget.userEmail : 'User',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ],
                 ),
@@ -347,9 +381,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 value: 'logout',
                 child: Row(
                   children: [
-                    Icon(Icons.logout_rounded, size: 18, color: AppColors.error),
+                    Icon(
+                      Icons.logout_rounded,
+                      size: 18,
+                      color: AppColors.error,
+                    ),
                     SizedBox(width: 8),
-                    Text('Sign Out', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w600)),
+                    Text(
+                      'Sign Out',
+                      style: TextStyle(
+                        color: AppColors.error,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -373,10 +417,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       onChanged: (val) => setState(() => _searchQuery = val),
                       decoration: InputDecoration(
                         hintText: 'Search grounds, turfs, sports...',
-                        prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: AppColors.textSecondary,
+                        ),
                         filled: true,
                         fillColor: AppColors.inputBackground,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 0,
+                          horizontal: 16,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -399,8 +449,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                               selectedColor: AppColors.primaryDark,
                               labelStyle: TextStyle(
-                                color: isSelected ? Colors.white : AppColors.textPrimary,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.textPrimary,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                                 fontSize: 13,
                               ),
                               backgroundColor: AppColors.inputBackground,
@@ -424,16 +478,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.sports_soccer_outlined, size: 64, color: AppColors.textMuted.withValues(alpha: 0.5)),
+                            Icon(
+                              Icons.sports_soccer_outlined,
+                              size: 64,
+                              color: AppColors.textMuted.withValues(alpha: 0.5),
+                            ),
                             const SizedBox(height: 12),
                             const Text(
                               'No grounds found',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             const Text(
                               'Try selecting another category or clear search query',
-                              style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textMuted,
+                              ),
                             ),
                           ],
                         ),
@@ -441,7 +506,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     : ListView.separated(
                         padding: const EdgeInsets.all(16),
                         itemCount: _filteredGrounds.length,
-                        separatorBuilder: (context, index) => const SizedBox(height: 14),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 14),
                         itemBuilder: (context, index) {
                           final ground = _filteredGrounds[index];
                           return Card(
@@ -456,14 +522,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         width: 52,
                                         height: 52,
                                         decoration: BoxDecoration(
                                           color: AppColors.primaryLight,
-                                          borderRadius: BorderRadius.circular(14),
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
                                         ),
                                         child: Icon(
                                           ground.sportIcon,
@@ -474,33 +543,48 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const SizedBox(width: 14),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Flexible(
                                                   child: Text(
                                                     ground.name,
                                                     style: const TextStyle(
                                                       fontSize: 16,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: AppColors.textPrimary,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          AppColors.textPrimary,
                                                     ),
                                                   ),
                                                 ),
                                                 Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 3,
+                                                      ),
                                                   decoration: BoxDecoration(
-                                                    color: AppColors.primaryLight,
-                                                    borderRadius: BorderRadius.circular(8),
+                                                    color:
+                                                        AppColors.primaryLight,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
                                                   ),
                                                   child: Text(
                                                     ground.sport,
                                                     style: const TextStyle(
                                                       fontSize: 11,
-                                                      fontWeight: FontWeight.w700,
-                                                      color: AppColors.primaryDark,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color:
+                                                          AppColors.primaryDark,
                                                     ),
                                                   ),
                                                 ),
@@ -509,14 +593,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                             const SizedBox(height: 4),
                                             Row(
                                               children: [
-                                                const Icon(Icons.location_on_outlined, size: 14, color: AppColors.textSecondary),
+                                                const Icon(
+                                                  Icons.location_on_outlined,
+                                                  size: 14,
+                                                  color:
+                                                      AppColors.textSecondary,
+                                                ),
                                                 const SizedBox(width: 4),
                                                 Expanded(
                                                   child: Text(
                                                     ground.location,
-                                                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                                                    style: const TextStyle(
+                                                      fontSize: 12,
+                                                      color: AppColors
+                                                          .textSecondary,
+                                                    ),
                                                     maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                               ],
@@ -527,17 +621,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ],
                                   ),
                                   const SizedBox(height: 14),
-                                  const Divider(height: 1, color: AppColors.border),
+                                  const Divider(
+                                    height: 1,
+                                    color: AppColors.border,
+                                  ),
                                   const SizedBox(height: 12),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
-                                              const Icon(Icons.star_rounded, size: 18, color: AppColors.accent),
+                                              const Icon(
+                                                Icons.star_rounded,
+                                                size: 18,
+                                                color: AppColors.accent,
+                                              ),
                                               const SizedBox(width: 3),
                                               Text(
                                                 '${ground.rating}',
@@ -549,7 +652,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                               Text(
                                                 ' (${ground.reviewsCount})',
-                                                style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: AppColors.textMuted,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -565,14 +671,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ],
                                       ),
                                       ElevatedButton.icon(
-                                        onPressed: () => _showBookingSheet(ground),
-                                        icon: const Icon(Icons.calendar_month_rounded, size: 16, color: Colors.white),
-                                        label: const Text('Book Slot', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
+                                        onPressed: () =>
+                                            _showBookingSheet(ground),
+                                        icon: const Icon(
+                                          Icons.calendar_month_rounded,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                        label: const Text(
+                                          'Book Slot',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: AppColors.primary,
-                                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 18,
+                                            vertical: 10,
+                                          ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
                                           ),
                                         ),
                                       ),

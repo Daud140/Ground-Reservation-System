@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+
 import '../constants/app_colors.dart';
 import '../core/storage/hive_boxes.dart';
 import '../widgets/custom_button.dart';
@@ -27,7 +29,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _agreeToTerms = false;
   bool _isLoading = false;
 
-  final List<String> _sports = ['Football', 'Cricket', 'Tennis', 'Badminton', 'Basketball'];
+  final List<String> _sports = [
+    'Football',
+    'Cricket',
+    'Tennis',
+    'Badminton',
+    'Basketball',
+  ];
   final Set<String> _selectedSports = {'Football'};
 
   @override
@@ -81,7 +89,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             setState(() => _isLoading = false);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('An account with this email already exists. Please sign in.'),
+                content: Text(
+                  'An account with this email already exists. Please sign in.',
+                ),
                 backgroundColor: AppColors.error,
               ),
             );
@@ -103,7 +113,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       };
       await usersBox.put(newId, jsonEncode(newUserMap));
       debugPrint('========================================================');
-      debugPrint('📦 [HIVE DATABASE] SAVED NEW ACCOUNT TO BOX: ${HiveBoxes.usersBox}');
+      debugPrint(
+        '📦 [HIVE DATABASE] SAVED NEW ACCOUNT TO BOX: ${HiveBoxes.usersBox}',
+      );
       debugPrint('🔑 KEY: $newId');
       debugPrint('📄 STORED DATA: ${jsonEncode(newUserMap)}');
       debugPrint('========================================================');
@@ -124,11 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          userEmail: email,
-        ),
-      ),
+      MaterialPageRoute(builder: (context) => HomeScreen(userEmail: email)),
       (route) => false,
     );
   }
@@ -141,7 +149,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.textPrimary,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
@@ -209,7 +220,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (val.trim().length < 3) {
                             return 'Full name must be at least 3 characters';
                           }
-                          if (!RegExp(r"^[a-zA-Z\s'-]+$").hasMatch(val.trim())) {
+                          if (!RegExp(r"^[a-zA-Z\s'-]+$")
+                              .hasMatch(val.trim())) {
                             return 'Full name must contain letters only';
                           }
                           return null;
@@ -220,7 +232,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       // 3. EMAIL FIELD: Must be valid format and contain at least one uppercase letter
                       CustomTextField(
                         controller: _emailController,
-                        label: 'Email Address (Must contain an uppercase letter)',
+                        label:
+                            'Email Address (Must contain an uppercase letter)',
                         hintText: 'User@example.com',
                         prefixIcon: Icons.email_outlined,
                         keyboardType: TextInputType.emailAddress,
@@ -231,7 +244,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (!RegExp(r'[A-Z]').hasMatch(val)) {
                             return 'Email must contain at least one uppercase letter (e.g. User@example.com)';
                           }
-                          if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(val)) {
+                          if (!RegExp(
+                            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                          ).hasMatch(val)) {
                             return 'Please enter a valid email format (e.g. User@example.com)';
                           }
                           return null;
@@ -253,7 +268,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (!RegExp(r'^[0-9]+$').hasMatch(val.trim())) {
                             return 'Phone number must accept digits only (no letters, symbols, or spaces)';
                           }
-                          if (val.trim().length < 10 || val.trim().length > 11) {
+                          if (val.trim().length < 10 ||
+                              val.trim().length > 11) {
                             return 'Phone number must be 10 or 11 digits (e.g. 03001234567)';
                           }
                           return null;
@@ -287,7 +303,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 spacing: 8,
                                 runSpacing: 8,
                                 children: _sports.map((sport) {
-                                  final isSelected = _selectedSports.contains(sport);
+                                  final isSelected = _selectedSports.contains(
+                                    sport,
+                                  );
                                   return FilterChip(
                                     label: Text(sport),
                                     selected: isSelected,
@@ -307,14 +325,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     checkmarkColor: AppColors.primaryDark,
                                     labelStyle: TextStyle(
                                       fontSize: 12,
-                                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                      color: isSelected ? AppColors.primaryDark : AppColors.textSecondary,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
+                                      color: isSelected
+                                          ? AppColors.primaryDark
+                                          : AppColors.textSecondary,
                                     ),
                                     backgroundColor: AppColors.inputBackground,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
                                       side: BorderSide(
-                                        color: isSelected ? AppColors.primary : AppColors.border,
+                                        color: isSelected
+                                            ? AppColors.primary
+                                            : AppColors.border,
                                       ),
                                     ),
                                   );
@@ -324,7 +348,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 const SizedBox(height: 6),
                                 Text(
                                   state.errorText!,
-                                  style: const TextStyle(color: AppColors.error, fontSize: 12),
+                                  style: const TextStyle(
+                                    color: AppColors.error,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ],
                             ],
@@ -343,11 +370,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         helperText: 'Rules: Min 6 chars, at least 1 uppercase letter (A-Z), at least 1 number (0-9)',
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                             color: AppColors.textSecondary,
                             size: 20,
                           ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                         validator: (val) {
                           if (val == null || val.isEmpty) {
@@ -376,11 +407,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         obscureText: _obscureConfirmPassword,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            _obscureConfirmPassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                             color: AppColors.textSecondary,
                             size: 20,
                           ),
-                          onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                          onPressed: () => setState(
+                            () => _obscureConfirmPassword =
+                                !_obscureConfirmPassword,
+                          ),
                         ),
                         validator: (val) {
                           if (val == null || val.isEmpty) {
@@ -404,15 +440,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             child: Checkbox(
                               value: _agreeToTerms,
                               activeColor: AppColors.primary,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                              onChanged: (val) => setState(() => _agreeToTerms = val ?? false),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              onChanged: (val) =>
+                                  setState(() => _agreeToTerms = val ?? false),
                             ),
                           ),
                           const SizedBox(width: 8),
                           const Expanded(
                             child: Text(
                               'I agree to the Terms of Service and Privacy Policy',
-                              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           ),
                         ],
@@ -434,7 +476,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           const Text(
                             'Already have an account? ',
-                            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
                           GestureDetector(
                             onTap: () => Navigator.of(context).pop(),

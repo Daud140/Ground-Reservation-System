@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../data/repositories/repository_providers.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../booking/models/booking_model.dart';
 
 class CustomerBookingsScreen extends ConsumerStatefulWidget {
   const CustomerBookingsScreen({super.key});
 
   @override
-  ConsumerState<CustomerBookingsScreen> createState() => _CustomerBookingsScreenState();
+  ConsumerState<CustomerBookingsScreen> createState() =>
+      _CustomerBookingsScreenState();
 }
 
-class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen> {
+class _CustomerBookingsScreenState
+    extends ConsumerState<CustomerBookingsScreen> {
   int _activeTab = 0; // 0: Upcoming, 1: Completed, 2: Cancelled
 
   @override
   Widget build(BuildContext context) {
     final bookingRepo = ref.watch(bookingRepositoryProvider);
+    final authState = ref.watch(authProvider);
+    final currentCustomerId = authState.user?.id ?? 'customer_sport_demo';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -37,13 +43,23 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
         future: bookingRepo.getAllBookings(),
         builder: (context, snapshot) {
           final allBookings = snapshot.data ?? [];
-          final filteredBookings = allBookings.where((b) {
+          final customerBookings = allBookings
+              .where(
+                (b) =>
+                    b.customerId == currentCustomerId ||
+                    b.customerId == 'customer_sport_demo',
+              )
+              .toList();
+
+          final filteredBookings = customerBookings.where((b) {
             if (_activeTab == 0) {
-              return b.status == BookingStatus.confirmed || b.status == BookingStatus.pending;
+              return b.status == BookingStatus.confirmed ||
+                  b.status == BookingStatus.pending;
             } else if (_activeTab == 1) {
               return b.status == BookingStatus.completed;
             } else {
-              return b.status == BookingStatus.cancelled || b.status == BookingStatus.rejected;
+              return b.status == BookingStatus.cancelled ||
+                  b.status == BookingStatus.rejected;
             }
           }).toList();
 
@@ -51,7 +67,10 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
             children: [
               Container(
                 color: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Row(
                   children: [
                     _buildTab('Upcoming', 0),
@@ -70,7 +89,9 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
                         itemCount: filteredBookings.length,
                         itemBuilder: (context, index) {
                           final booking = filteredBookings[index];
-                          final canCancel = booking.status == BookingStatus.confirmed || booking.status == BookingStatus.pending;
+                          final canCancel =
+                              booking.status == BookingStatus.confirmed ||
+                              booking.status == BookingStatus.pending;
 
                           return Container(
                             margin: const EdgeInsets.only(bottom: 12),
@@ -84,7 +105,8 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
                                       child: Text(
@@ -98,7 +120,10 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
                                       ),
                                     ),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: booking.status.containerColor,
                                         borderRadius: BorderRadius.circular(8),
@@ -117,15 +142,23 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
                                 const SizedBox(height: 6),
                                 Text(
                                   '${booking.date} • ${booking.timeSlot}',
-                                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondaryLight),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.textSecondaryLight,
+                                  ),
                                 ),
                                 const SizedBox(height: 12),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       'PKR ${booking.totalPrice.toInt()} Paid',
-                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.emeraldDark),
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.emeraldDark,
+                                      ),
                                     ),
                                     Row(
                                       children: [
@@ -135,49 +168,100 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
                                               final confirmed = await showDialog<bool>(
                                                 context: context,
                                                 builder: (ctx) => AlertDialog(
-                                                  title: const Text('Cancel Booking?'),
+                                                  title: const Text(
+                                                    'Cancel Booking?',
+                                                  ),
                                                   content: Text(
                                                     'Are you sure you want to cancel this booking (${booking.groundName} - PKR ${booking.totalPrice.toInt()})?\n\nIf confirmed, this will reduce owner revenue accordingly.',
                                                   ),
                                                   actions: [
                                                     TextButton(
-                                                      onPressed: () => Navigator.pop(ctx, false),
-                                                      child: const Text('Keep Booking'),
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                            ctx,
+                                                            false,
+                                                          ),
+                                                      child: const Text(
+                                                        'Keep Booking',
+                                                      ),
                                                     ),
                                                     ElevatedButton(
-                                                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-                                                      onPressed: () => Navigator.pop(ctx, true),
-                                                      child: const Text('Confirm Cancel', style: TextStyle(color: Colors.white)),
+                                                      style:
+                                                          ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                AppColors.error,
+                                                          ),
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                            ctx,
+                                                            true,
+                                                          ),
+                                                      child: const Text(
+                                                        'Confirm Cancel',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
                                               );
                                               if (confirmed == true) {
-                                                await bookingRepo.cancelBooking(booking.id);
+                                                await bookingRepo.cancelBooking(
+                                                  booking.id,
+                                                );
                                                 setState(() {});
                                                 if (context.mounted) {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text('Booking cancelled. Owner revenue reduced accordingly.'),
-                                                      backgroundColor: AppColors.error,
-                                                    ),
-                                                  );
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                            'Booking cancelled. Owner revenue reduced accordingly.',
+                                                          ),
+                                                          backgroundColor:
+                                                              AppColors.error,
+                                                        ),
+                                                      );
                                                 }
                                               }
                                             },
-                                            icon: const Icon(Icons.cancel_outlined, size: 14, color: AppColors.error),
-                                            label: const Text('Cancel', style: TextStyle(color: AppColors.error, fontSize: 12)),
+                                            icon: const Icon(
+                                              Icons.cancel_outlined,
+                                              size: 14,
+                                              color: AppColors.error,
+                                            ),
+                                            label: const Text(
+                                              'Cancel',
+                                              style: TextStyle(
+                                                color: AppColors.error,
+                                                fontSize: 12,
+                                              ),
+                                            ),
                                           ),
                                           const SizedBox(width: 8),
                                         ],
                                         OutlinedButton.icon(
-                                          onPressed: () => context.push('/customer/ticket/${booking.id}', extra: booking),
-                                          icon: const Icon(Icons.qr_code, size: 16),
-                                          label: const Text('View Pass', style: TextStyle(fontSize: 12)),
+                                          onPressed: () => context.push(
+                                            '/customer/ticket/${booking.id}',
+                                            extra: booking,
+                                          ),
+                                          icon: const Icon(
+                                            Icons.qr_code,
+                                            size: 16,
+                                          ),
+                                          label: const Text(
+                                            'View Pass',
+                                            style: TextStyle(fontSize: 12),
+                                          ),
                                           style: OutlinedButton.styleFrom(
                                             foregroundColor: AppColors.navy,
-                                            side: const BorderSide(color: AppColors.borderLight),
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            side: const BorderSide(
+                                              color: AppColors.borderLight,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -205,7 +289,9 @@ class _CustomerBookingsScreenState extends ConsumerState<CustomerBookingsScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.emerald : AppColors.surfaceSecondaryLight,
+            color: isSelected
+                ? AppColors.emerald
+                : AppColors.surfaceSecondaryLight,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(

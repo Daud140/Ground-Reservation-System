@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/route_names.dart';
 import '../../../core/theme/app_theme.dart';
@@ -21,8 +22,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<_OnboardingSlideData> _slides = const [
     _OnboardingSlideData(
       titlePrefix: 'Find',
-      description:
-          'Discover and reserve elite turfs, connect and spend recreation time with friends.',
+      description: 'Discover and reserve elite turfs, connect and spend recreation time with friends.',
       chips: [
         _SlideChip(label: 'Find nearby turf', icon: Icons.location_on_rounded),
         _SlideChip(label: 'Verified ratings', icon: Icons.star_rounded),
@@ -31,8 +31,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
     _OnboardingSlideData(
       titlePrefix: 'Book',
-      description:
-          'Instant slot reservation with real-time ground availability and instant confirmation.',
+      description: 'Instant slot reservation with real-time ground availability and instant confirmation.',
       chips: [
         _SlideChip(label: 'Instant confirmation', icon: Icons.bolt_rounded),
         _SlideChip(label: 'Flexible payment', icon: Icons.credit_card_rounded),
@@ -41,8 +40,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
     _OnboardingSlideData(
       titlePrefix: 'Manage',
-      description:
-          'Coordinate squads, split booking expenses, and elevate your match day performance.',
+      description: 'Coordinate squads, split booking expenses, and elevate your match day performance.',
       chips: [
         _SlideChip(label: 'Squad splitting', icon: Icons.groups_rounded),
         _SlideChip(label: 'Player analytics', icon: Icons.insights_rounded),
@@ -81,7 +79,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           children: [
             // Top Bar with Brand Logo and Skip Button
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 12.0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -89,7 +90,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   TextButton(
                     onPressed: _onSkip,
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
@@ -118,7 +122,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   final slide = _slides[index];
                   return SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 8.0,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -131,10 +138,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(AppTheme.cardRadius + 4),
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.cardRadius + 4,
+                              ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.emerald.withValues(alpha: 0.12),
+                                  color: AppTheme.emerald.withValues(
+                                    alpha: 0.12,
+                                  ),
                                   blurRadius: 28,
                                   offset: const Offset(0, 10),
                                 ),
@@ -189,7 +200,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           spacing: 10,
                           runSpacing: 10,
                           children: slide.chips
-                              .map((chip) => _buildFeaturePill(chip.label, chip.icon))
+                              .map(
+                                (chip) =>
+                                    _buildFeaturePill(chip.label, chip.icon),
+                              )
                               .toList(),
                         ),
                       ],
@@ -230,10 +244,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                       // Text Page Indicator: "01/03"
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.surfaceSecondaryLight,
-                          borderRadius: BorderRadius.circular(AppTheme.pillRadius),
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.pillRadius,
+                          ),
                         ),
                         child: Text(
                           '0${_currentPage + 1}/0${_slides.length}',
@@ -262,7 +281,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   const SizedBox(height: 10),
                   TextButton(
-                    onPressed: () => context.go('${AppRoutes.login}?role=customer&tab=login'),
+                    onPressed: () => context.go(
+                      '${AppRoutes.login}?role=customer&tab=login',
+                    ),
                     child: const Text(
                       'Already have an account? Log In / Sign Up',
                       style: TextStyle(
@@ -310,17 +331,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildSlideIllustration(_SlideType type) {
     switch (type) {
       case _SlideType.find:
-        return const RunnerIllustrationWidget(
-          width: 280,
-          height: 220,
-        );
+        return const RunnerIllustrationWidget(width: 280, height: 220);
       case _SlideType.book:
         return _buildBookingPitchIllustration();
       case _SlideType.manage:
-        return const StadiumIllustrationWidget(
-          width: 280,
-          height: 220,
-        );
+        return const StadiumIllustrationWidget(width: 280, height: 220);
     }
   }
 

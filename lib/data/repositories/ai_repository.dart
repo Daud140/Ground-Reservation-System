@@ -51,8 +51,12 @@ class MockAiRepository implements AiRepository {
 
     // 1. Sport identification
     SportType? targetSport;
-    if (lower.contains('futsal') || lower.contains('football') || lower.contains('soccer')) {
-      targetSport = lower.contains('futsal') ? SportType.futsal : SportType.football;
+    if (lower.contains('futsal') ||
+        lower.contains('football') ||
+        lower.contains('soccer')) {
+      targetSport = lower.contains('futsal')
+          ? SportType.futsal
+          : SportType.football;
     } else if (lower.contains('cricket')) {
       targetSport = SportType.cricket;
     } else if (lower.contains('padel')) {
@@ -65,39 +69,67 @@ class MockAiRepository implements AiRepository {
 
     // 2. Budget extraction (e.g. "under 4000", "< 3500", "budget 3000")
     double? budget;
-    final budgetRegex = RegExp(r'(?:under|below|less than|<|budget|around)\s*(\d{3,5})');
+    final budgetRegex = RegExp(
+      r'(?:under|below|less than|<|budget|around)\s*(\d{3,5})',
+    );
     final budgetMatch = budgetRegex.firstMatch(lower);
     if (budgetMatch != null) {
       budget = double.tryParse(budgetMatch.group(1)!);
     }
 
     // 3. Location extraction (Islamabad vs Rawalpindi)
-    bool isIslamabad = lower.contains('islamabad') || lower.contains('f-7') || lower.contains('e-11') || lower.contains('f-10') || lower.contains('blue area');
-    bool isRawalpindi = lower.contains('rawalpindi') || lower.contains('pindi') || lower.contains('ayub') || lower.contains('chaklala') || lower.contains('bahria');
+    bool isIslamabad =
+        lower.contains('islamabad') ||
+        lower.contains('f-7') ||
+        lower.contains('e-11') ||
+        lower.contains('f-10') ||
+        lower.contains('blue area');
+    bool isRawalpindi =
+        lower.contains('rawalpindi') ||
+        lower.contains('pindi') ||
+        lower.contains('ayub') ||
+        lower.contains('chaklala') ||
+        lower.contains('bahria');
 
     // Filter grounds
     matched = allGrounds.where((g) {
       if (targetSport != null && g.sportType != targetSport) return false;
       if (budget != null && g.pricePerHour > budget) return false;
-      if (isIslamabad && !g.location.toLowerCase().contains('islamabad')) return false;
-      if (isRawalpindi && !g.location.toLowerCase().contains('rawalpindi')) return false;
+      if (isIslamabad && !g.location.toLowerCase().contains('islamabad')) {
+        return false;
+      }
+      if (isRawalpindi && !g.location.toLowerCase().contains('rawalpindi')) {
+        return false;
+      }
       return true;
     }).toList();
 
     // Construct intelligent response
     if (matched.isNotEmpty) {
       final sportName = targetSport?.displayName ?? 'sports';
-      final budgetStr = budget != null ? ' within PKR ${budget.toInt()}/hr' : '';
-      replyText = 'I found ${matched.length} premier $sportName arena(s)$budgetStr for you in Rawalpindi & Islamabad. Tap any card below to view details and reserve your slot:';
-      chips = ['Book Today Evening', 'Show Top Rated', 'Filter by Under 4000 PKR'];
+      final budgetStr = budget != null
+          ? ' within PKR ${budget.toInt()}/hr'
+          : '';
+      replyText =
+          'I found ${matched.length} premier $sportName arena(s)$budgetStr for you in Rawalpindi & Islamabad. Tap any card below to view details and reserve your slot:';
+      chips = [
+        'Book Today Evening',
+        'Show Top Rated',
+        'Filter by Under 4000 PKR',
+      ];
     } else if (targetSport != null) {
-      replyText = 'I couldn\'t find available ${targetSport.displayName} grounds matching those specific criteria right now. Here are our top recommended venues:';
+      replyText =
+          'I couldn\'t find available ${targetSport.displayName} grounds matching those specific criteria right now. Here are our top recommended venues:';
       matched = allGrounds.take(2).toList();
       chips = ['View All Grounds', 'Change Budget', 'Top Rated Futsal'];
     } else {
       replyText = 'Hello! I\'m GroundBot, your personal sports ground reservation concierge in Rawalpindi & Islamabad. Tell me what sport you want to play, your location, or your target hourly budget!';
       matched = allGrounds.take(3).toList();
-      chips = ['Find Futsal under 3500 PKR', 'Cricket grounds open tomorrow', 'Top rated Padel courts'];
+      chips = [
+        'Find Futsal under 3500 PKR',
+        'Cricket grounds open tomorrow',
+        'Top rated Padel courts',
+      ];
     }
 
     return ChatMessageModel(
@@ -151,9 +183,7 @@ class MockAiRepository implements AiRepository {
           'Spacious outfield with clear boundary markings.',
           'Traditional pavilion seating for player dugouts and supporters.',
         ];
-        cons = [
-          'Parking can get busy during major tournament weekends.',
-        ];
+        cons = ['Parking can get busy during major tournament weekends.'];
         break;
       default:
         pros = [
@@ -161,16 +191,15 @@ class MockAiRepository implements AiRepository {
           'Friendly and punctual venue staff.',
           'Clean facilities with dedicated locker amenities.',
         ];
-        cons = [
-          'Peak hours fill up quickly on Friday and Saturday nights.',
-        ];
+        cons = ['Peak hours fill up quickly on Friday and Saturday nights.'];
         break;
     }
 
     return {
       'score': rating,
       'totalReviews': count,
-      'summary': 'Players consistently praise ${ground.name} for its ${pros.first.toLowerCase()} Overall customer satisfaction sits at ${(rating / 5 * 100).toInt()}%.',
+      'summary':
+          'Players consistently praise ${ground.name} for its ${pros.first.toLowerCase()} Overall customer satisfaction sits at ${(rating / 5 * 100).toInt()}%.',
       'pros': pros,
       'cons': cons,
     };
@@ -184,7 +213,9 @@ class MockAiRepository implements AiRepository {
     required List<String> facilities,
   }) async {
     await Future.delayed(const Duration(milliseconds: 400));
-    final facilityStr = facilities.isNotEmpty ? facilities.take(4).join(', ') : 'modern amenities';
+    final facilityStr = facilities.isNotEmpty
+        ? facilities.take(4).join(', ')
+        : 'modern amenities';
     return 'Welcome to $name, premier ${sportType.displayName} arena located in $location. Designed for both casual friendlies and intense competitive leagues, the venue features top-tier playing surfaces, full night floodlights, and premium player comfort including $facilityStr. Reserve your slot instantly on GroundZero to experience seamless sports entertainment.';
   }
 
@@ -195,8 +226,12 @@ class MockAiRepository implements AiRepository {
   }) async {
     await Future.delayed(const Duration(milliseconds: 300));
     final total = bookings.length;
-    final confirmed = bookings.where((b) => b.status == BookingStatus.confirmed).length;
-    final pending = bookings.where((b) => b.status == BookingStatus.pending).length;
+    final confirmed = bookings
+        .where((b) => b.status == BookingStatus.confirmed)
+        .length;
+    final pending = bookings
+        .where((b) => b.status == BookingStatus.pending)
+        .length;
 
     if (total == 0) {
       return 'AI Insight: No bookings logged yet. Promote your ground on social media and ensure floodlight amenities are highlighted to drive evening slot reservations.';

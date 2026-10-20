@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/storage/local_storage_service.dart';
 import '../../../data/repositories/repository_providers.dart';
 import '../models/user_model.dart';
@@ -8,11 +9,7 @@ class AuthState {
   final bool isLoading;
   final String? errorMessage;
 
-  const AuthState({
-    this.user,
-    this.isLoading = false,
-    this.errorMessage,
-  });
+  const AuthState({this.user, this.isLoading = false, this.errorMessage});
 
   bool get isAuthenticated => user != null;
   bool get isCustomer => user?.isCustomer ?? false;
@@ -131,4 +128,6 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 }
 
-final authProvider = NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
+final authProvider = NotifierProvider<AuthNotifier, AuthState>(
+  AuthNotifier.new,
+);

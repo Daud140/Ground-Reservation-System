@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
 import '../../data/demo/demo_data.dart';
 import '../../data/demo/fake_database.dart';
 import '../../features/auth/models/user_model.dart';
@@ -58,12 +60,18 @@ class LocalStorageService {
     try {
       if (Hive.isBoxOpen(HiveBoxes.usersBox)) {
         final usersBox = Hive.box(HiveBoxes.usersBox);
-        debugPrint('📦 =================== HIVE DATABASE: USERS ===================');
-        debugPrint('📦 Total Users in "${HiveBoxes.usersBox}": ${usersBox.length}');
+        debugPrint(
+          '📦 =================== HIVE DATABASE: USERS ===================',
+        );
+        debugPrint(
+          '📦 Total Users in "${HiveBoxes.usersBox}": ${usersBox.length}',
+        );
         for (final key in usersBox.keys) {
           debugPrint('  🔑 Key: $key => ${usersBox.get(key)}');
         }
-        debugPrint('📦 =============================================================');
+        debugPrint(
+          '📦 =============================================================',
+        );
       }
     } catch (e) {
       debugPrint('Error printing Hive users: $e');
@@ -144,7 +152,9 @@ class LocalStorageService {
       final settingsBox = Hive.box(HiveBoxes.settingsBox);
       final raw = settingsBox.get(_keyCurrentUser);
       if (raw == null) return null;
-      return UserModel.fromJson(Map<String, dynamic>.from(jsonDecode(raw as String)));
+      return UserModel.fromJson(
+        Map<String, dynamic>.from(jsonDecode(raw as String)),
+      );
     } catch (_) {
       return null;
     }

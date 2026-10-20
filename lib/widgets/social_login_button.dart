@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../constants/app_colors.dart';
 
 class SocialLoginButton extends StatelessWidget {
@@ -38,11 +39,7 @@ class SocialLoginButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 18,
-              color: iconColor ?? AppColors.textPrimary,
-            ),
+            Icon(icon, size: 18, color: iconColor ?? AppColors.textPrimary),
             const SizedBox(width: 6),
             Flexible(
               child: Text(

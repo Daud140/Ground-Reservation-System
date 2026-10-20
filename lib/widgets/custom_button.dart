@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../constants/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
@@ -44,7 +45,9 @@ class CustomButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: (backgroundColor ?? AppColors.primary).withValues(alpha: 0.35),
+            color: (backgroundColor ?? AppColors.primary).withValues(
+              alpha: 0.35,
+            ),
             blurRadius: 12,
             offset: const Offset(0, 5),
           ),

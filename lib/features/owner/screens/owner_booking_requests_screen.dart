@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../data/repositories/repository_providers.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../booking/models/booking_model.dart';
 
 class OwnerBookingRequestsScreen extends ConsumerStatefulWidget {
   const OwnerBookingRequestsScreen({super.key});
 
   @override
-  ConsumerState<OwnerBookingRequestsScreen> createState() => _OwnerBookingRequestsScreenState();
+  ConsumerState<OwnerBookingRequestsScreen> createState() =>
+      _OwnerBookingRequestsScreenState();
 }
 
-class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequestsScreen> {
-  int _selectedFilterIndex = 0; // 0: All, 1: Pending, 2: Confirmed, 3: Completed
+class _OwnerBookingRequestsScreenState
+    extends ConsumerState<OwnerBookingRequestsScreen> {
+  int _selectedFilterIndex =
+      0; // 0: All, 1: Pending, 2: Confirmed, 3: Completed
 
-  Future<void> _updateStatus(String bookingId, BookingStatus newStatus, [double? price]) async {
+  Future<void> _updateStatus(
+    String bookingId,
+    BookingStatus newStatus, [
+    double? price,
+  ]) async {
     final bookingRepo = ref.read(bookingRepositoryProvider);
     await bookingRepo.updateBookingStatus(bookingId, newStatus);
     setState(() {});
@@ -34,7 +43,9 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: newStatus == BookingStatus.confirmed ? AppColors.emerald : AppColors.error,
+        backgroundColor: newStatus == BookingStatus.confirmed
+            ? AppColors.emerald
+            : AppColors.error,
       ),
     );
   }
@@ -42,6 +53,8 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
   @override
   Widget build(BuildContext context) {
     final bookingRepo = ref.watch(bookingRepositoryProvider);
+    final authState = ref.watch(authProvider);
+    final ownerId = authState.user?.id ?? 'owner_sport_demo';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -60,11 +73,19 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
       body: FutureBuilder<List<BookingModel>>(
         future: bookingRepo.getAllBookings(),
         builder: (context, snapshot) {
-          final allBookings = snapshot.data ?? [];
+          final allBookings = (snapshot.data ?? [])
+              .where((b) => b.ownerId == ownerId)
+              .toList();
 
-          final pendingList = allBookings.where((b) => b.status == BookingStatus.pending).toList();
-          final confirmedList = allBookings.where((b) => b.status == BookingStatus.confirmed).toList();
-          final completedList = allBookings.where((b) => b.status == BookingStatus.completed).toList();
+          final pendingList = allBookings
+              .where((b) => b.status == BookingStatus.pending)
+              .toList();
+          final confirmedList = allBookings
+              .where((b) => b.status == BookingStatus.confirmed)
+              .toList();
+          final completedList = allBookings
+              .where((b) => b.status == BookingStatus.completed)
+              .toList();
 
           List<BookingModel> displayedBookings;
           switch (_selectedFilterIndex) {
@@ -87,7 +108,10 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
               // Filter Tabs Header
               Container(
                 color: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 child: Row(
                   children: [
                     _buildFilterTab('All', 0, allBookings.length),
@@ -137,7 +161,9 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.emerald : AppColors.surfaceSecondaryLight,
+            color: isSelected
+                ? AppColors.emerald
+                : AppColors.surfaceSecondaryLight,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
@@ -188,7 +214,9 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
                 ),
                 child: Center(
                   child: Text(
-                    booking.customerName.isNotEmpty ? booking.customerName[0] : 'U',
+                    booking.customerName.isNotEmpty
+                        ? booking.customerName[0]
+                        : 'U',
                     style: const TextStyle(
                       color: AppColors.emeraldDark,
                       fontWeight: FontWeight.w800,
@@ -248,7 +276,11 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
             children: [
               Row(
                 children: [
-                  const Icon(Icons.calendar_today_outlined, size: 14, color: AppColors.textSecondaryLight),
+                  const Icon(
+                    Icons.calendar_today_outlined,
+                    size: 14,
+                    color: AppColors.textSecondaryLight,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     '${booking.date} • ${booking.timeSlot}',
@@ -275,11 +307,18 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.check_circle_outline, size: 14, color: AppColors.emerald),
+              const Icon(
+                Icons.check_circle_outline,
+                size: 14,
+                color: AppColors.emerald,
+              ),
               const SizedBox(width: 6),
               Text(
                 'Payment: ${booking.paymentMethod}',
-                style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textSecondaryLight,
+                ),
               ),
             ],
           ),
@@ -291,28 +330,46 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => _updateStatus(booking.id, BookingStatus.rejected, booking.totalPrice),
+                    onPressed: () => _updateStatus(
+                      booking.id,
+                      BookingStatus.rejected,
+                      booking.totalPrice,
+                    ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.error,
                       side: const BorderSide(color: AppColors.error),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
-                    child: const Text('Reject', style: TextStyle(fontWeight: FontWeight.w700)),
+                    child: const Text(
+                      'Reject',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () => _updateStatus(booking.id, BookingStatus.confirmed, booking.totalPrice),
+                    onPressed: () => _updateStatus(
+                      booking.id,
+                      BookingStatus.confirmed,
+                      booking.totalPrice,
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.emerald,
                       foregroundColor: Colors.white,
                       elevation: 2,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
-                    child: const Text('Accept Request', style: TextStyle(fontWeight: FontWeight.w700)),
+                    child: const Text(
+                      'Accept Request',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ],
@@ -325,13 +382,22 @@ class _OwnerBookingRequestsScreenState extends ConsumerState<OwnerBookingRequest
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () => _updateStatus(booking.id, BookingStatus.cancelled, booking.totalPrice),
+                onPressed: () => _updateStatus(
+                  booking.id,
+                  BookingStatus.cancelled,
+                  booking.totalPrice,
+                ),
                 icon: const Icon(Icons.cancel_outlined, size: 16),
-                label: const Text('Cancel Booking (Reduces Revenue)', style: TextStyle(fontWeight: FontWeight.w700)),
+                label: const Text(
+                  'Cancel Booking (Reduces Revenue)',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.error,
                   side: const BorderSide(color: AppColors.error),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 10),
                 ),
               ),

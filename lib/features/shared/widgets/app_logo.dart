@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 
 class GroundZeroLogo extends StatelessWidget {
@@ -58,7 +59,9 @@ class GroundZeroLogo extends StatelessWidget {
                         fontSize: size * 0.58,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1.1,
-                        color: textColor ?? (isDark ? Colors.white : AppColors.navy),
+                        color:
+                            textColor ??
+                            (isDark ? Colors.white : AppColors.navy),
                       ),
                     ),
                     TextSpan(

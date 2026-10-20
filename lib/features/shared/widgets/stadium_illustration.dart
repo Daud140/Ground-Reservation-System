@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/constants/app_colors.dart';
 
 class StadiumIllustrationWidget extends StatelessWidget {
@@ -29,10 +30,7 @@ class StadiumIllustrationWidget extends StatelessWidget {
         child: Stack(
           children: [
             // Ambient floodlight beam gradient
-            CustomPaint(
-              size: Size(width, height),
-              painter: _StadiumPainter(),
-            ),
+            CustomPaint(size: Size(width, height), painter: _StadiumPainter()),
           ],
         ),
       ),
@@ -93,8 +91,16 @@ class _StadiumPainter extends CustomPainter {
       ..strokeWidth = 2.5
       ..style = PaintingStyle.stroke;
 
-    canvas.drawLine(Offset(w * 0.12, h * 0.35), Offset(w * 0.18, h * 0.08), towerPaint);
-    canvas.drawLine(Offset(w * 0.88, h * 0.35), Offset(w * 0.82, h * 0.08), towerPaint);
+    canvas.drawLine(
+      Offset(w * 0.12, h * 0.35),
+      Offset(w * 0.18, h * 0.08),
+      towerPaint,
+    );
+    canvas.drawLine(
+      Offset(w * 0.88, h * 0.35),
+      Offset(w * 0.82, h * 0.08),
+      towerPaint,
+    );
 
     final bulbPaint = Paint()..color = Colors.white;
     for (int i = 0; i < 4; i++) {
@@ -124,15 +130,27 @@ class _StadiumPainter extends CustomPainter {
       ..strokeWidth = 1.5;
 
     // Pitch center line & center circle
-    canvas.drawLine(Offset(w * 0.5, h * 0.58), Offset(w * 0.5, h * 0.98), markPaint);
+    canvas.drawLine(
+      Offset(w * 0.5, h * 0.58),
+      Offset(w * 0.5, h * 0.98),
+      markPaint,
+    );
     canvas.drawOval(
-      Rect.fromCenter(center: Offset(w * 0.5, h * 0.78), width: w * 0.22, height: h * 0.18),
+      Rect.fromCenter(
+        center: Offset(w * 0.5, h * 0.78),
+        width: w * 0.22,
+        height: h * 0.18,
+      ),
       markPaint,
     );
 
     // Outer boundary
     canvas.drawOval(
-      Rect.fromCenter(center: Offset(w * 0.5, h * 0.78), width: w * 0.72, height: h * 0.38),
+      Rect.fromCenter(
+        center: Offset(w * 0.5, h * 0.78),
+        width: w * 0.72,
+        height: h * 0.38,
+      ),
       markPaint,
     );
   }

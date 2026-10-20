@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/router/route_names.dart';
 import '../../../data/repositories/repository_providers.dart';
@@ -27,7 +28,11 @@ class BookingConfirmationScreen extends ConsumerWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.navy, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.navy,
+            size: 20,
+          ),
           onPressed: () => context.go(AppRoutes.customerRoot),
         ),
         title: const Text(
@@ -40,10 +45,16 @@ class BookingConfirmationScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.share_outlined, color: AppColors.navy, size: 22),
+            icon: const Icon(
+              Icons.share_outlined,
+              color: AppColors.navy,
+              size: 22,
+            ),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Digital pass ready to share via WhatsApp')),
+                const SnackBar(
+                  content: Text('Digital pass ready to share via WhatsApp'),
+                ),
               );
             },
           ),
@@ -62,7 +73,8 @@ class BookingConfirmationScreen extends ConsumerWidget {
           }
 
           final venueName = booking?.groundName ?? 'Apex Arena 5-a-side Turf';
-          final venueLocation = booking?.groundLocation ?? 'Bahria Town, Islamabad';
+          final venueLocation =
+              booking?.groundLocation ?? 'Bahria Town, Islamabad';
           final dateStr = booking?.date ?? '2026-10-26';
           final timeSlot = booking?.timeSlot ?? '08:00 PM - 09:00 PM';
           final amount = booking?.totalPrice ?? 4200.0;
@@ -140,7 +152,11 @@ class BookingConfirmationScreen extends ConsumerWidget {
                               color: AppColors.emerald,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(Icons.sports_soccer, color: Colors.white, size: 26),
+                            child: const Icon(
+                              Icons.sports_soccer,
+                              color: Colors.white,
+                              size: 26,
+                            ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
@@ -176,19 +192,32 @@ class BookingConfirmationScreen extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('Date & Time', style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
+                                const Text(
+                                  'Date & Time',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.textSecondaryLight,
+                                  ),
+                                ),
                                 const SizedBox(height: 2),
                                 Text(
                                   '$dateStr • $timeSlot',
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.navy),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.navy,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                           const SizedBox(width: 10),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.emeraldContainer,
                               borderRadius: BorderRadius.circular(8),
@@ -268,27 +297,47 @@ class BookingConfirmationScreen extends ConsumerWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: _buildActionButton(Icons.calendar_month_outlined, 'Calendar', () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Match event synced to device calendar!')),
-                        );
-                      }),
+                      child: _buildActionButton(
+                        Icons.calendar_month_outlined,
+                        'Calendar',
+                        () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Match event synced to device calendar!',
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: _buildActionButton(Icons.share_outlined, 'Share Pass', () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Pass ready to share!')),
-                        );
-                      }),
+                      child: _buildActionButton(
+                        Icons.share_outlined,
+                        'Share Pass',
+                        () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Pass ready to share!'),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: _buildActionButton(Icons.directions_outlined, 'Directions', () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Opening navigation directions...')),
-                        );
-                      }),
+                      child: _buildActionButton(
+                        Icons.directions_outlined,
+                        'Directions',
+                        () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Opening navigation directions...'),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),

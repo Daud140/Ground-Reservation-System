@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+
 import '../constants/app_colors.dart';
 import '../core/storage/hive_boxes.dart';
 import '../widgets/custom_button.dart';
@@ -67,7 +69,8 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       // Allow demo accounts as well as any created accounts in Hive
-      if (email.toLowerCase() == 'demo.player@groundres.com' || email.toLowerCase() == 'customer@groundzero.pk') {
+      if (email.toLowerCase() == 'demo.player@groundres.com' ||
+          email.toLowerCase() == 'customer@groundzero.pk') {
         isAuthenticated = true;
       } else {
         for (final key in usersBox.keys) {
@@ -78,7 +81,8 @@ class _LoginScreenState extends State<LoginScreen> {
             if (storedEmail == email.toLowerCase()) {
               final storedPassword = map['password'] as String?;
               if (storedPassword != null && storedPassword != password) {
-                authError = 'Incorrect password. Please verify your credentials.';
+                authError =
+                    'Incorrect password. Please verify your credentials.';
               } else {
                 isAuthenticated = true;
               }
@@ -110,16 +114,14 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          userEmail: email,
-        ),
-      ),
+      MaterialPageRoute(builder: (context) => HomeScreen(userEmail: email)),
     );
   }
 
   void _showForgotPasswordDialog() {
-    final resetEmailController = TextEditingController(text: _emailController.text);
+    final resetEmailController = TextEditingController(
+      text: _emailController.text,
+    );
     final dialogFormKey = GlobalKey<FormState>();
 
     showDialog(
@@ -130,7 +132,10 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             Icon(Icons.lock_reset, color: AppColors.primary),
             SizedBox(width: 8),
-            Text('Reset Password', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              'Reset Password',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ],
         ),
         content: Form(
@@ -154,7 +159,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (!RegExp(r'[A-Z]').hasMatch(val)) {
                     return 'Email must contain at least one uppercase letter';
                   }
-                  if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(val)) {
+                  if (!RegExp(
+                    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                  ).hasMatch(val)) {
                     return 'Please enter a valid email format';
                   }
                   return null;
@@ -176,24 +183,34 @@ class _LoginScreenState extends State<LoginScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
             onPressed: () {
               if (!dialogFormKey.currentState!.validate()) return;
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Password reset instructions sent to your email!'),
+                  content: Text(
+                    'Password reset instructions sent to your email!',
+                  ),
                   backgroundColor: AppColors.primaryDark,
                 ),
               );
             },
-            child: const Text('Send Link', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Send Link',
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -270,7 +287,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (!RegExp(r'[A-Z]').hasMatch(val)) {
                                 return 'Email must contain at least one uppercase letter (e.g. User@example.com)';
                               }
-                              if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$').hasMatch(val)) {
+                              if (!RegExp(
+                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                              ).hasMatch(val)) {
                                 return 'Please enter a valid email address (e.g. User@example.com)';
                               }
                               return null;
@@ -355,7 +374,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
                                   minimumSize: const Size(50, 30),
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: const Text(
                                   'Forgot Password?',
@@ -382,7 +402,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Quick Demo Fill Action
                           OutlinedButton.icon(
                             onPressed: _fillDemoCredentials,
-                            icon: const Icon(Icons.flash_on, size: 16, color: AppColors.accent),
+                            icon: const Icon(
+                              Icons.flash_on,
+                              size: 16,
+                              color: AppColors.accent,
+                            ),
                             label: const Text(
                               'Auto-fill Demo Credentials',
                               style: TextStyle(
@@ -431,7 +455,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   iconColor: Colors.redAccent,
                                   onTap: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Google Sign-In selected')),
+                                      const SnackBar(
+                                        content: Text(
+                                          'Google Sign-In selected',
+                                        ),
+                                      ),
                                     );
                                   },
                                 ),
@@ -444,7 +472,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   iconColor: Colors.black,
                                   onTap: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Apple Sign-In selected')),
+                                      const SnackBar(
+                                        content: Text('Apple Sign-In selected'),
+                                      ),
                                     );
                                   },
                                 ),
@@ -457,7 +487,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   iconColor: AppColors.primaryDark,
                                   onTap: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Phone OTP login selected')),
+                                      const SnackBar(
+                                        content: Text(
+                                          'Phone OTP login selected',
+                                        ),
+                                      ),
                                     );
                                   },
                                 ),

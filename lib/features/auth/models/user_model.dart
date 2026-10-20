@@ -2,7 +2,8 @@ enum UserRole {
   customer,
   owner;
 
-  String get displayName => this == UserRole.customer ? 'Customer' : 'Ground Owner';
+  String get displayName =>
+      this == UserRole.customer ? 'Customer' : 'Ground Owner';
 }
 
 /// Represents an authenticated user (Customer or Owner) in GroundZero
